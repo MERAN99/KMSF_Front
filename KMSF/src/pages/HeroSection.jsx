@@ -37,8 +37,8 @@ export default function HeroSection() {
             Federation
           </h1>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-300 max-w-xl mx-auto lg:mx-0">
-            Connecting healthcare professionals and advancing medical excellence across Kurdistan
-          </p>
+                 Connecting healthcare professionals and scientists across the World          
+                 </p>
         </motion.div>
 
         {/* Right Side - Popped Out Images */}
