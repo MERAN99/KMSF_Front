@@ -24,6 +24,14 @@ const Members = () => {
       image: '/Team/Team-1.jpg',
       bio: 'Expert in scientific publishing and peer review processes in medical literature.'
     }
+    ,
+    {
+      id: 4,
+      name: 'Prof. Omar Al-Zahra',
+      position: 'Senior Researcher',
+      image: '/Team/Team-1.jpg',
+      bio: 'Expert in scientific publishing and peer review processes in medical literature.'
+    }
   ];
 
   const kumaMembers = [
@@ -43,6 +51,14 @@ const Members = () => {
     },
     {
       id: 3,
+      name: 'Dr. Nour Al-Hassan',
+      position: 'Medical Educator',
+      image: '/Team/Team-1.jpg',
+      bio: 'Dedicated to medical training and continuing education for healthcare professionals.'
+    }
+    ,
+    {
+      id: 4,
       name: 'Dr. Nour Al-Hassan',
       position: 'Medical Educator',
       image: '/Team/Team-1.jpg',
@@ -68,18 +84,18 @@ const Members = () => {
   const MemberCard = ({ member }) => (
     <motion.div
       variants={cardVariants}
-      className="group relative bg-gray-800 bg-opacity-50 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:bg-opacity-70"
+      className="group relative bg-gray-800 bg-opacity-50 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:bg-opacity-70"
       whileHover={{ y: -10 }}
     >
       {/* Background gradient overlay on hover */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
       {/* Image */}
-      <div className="relative w-full h-64 overflow-hidden">
+      <div className="relative w-full h-48 overflow-hidden">
         <img
           src={member.image}
           alt={member.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none"
         />
         {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent"></div>
@@ -93,23 +109,23 @@ const Members = () => {
         <p className="text-[#C8A441] font-medium mb-3 text-sm">
           {member.position}
         </p>
-        <p className="text-gray-300 text-sm leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+        <p className="text-gray-300 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100">
           {member.bio}
         </p>
 
         {/* Decorative elements */}
-        <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <div className="w-3 h-3 bg-[#C8A441] rounded-full"></div>
+        <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <div className="w-3 h-3 bg-[#C8A441]"></div>
         </div>
       </div>
 
       {/* Hover border effect */}
-      <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#C8A441]/50 rounded-2xl transition-all duration-300"></div>
+      <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#C8A441]/50 transition-all duration-300"></div>
     </motion.div>
   );
 
   return (
-    <section className="py-16 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+    <section className="py-16 w-full bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -147,7 +163,7 @@ const Members = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
           >
             {ksaMembers.map((member) => (
               <MemberCard key={member.id} member={member} />
@@ -175,7 +191,7 @@ const Members = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
           >
             {kumaMembers.map((member) => (
               <MemberCard key={member.id} member={member} />
@@ -191,13 +207,13 @@ const Members = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-center mt-16"
         >
-          <div className="bg-gradient-to-r from-[#C8A441] to-[#F2AE02] rounded-2xl p-8 shadow-2xl">
+          <div className="bg-gradient-to-r from-[#C8A441] to-[#F2AE02] p-8 shadow-2xl">
             <h3 className="text-2xl font-bold text-white mb-4">Join Our Team</h3>
             <p className="text-gray-200 mb-6 max-w-2xl mx-auto">
               Interested in contributing to Kurdish healthcare and scientific advancement?
               We welcome passionate professionals to join our growing community.
             </p>
-            <button className="bg-white text-gray-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors duration-300">
+            <button className="bg-white text-gray-900 px-8 py-3 font-semibold hover:bg-gray-100 transition-colors duration-300">
               Learn About Membership
             </button>
           </div>
