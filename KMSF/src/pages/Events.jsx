@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
 
@@ -61,8 +62,7 @@ export default function EventsSection() {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
-        ease: "easeOut"
+        duration: 0.6
       }
     }
   };

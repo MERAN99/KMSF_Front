@@ -65,7 +65,7 @@ const Members = () => {
     visible: { opacity: 1, y: 0 }
   };
 
-  const MemberCard = ({ member, index }: { member: typeof ksaMembers[0], index: number }) => (
+  const MemberCard = ({ member }) => (
     <motion.div
       variants={cardVariants}
       className="group relative bg-gray-800 bg-opacity-50 rounded-2xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:bg-opacity-70"
@@ -149,8 +149,8 @@ const Members = () => {
             viewport={{ once: true, amount: 0.2 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {ksaMembers.map((member, index) => (
-              <MemberCard key={member.id} member={member} index={index} />
+            {ksaMembers.map((member) => (
+              <MemberCard key={member.id} member={member} />
             ))}
           </motion.div>
         </div>
@@ -177,8 +177,8 @@ const Members = () => {
             viewport={{ once: true, amount: 0.2 }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
-            {kumaMembers.map((member, index) => (
-              <MemberCard key={member.id} member={member} index={index} />
+            {kumaMembers.map((member) => (
+              <MemberCard key={member.id} member={member} />
             ))}
           </motion.div>
         </div>

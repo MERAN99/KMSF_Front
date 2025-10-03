@@ -30,7 +30,7 @@ const Navbar = () => {
     { name: 'Contact', href: '/contact' },
   ];
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, link: typeof navLinks[0]) => {
+  const handleNavClick = (e, link) => {
     if (link.scrollTo && window.location.pathname === '/') {
       e.preventDefault();
       const element = document.getElementById(link.scrollTo);

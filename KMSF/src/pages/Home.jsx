@@ -1,9 +1,9 @@
+import React from 'react';
 import About from './About';
 import Events from './Events';
 import HeroSection from './HeroSection';
 import Members from './Members';
 import ScrollToTop from '../components/ScrollToTop';
-import Footer from '../layout/Footer';
 
 const Home = () => {
   return (
