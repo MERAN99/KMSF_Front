@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +20,25 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Handle click outside to close mobile menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMobileMenuOpen && mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
+
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about', scrollTo: 'about-section' },
@@ -31,11 +51,31 @@ const Navbar = () => {
   ];
 
   const handleNavClick = (e, link) => {
-    if (link.scrollTo && window.location.pathname === '/') {
+    if (link.scrollTo) {
       e.preventDefault();
-      const element = document.getElementById(link.scrollTo);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+
+      if (window.location.pathname === '/') {
+        // Already on home page, just scroll
+        const scrollToElement = () => {
+          const element = document.getElementById(link.scrollTo);
+          if (element) {
+            const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+            const offset = 80; // Account for fixed navbar height
+            window.scrollTo({
+              top: elementTop - offset,
+              behavior: 'smooth'
+            });
+          } else {
+            console.warn(`Element with ID "${link.scrollTo}" not found`);
+          }
+        };
+
+        // Try immediately, then retry after a delay for lazy-loaded content
+        scrollToElement();
+        setTimeout(scrollToElement, 200);
+      } else {
+        // Navigate to home page first, then scroll
+        window.location.href = `/#${link.scrollTo}`;
       }
     }
   };
@@ -59,14 +99,23 @@ const Navbar = () => {
           {/* Center - Desktop Navigation Links */}
           <div className="hidden lg:flex items-center space-x-1">
             {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                onClick={(e) => handleNavClick(e, link)}
-                className="text-white hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 cursor-pointer"
-              >
-                {link.name}
-              </a>
+              link.scrollTo ? (
+                <button
+                  key={link.name}
+                  onClick={(e) => handleNavClick(e, link)}
+                  className="text-white hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 cursor-pointer bg-transparent border-none"
+                >
+                  {link.name}
+                </button>
+              ) : (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-white hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 cursor-pointer"
+                >
+                  {link.name}
+                </a>
+              )
             ))}
           </div>
 
@@ -74,19 +123,27 @@ const Navbar = () => {
           <div className="flex items-center space-x-4">
             {/* Sign In Button - Always visible */}
             <a
-              href="/signin"
-              className=" hover:bg-amber-400 hover:border-white text-white px-4 py-2 border border-amber-400 rounded-lg text-sm font-medium transition-colors duration-200 shadow-lg hover:shadow-xl"
+              href="/membership"
+              className=" hover:bg-amber-400 hover:border-white text-white px-4 py-2 border border-amber-400  text-sm font-medium transition-colors duration-200 shadow-lg hover:shadow-xl"
             >
               Sign In
             </a>
 
             {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden text-white p-2 rounded-md hover:bg-white/10 transition-colors duration-200"
-              aria-label="Toggle menu"
-            >
-              <AnimatePresence mode="wait" initial={false}>
+            <div className="lg:hidden">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('Button clicked, current state:', isMobileMenuOpen);
+                  setIsMobileMenuOpen(prev => {
+                    console.log('Setting menu to:', !prev);
+                    return !prev;
+                  });
+                }}
+                className="text-white p-2 rounded-md hover:bg-white/10 transition-colors duration-200 flex items-center justify-center w-10 h-10 relative z-10"
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              >
                 {isMobileMenuOpen ? (
                   <motion.div
                     key="close"
@@ -108,8 +165,8 @@ const Navbar = () => {
                     <Menu size={24} />
                   </motion.div>
                 )}
-              </AnimatePresence>
-            </button>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -118,6 +175,7 @@ const Navbar = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
+            ref={mobileMenuRef}
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -126,20 +184,33 @@ const Navbar = () => {
           >
             <div className="px-4 pt-2 pb-4 space-y-1">
               {navLinks.map((link, index) => (
-                <motion.a
-                  key={link.name}
-                  href={link.href}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="block text-white hover:bg-white/10 px-3 py-3 rounded-md text-base font-medium transition-colors duration-200 cursor-pointer"
-                  onClick={(e) => {
-                    handleNavClick(e, link);
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  {link.name}
-                </motion.a>
+                link.scrollTo ? (
+                  <motion.button
+                    key={link.name}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="block text-white hover:bg-white/10 px-3 py-3 rounded-md text-base font-medium transition-colors duration-200 cursor-pointer w-full text-left bg-transparent border-none"
+                    onClick={(e) => {
+                      handleNavClick(e, link);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    {link.name}
+                  </motion.button>
+                ) : (
+                  <motion.a
+                    key={link.name}
+                    href={link.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="block text-white hover:bg-white/10 px-3 py-3 rounded-md text-base font-medium transition-colors duration-200 cursor-pointer"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </motion.a>
+                )
               ))}
             </div>
           </motion.div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
+import LazyImage from '../components/LazyImage';
 
 export default function EventsSection() {
   const events = [
@@ -111,8 +112,8 @@ export default function EventsSection() {
 
               {/* Event Image */}
               <div className="relative w-full h-48 overflow-hidden">
-                <img 
-                  src={event.image} 
+                <LazyImage
+                  src={event.image}
                   alt={event.title}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />

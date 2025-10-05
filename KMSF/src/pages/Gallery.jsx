@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
+import LazyImage from '../components/LazyImage';
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -323,7 +324,7 @@ const Gallery = () => {
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.98 }}
         >
-          <img
+          <LazyImage
             src={image.src}
             alt={image.alt}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none"
@@ -562,7 +563,7 @@ const Gallery = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="relative overflow-hidden shadow-2xl">
-              <img
+              <LazyImage
                 src={selectedImage.src}
                 alt={selectedImage.alt}
                 className="w-full h-auto max-h-[85vh] object-contain select-none"
