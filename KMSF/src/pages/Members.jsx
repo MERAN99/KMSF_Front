@@ -5,64 +5,146 @@ const Members = () => {
   const ksaMembers = [
     {
       id: 1,
-      name: 'Dr. Ahmed Hassan',
-      position: 'Scientific Director',
-      image: '/Team/Team-1.jpg',
-      bio: 'Leading research in medical sciences with over 15 years of experience in academic research.'
+      name: 'Dr Sayah Saied',
+      position: 'Chair - Atomic Physicist',
+      image: '',
+      bio: ''
     },
     {
       id: 2,
-      name: 'Dr. Fatima Al-Rashid',
-      position: 'Research Coordinator',
-      image: '/Team/Team-1.jpg',
-      bio: 'Specialized in scientific methodology and data analysis for medical research projects.'
+      name: 'Taban Hawezy',
+      position: 'Secretary - Data Analyst',
+      image: '',
+      bio: ''
     },
     {
       id: 3,
-      name: 'Prof. Omar Al-Zahra',
-      position: 'Senior Researcher',
-      image: '/Team/Team-1.jpg',
-      bio: 'Expert in scientific publishing and peer review processes in medical literature.'
-    }
-    ,
+      name: 'Dr Barzan Rahman',
+      position: 'Treasurer - Psychologist',
+      image: '',
+      bio: ''
+    },
     {
       id: 4,
-      name: 'Prof. Omar Al-Zahra',
-      position: 'Senior Researcher',
-      image: '/Team/Team-1.jpg',
-      bio: 'Expert in scientific publishing and peer review processes in medical literature.'
+      name: 'Dr Aras Asaad',
+      position: 'Machine Learning Scientist',
+      image: '/Team/Dr - Aras.jpg',
+      bio: ''
+    },
+    {
+      id: 5,
+      name: 'Araz Agha',
+      position: 'Architect, Academic & Researcher',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 6,
+      name: 'Bayad Omar',
+      position: 'Technology Consultant',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 7,
+      name: 'Niga S. Nawroly',
+      position: 'Scientist, Immunologist',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 8,
+      name: 'Soma Hadad',
+      position: 'Architect, Academic & CEO of S.A.',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 9,
+      name: 'Dr Tahir Hassan',
+      position: 'Research Fellow in Machine Learning',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 10,
+      name: 'Dr Zana Hussain',
+      position: 'Business Management',
+      image: '',
+      bio: ''
     }
   ];
 
   const kumaMembers = [
     {
       id: 1,
-      name: 'Dr. Layla Mahmoud',
-      position: 'Medical Director',
-      image: '/Team/Team-1.jpg',
-      bio: 'Board-certified physician with extensive experience in clinical practice and medical education.'
+      name: 'Zhyar Said',
+      position: 'Chair - Pharmacist, Lecturer & Director',
+      image: '',
+      bio: ''
     },
     {
       id: 2,
-      name: 'Dr. Karim Al-Sayed',
-      position: 'Clinical Coordinator',
-      image: '/Team/Team-1.jpg',
-      bio: 'Specialist in internal medicine with focus on community health programs.'
+      name: 'Dr Chinar Osman',
+      position: 'Secretary - Consultant Neurologist',
+      image: '',
+      bio: ''
     },
     {
       id: 3,
-      name: 'Dr. Nour Al-Hassan',
-      position: 'Medical Educator',
-      image: '/Team/Team-1.jpg',
-      bio: 'Dedicated to medical training and continuing education for healthcare professionals.'
-    }
-    ,
+      name: 'Yar Ameen',
+      position: 'Treasurer - Senior Paralegal',
+      image: '',
+      bio: ''
+    },
     {
       id: 4,
-      name: 'Dr. Nour Al-Hassan',
-      position: 'Medical Educator',
-      image: '/Team/Team-1.jpg',
-      bio: 'Dedicated to medical training and continuing education for healthcare professionals.'
+      name: 'Dr Badenan Fathulla',
+      position: 'Consultant Obstetrician & Gynaecologist',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 5,
+      name: 'Dr Dlovan Taha',
+      position: 'General Practitioner',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 6,
+      name: 'Dr Firiad Hiwaizi',
+      position: 'Consultant Haematologist',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 7,
+      name: 'Dr Hama Attar',
+      position: 'Consultant Urological Surgeon',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 8,
+      name: 'Dr Sanaria Raouf',
+      position: 'Consultant Obstetrician & Maternal Medicine',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 9,
+      name: 'Shilan Ghafoor',
+      position: 'Pharmacist, Healthcare Policy Advisor',
+      image: '',
+      bio: ''
+    },
+    {
+      id: 10,
+      name: 'Dr Teshk Nakshbandi',
+      position: 'General Practitioner',
+      image: '',
+      bio: ''
     }
   ];
 
@@ -93,7 +175,7 @@ const Members = () => {
       {/* Image */}
       <div className="relative w-full h-48 overflow-hidden">
         <img
-          src={member.image}
+          src={member.image || '/Team/user.png'}
           alt={member.name}
           className="w-full h-full object-cover filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none"
         />
