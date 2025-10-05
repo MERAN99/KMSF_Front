@@ -2,13 +2,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import LazyImage from '../components/LazyImage';
+import useMobile from '../hooks/useMobile';
 
 const Gallery = () => {
+  const isMobile = useMobile();
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [activeFilter, setActiveFilter] = useState('All');
   const [showIndicators, setShowIndicators] = useState({ row1: true, row2: true, row3: true });
-  
+
   const row1Ref = useRef(null);
   const row2Ref = useRef(null);
   const row3Ref = useRef(null);
@@ -307,7 +309,42 @@ const Gallery = () => {
       ];
       const direction = directions[index % 4];
       const globalIndex = filteredImages.findIndex(img => img.id === image.id);
-      
+
+      if (isMobile) {
+        return (
+          <div
+            key={image.id}
+            className="group relative flex-shrink-0 w-80 h-80 overflow-hidden bg-gray-800 cursor-pointer select-none"
+            onClick={() => {
+              setSelectedImage(image);
+              setSelectedIndex(globalIndex);
+            }}
+          >
+            <LazyImage
+              src={image.src}
+              alt={image.alt}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none"
+            />
+
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <span className="inline-block bg-yellow-500 text-gray-900 px-3 py-1 text-xs font-bold mb-3">
+                  {image.category}
+                </span>
+                <p className="text-white font-semibold text-lg">{image.alt}</p>
+              </div>
+            </div>
+
+            {/* Border Effect */}
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-yellow-500/50 transition-all duration-300"></div>
+
+            {/* Corner Accent */}
+            <div className="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+        );
+      }
+
       return (
         <motion.div
           key={image.id}
@@ -329,7 +366,7 @@ const Gallery = () => {
             alt={image.alt}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 pointer-events-none"
           />
-          
+
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -361,73 +398,117 @@ const Gallery = () => {
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <motion.span 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="inline-block text-yellow-500 font-semibold text-sm uppercase tracking-widest mb-4"
-            >
-              Memories & Moments
-            </motion.span>
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-6">
-              <span className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 bg-clip-text text-transparent">
-                Our Gallery
+          {isMobile ? (
+            <div className="text-center">
+              <span className="inline-block text-yellow-500 font-semibold text-sm uppercase tracking-widest mb-4">
+                Memories & Moments
               </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Capturing moments that define our journey in Kurdish healthcare and scientific excellence
-            </p>
-          </motion.div>
+              <h1 className="text-6xl md:text-8xl font-bold text-white mb-6">
+                <span className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 bg-clip-text text-transparent">
+                  Our Gallery
+                </span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                Capturing moments that define our journey in Kurdish healthcare and scientific excellence
+              </p>
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center"
+            >
+              <motion.span
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="inline-block text-yellow-500 font-semibold text-sm uppercase tracking-widest mb-4"
+              >
+                Memories & Moments
+              </motion.span>
+              <h1 className="text-6xl md:text-8xl font-bold text-white mb-6">
+                <span className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 bg-clip-text text-transparent">
+                  Our Gallery
+                </span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                Capturing moments that define our journey in Kurdish healthcare and scientific excellence
+              </p>
+            </motion.div>
+          )}
         </div>
       </div>
 
       {/* Filter Tabs */}
       <div className="max-w-7xl mt-5 mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="flex flex-wrap justify-center gap-4"
-        >
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setActiveFilter(category)}
-              className={`px-8 py-3 font-semibold transition-all duration-300 ${
-                activeFilter === category
-                  ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white'
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
-            >
-              {category}
-            </button>
-          ))}
-        </motion.div>
+        {isMobile ? (
+          <div className="flex flex-wrap justify-center gap-4">
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveFilter(category)}
+                className={`px-8 py-3 font-semibold transition-all duration-300 ${
+                  activeFilter === category
+                    ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-wrap justify-center gap-4"
+          >
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setActiveFilter(category)}
+                className={`px-8 py-3 font-semibold transition-all duration-300 ${
+                  activeFilter === category
+                    ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
+          </motion.div>
+        )}
       </div>
 
       {/* Swipe Indicator - Top */}
-      <motion.div 
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1, duration: 0.8 }}
-        className="flex items-center justify-center gap-3 mb-8"
-      >
+      {isMobile ? (
+        <div className="flex items-center justify-center gap-3 mb-8">
+          <div className="flex items-center gap-2 text-yellow-500">
+            <span className="text-sm font-semibold uppercase tracking-wider">Drag or Swipe to explore</span>
+            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5 -ml-3" />
+          </div>
+        </div>
+      ) : (
         <motion.div
-          animate={{ x: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="flex items-center gap-2 text-yellow-500"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1, duration: 0.8 }}
+          className="flex items-center justify-center gap-3 mb-8"
         >
-          <span className="text-sm font-semibold uppercase tracking-wider">Drag or Swipe to explore</span>
-          <ChevronRight className="w-5 h-5" />
-          <ChevronRight className="w-5 h-5 -ml-3" />
+          <motion.div
+            animate={{ x: [0, 10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            className="flex items-center gap-2 text-yellow-500"
+          >
+            <span className="text-sm font-semibold uppercase tracking-wider">Drag or Swipe to explore</span>
+            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5 -ml-3" />
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
 
       {/* Gallery - 3 Rows with Hidden Scrollbar */}
       <style>{`
@@ -525,22 +606,32 @@ const Gallery = () => {
       </div>
 
       {/* Swipe Indicator - Bottom */}
-      <motion.div 
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1.2, duration: 0.8 }}
-        className="flex items-center justify-center gap-3 mb-12"
-      >
+      {isMobile ? (
+        <div className="flex items-center justify-center gap-3 mb-12">
+          <div className="flex items-center gap-2 text-yellow-500">
+            <span className="text-sm font-semibold uppercase tracking-wider">More to see</span>
+            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5 -ml-3" />
+          </div>
+        </div>
+      ) : (
         <motion.div
-          animate={{ x: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
-          className="flex items-center gap-2 text-yellow-500"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="flex items-center justify-center gap-3 mb-12"
         >
-          <span className="text-sm font-semibold uppercase tracking-wider">More to see</span>
-          <ChevronRight className="w-5 h-5" />
-          <ChevronRight className="w-5 h-5 -ml-3" />
+          <motion.div
+            animate={{ x: [0, 10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+            className="flex items-center gap-2 text-yellow-500"
+          >
+            <span className="text-sm font-semibold uppercase tracking-wider">More to see</span>
+            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-5 h-5 -ml-3" />
+          </motion.div>
         </motion.div>
-      </motion.div>
+      )}
 
       {/* Lightbox Modal with Navigation */}
       {selectedImage && (
@@ -618,31 +709,53 @@ const Gallery = () => {
       )}
 
       {/* Call to Action */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20"
-      >
-        <div className="relative overflow-hidden bg-gradient-to-r from-yellow-600 to-yellow-500 p-12 md:p-16 shadow-2xl">
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white blur-3xl"></div>
-          </div>
-          <div className="relative text-center">
-            <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Want to be part of our story?
-            </h3>
-            <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-              Join our community and help create more memorable moments for Kurdish healthcare and scientific advancement.
-            </p>
-            <button className="bg-white text-gray-900 px-10 py-4 font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
-              Get Involved
-            </button>
+      {isMobile ? (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+          <div className="relative overflow-hidden bg-gradient-to-r from-yellow-600 to-yellow-500 p-12 md:p-16 shadow-2xl">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-white blur-3xl"></div>
+            </div>
+            <div className="relative text-center">
+              <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Want to be part of our story?
+              </h3>
+              <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                Join our community and help create more memorable moments for Kurdish healthcare and scientific advancement.
+              </p>
+              <button className="bg-white text-gray-900 px-10 py-4 font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+                Get Involved
+              </button>
+            </div>
           </div>
         </div>
-      </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20"
+        >
+          <div className="relative overflow-hidden bg-gradient-to-r from-yellow-600 to-yellow-500 p-12 md:p-16 shadow-2xl">
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white blur-3xl"></div>
+              <div className="absolute bottom-0 left-0 w-64 h-64 bg-white blur-3xl"></div>
+            </div>
+            <div className="relative text-center">
+              <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                Want to be part of our story?
+              </h3>
+              <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                Join our community and help create more memorable moments for Kurdish healthcare and scientific advancement.
+              </p>
+              <button className="bg-white text-gray-900 px-10 py-4 font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+                Get Involved
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 };
