@@ -251,7 +251,7 @@ const Membership = () => {
                     className="w-full bg-gray-700 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all duration-300"
                   >
                     <option value="">Select Organization</option>
-                    <option value="KSA">KSA (Kurdish Students Association)</option>
+                    <option value="KSA">KSA (Kurdistan Scientific Association)</option>
                     <option value="KuMA">KuMA (Kurdish Medical Association)</option>
                   </select>
                 </div>

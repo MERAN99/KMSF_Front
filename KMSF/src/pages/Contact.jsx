@@ -25,27 +25,30 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white pt-16">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
-        <div className="relative z-10 flex flex-col items-center justify-center py-20 px-4">
-          <img
-            src="/KMSF_logo.png"
-            alt="KMSF Logo"
-            className="w-32 h-32 mb-8 shadow-lg"
-          />
-          <h1 className="text-5xl md:text-6xl font-bold text-center mb-6 bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">
-            Contact Us
-          </h1>
-          <p className="text-xl md:text-2xl text-center max-w-3xl leading-relaxed">
-            Get in touch with the Kurdistan Medical and Scientific Federation
-          </p>
+      <div className="relative overflow-hidden pt-32 pb-20">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-850 to-gray-900"></div>
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-20 left-1/4 w-96 h-96 bg-yellow-500 blur-3xl"></div>
+          <div className="absolute top-40 right-1/3 w-80 h-80 bg-yellow-600 blur-3xl"></div>
         </div>
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-10"
-          style={{ backgroundImage: 'url(/WorldMapPattern.png)' }}
-        ></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <span className="inline-block text-yellow-500 font-semibold text-sm uppercase tracking-widest mb-4">
+              Get In Touch
+            </span>
+            <h1 className="text-6xl md:text-8xl font-bold text-white mb-6">
+              <span className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 bg-clip-text text-transparent">
+                Contact Us
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Get in touch with the Kurdistan Medical and Scientific Federation
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Main Content */}
