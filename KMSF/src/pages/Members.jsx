@@ -14,14 +14,14 @@ const Members = () => {
       id: 2,
       name: 'Taban Hawezy',
       position: 'Secretary - Data Analyst',
-      image: '',
+      image: '/Team/Taban.jpg',
       bio: ''
     },
     {
       id: 3,
       name: 'Dr Barzan Rahman',
       position: 'Treasurer - Psychologist',
-      image: '',
+      image: '/Team/Dr-Barzan.jpg',
       bio: ''
     },
     {
@@ -42,14 +42,14 @@ const Members = () => {
       id: 6,
       name: 'Bayad Omar',
       position: 'Technology Consultant',
-      image: '',
+      image: '/Team/Dr-Bayad.jpg',
       bio: ''
     },
     {
       id: 7,
       name: 'Niga S. Nawroly',
       position: 'Scientist, Immunologist',
-      image: '',
+      image: '/Team/Niga.jpg',
       bio: ''
     },
     {
@@ -63,7 +63,7 @@ const Members = () => {
       id: 9,
       name: 'Dr Tahir Hassan',
       position: 'Research Fellow in Machine Learning',
-      image: '',
+      image: '/Team/Dr-Tahir.jpg',
       bio: ''
     },
     {
@@ -80,7 +80,7 @@ const Members = () => {
       id: 1,
       name: 'Zhyar Said',
       position: 'Chair - Pharmacist, Lecturer & Director',
-      image: '',
+      image: '/Team/Zhyar.jpg',
       bio: ''
     },
     {

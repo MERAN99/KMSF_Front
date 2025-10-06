@@ -7,43 +7,67 @@ export default function EventsSection() {
   const events = [
     {
       id: 1,
-      title: "Annual Medical Conference 2025",
-      date: "March 15, 2025",
-      time: "9:00 AM - 5:00 PM",
-      location: "Erbil Convention Center",
-      description: "Join leading medical professionals for groundbreaking research presentations and networking opportunities.",
+      title: "KURDISTAN MEDICAL AND SCIENTIFIC FEDERATION - UK CONFERENCE",
+      date: "November 9, 2025",
+      time: "9:00 AM - 8:30 PM",
+      location: "London Conference Center",
+      description: "Join the Kurdistan Medical and Scientific Federation for an international conference featuring leading medical professionals, research presentations, and networking opportunities.",
       category: "Conference",
-      image: "/Events/Eve-1.jpg"
+      image: "/Events/Event-1.jpg",
+      registration: {
+        student: "Free",
+        kmsfMember: "£20",
+        nonMember: "£40"
+      },
+      link: "/Events/2025 KURDISTAN MEDICAL AND SCIENTIFIC FEDERATION - UK CONFERENCE.pdf"
     },
     {
       id: 2,
-      title: "Healthcare Innovation Summit",
-      date: "April 22, 2025",
+      title: "Advanced Cardiology Seminar",
+      date: "December 14, 2025",
       time: "10:00 AM - 4:00 PM",
-      location: "Sulaymaniyah Medical Center",
-      description: "Exploring cutting-edge medical technologies and their impact on healthcare delivery in Kurdistan.",
-      category: "Summit",
-      image: "/Events/Eve-2.jpg"
+      location: "Erbil Medical Center",
+      description: "Comprehensive seminar on latest advancements in cardiology, featuring expert speakers and interactive sessions.",
+      category: "Seminar",
+      image: "/Events/Eve-2.jpg",
+      registration: {
+        student: "£10",
+        kmsfMember: "£25",
+        nonMember: "£50"
+      },
+      link: ""
     },
     {
       id: 3,
-      title: "Medical Training Workshop",
-      date: "May 8, 2025",
-      time: "2:00 PM - 6:00 PM",
-      location: "Duhok University Hospital",
-      description: "Hands-on training session for medical practitioners focusing on advanced surgical techniques.",
+      title: "Pediatric Medicine Workshop",
+      date: "January 18, 2026",
+      time: "1:00 PM - 5:00 PM",
+      location: "Sulaymaniyah Children's Hospital",
+      description: "Hands-on workshop focusing on pediatric care techniques and emergency response for young patients.",
       category: "Workshop",
-      image: "/Events/Eve-3.jpg"
+      image: "/Events/Eve-3.jpg",
+      registration: {
+        student: "£15",
+        kmsfMember: "£30",
+        nonMember: "£60"
+      },
+      link: ""
     },
     {
       id: 4,
-      title: "Public Health Symposium",
-      date: "June 12, 2025",
-      time: "11:00 AM - 3:00 PM",
-      location: "Kurdistan Medical Institute",
-      description: "Addressing public health challenges and developing community healthcare strategies.",
-      category: "Symposium",
-      image: "/Events/Eve-4.jpg"
+      title: "Mental Health Awareness Summit",
+      date: "February 22, 2026",
+      time: "9:00 AM - 3:00 PM",
+      location: "Duhok Mental Health Institute",
+      description: "Addressing mental health challenges in Kurdistan with community strategies and professional development.",
+      category: "Summit",
+      image: "/Events/Eve-4.jpg",
+      registration: {
+        student: "£5",
+        kmsfMember: "£15",
+        nonMember: "£35"
+      },
+      link: ""
     }
   ];
 
@@ -101,7 +125,7 @@ export default function EventsSection() {
             <motion.div
               key={event.id}
               variants={cardVariants}
-              className="group relative bg-gradient-to-br from-[#C8A441]/10 to-[#F2AE02]/10 backdrop-blur-sm overflow-hidden border border-white/10 hover:border-[#C8A441]/50 transition-all duration-300 shadow-xl hover:shadow-2xl"
+              className="group relative bg-gradient-to-br from-[#C8A441]/10 to-[#F2AE02]/10 backdrop-blur-sm overflow-hidden border border-white/10 hover:border-[#C8A441]/50 transition-all duration-300 shadow-xl hover:shadow-2xl min-h-[500px] flex flex-col"
             >
               {/* Category Badge */}
               <div className="absolute top-4 right-4 z-10">
@@ -120,33 +144,41 @@ export default function EventsSection() {
               </div>
 
               {/* Event Content */}
-              <div className="p-4">
-                <h3 className="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-[#C8A441] transition-colors">
-                  {event.title}
-                </h3>
-                
-                <p className="text-gray-300 text-xs sm:text-sm mb-3 line-clamp-2">
-                  {event.description}
-                </p>
+              <div className="p-4 flex flex-col h-full">
+                <div className="flex-grow">
+                  <h3 className="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-[#C8A441] transition-colors">
+                    {event.title}
+                  </h3>
 
-                {/* Event Details */}
-                <div className="space-y-1.5 mb-3">
-                  <div className="flex items-center text-gray-400 text-xs">
-                    <Calendar className="w-3.5 h-3.5 mr-2 text-[#C8A441]" />
-                    <span>{event.date}</span>
-                  </div>
-                  <div className="flex items-center text-gray-400 text-xs">
-                    <Clock className="w-3.5 h-3.5 mr-2 text-[#C8A441]" />
-                    <span>{event.time}</span>
-                  </div>
-                  <div className="flex items-center text-gray-400 text-xs">
-                    <MapPin className="w-3.5 h-3.5 mr-2 text-[#C8A441]" />
-                    <span>{event.location}</span>
+                  <p className="text-gray-300 text-xs sm:text-sm mb-3 line-clamp-2">
+                    {event.description}
+                  </p>
+
+                  {/* Event Details */}
+                  <div className="space-y-1.5 mb-3">
+                    <div className="flex items-center text-gray-400 text-xs">
+                      <Calendar className="w-3.5 h-3.5 mr-2 text-[#C8A441]" />
+                      <span>{event.date}</span>
+                    </div>
+                    <div className="flex items-center text-gray-400 text-xs">
+                      <Clock className="w-3.5 h-3.5 mr-2 text-[#C8A441]" />
+                      <span>{event.time}</span>
+                    </div>
+                    <div className="flex items-center text-gray-400 text-xs">
+                      <MapPin className="w-3.5 h-3.5 mr-2 text-[#C8A441]" />
+                      <span>{event.location}</span>
+                    </div>
+                    <div className="flex items-center text-gray-400 text-xs">
+                      <span>Student: <strong className="text-[#C8A441]">{event.registration.student}</strong> | Member: <strong className="text-[#C8A441]">{event.registration.kmsfMember}</strong> | Non-member: <strong className="text-[#C8A441]">{event.registration.nonMember}</strong></span>
+                    </div>
                   </div>
                 </div>
 
                 {/* Learn More Button */}
-                <button className="w-full bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-white py-2 font-semibold flex items-center justify-center gap-2 hover:from-[#C8A441] hover:to-[#F2AE02] transition-all duration-300 group-hover:gap-3 text-sm">
+                <button
+                  onClick={() => event.link && window.open(event.link, '_blank')}
+                  className="w-full bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-white py-2 font-semibold flex items-center justify-center gap-2 hover:from-[#C8A441] hover:to-[#F2AE02] transition-all duration-300 group-hover:gap-3 text-sm mt-auto"
+                >
                   Learn More
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
