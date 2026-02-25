@@ -3,73 +3,26 @@ import { motion } from "framer-motion";
 import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
 import LazyImage from '../components/LazyImage';
 
+import { useGetEventsQuery } from '../store/api/apiSlice';
+
 export default function EventsSection() {
-  const events = [
-    {
-      id: 1,
-      title: "KURDISTAN MEDICAL AND SCIENTIFIC FEDERATION - UK CONFERENCE",
-      date: "November 9, 2025",
-      time: "9:00 AM - 8:30 PM",
-      location: "London Conference Center",
-      description: "Join the Kurdistan Medical and Scientific Federation for an international conference featuring leading medical professionals, research presentations, and networking opportunities.",
-      category: "Conference",
-      image: "/Events/Event-1.jpg",
-      registration: {
-        student: "Free",
-        kmsfMember: "£20",
-        nonMember: "£40"
-      },
-      link: "/Events/2025 KURDISTAN MEDICAL AND SCIENTIFIC FEDERATION - UK CONFERENCE.pdf"
-    },
-    {
-      id: 2,
-      title: "Advanced Cardiology Seminar",
-      date: "December 14, 2025",
-      time: "10:00 AM - 4:00 PM",
-      location: "Erbil Medical Center",
-      description: "Comprehensive seminar on latest advancements in cardiology, featuring expert speakers and interactive sessions.",
-      category: "Seminar",
-      image: "/Events/Eve-2.jpg",
-      registration: {
-        student: "£10",
-        kmsfMember: "£25",
-        nonMember: "£50"
-      },
-      link: ""
-    },
-    {
-      id: 3,
-      title: "Pediatric Medicine Workshop",
-      date: "January 18, 2026",
-      time: "1:00 PM - 5:00 PM",
-      location: "Sulaymaniyah Children's Hospital",
-      description: "Hands-on workshop focusing on pediatric care techniques and emergency response for young patients.",
-      category: "Workshop",
-      image: "/Events/Eve-3.jpg",
-      registration: {
-        student: "£15",
-        kmsfMember: "£30",
-        nonMember: "£60"
-      },
-      link: ""
-    },
-    {
-      id: 4,
-      title: "Mental Health Awareness Summit",
-      date: "February 22, 2026",
-      time: "9:00 AM - 3:00 PM",
-      location: "Duhok Mental Health Institute",
-      description: "Addressing mental health challenges in Kurdistan with community strategies and professional development.",
-      category: "Summit",
-      image: "/Events/Eve-4.jpg",
-      registration: {
-        student: "£5",
-        kmsfMember: "£15",
-        nonMember: "£35"
-      },
-      link: ""
+  const { data: eventsData, isLoading } = useGetEventsQuery();
+  const baseUrl = 'http://localhost:5000'; // Make sure this matches your backend
+
+  const events = eventsData?.data?.map(ev => ({
+    ...ev,
+    id: ev._id,
+    image: ev.image?.startsWith('/uploads') ? `${baseUrl}${ev.image}` : ev.image,
+    registration: {
+      student: ev.prices?.find(p => p.type === 'Student')?.amount || 'Free',
+      kmsfMember: ev.prices?.find(p => p.type === 'Member')?.amount || 'N/A',
+      nonMember: ev.prices?.find(p => p.type === 'Non-member')?.amount || 'N/A'
     }
-  ];
+  })) || [];
+
+  if (isLoading) {
+    return <div className="min-h-screen bg-gray-900 flex items-center justify-center"><div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#C8A441]"></div></div>;
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -94,7 +47,7 @@ export default function EventsSection() {
 
   return (
     <section className="relative w-full min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 py-16 sm:py-20 lg:py-24 overflow-hidden">
-    
+
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
@@ -158,7 +111,7 @@ export default function EventsSection() {
                   <div className="space-y-1.5 mb-3">
                     <div className="flex items-center text-gray-400 text-xs">
                       <Calendar className="w-3.5 h-3.5 mr-2 text-[#C8A441]" />
-                      <span>{event.date}</span>
+                      <span>{new Date(event.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                     </div>
                     <div className="flex items-center text-gray-400 text-xs">
                       <Clock className="w-3.5 h-3.5 mr-2 text-[#C8A441]" />

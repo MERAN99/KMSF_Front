@@ -1,73 +1,123 @@
-# React + TypeScript + Vite
+# Kurdistan Medical and Scientific Federation (KMSF) Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive React-based website for the Kurdistan Medical and Scientific Federation, established in 1988 to advance Kurdish healthcare and scientific excellence.
 
-Currently, two official plugins are available:
+## Table of Contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Project Overview](#project-overview)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Installation](#installation)
+- [Available Scripts](#available-scripts)
+- [Deployment](#deployment)
+- [Design Principles](#design-principles)
 
-## React Compiler
+## Project Overview
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+The Kurdistan Medical and Scientific Federation (KMSF) website serves as a professional portal for the organization to communicate with members and the public about their activities, events, and membership opportunities. The site was built with modern web development practices to provide an optimal user experience across all devices.
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Responsive Design**: Mobile-first approach that works on all device sizes
+- **Performance Optimized**: Lazy loading and code splitting for faster initial load times
+- **Smooth Navigation**: Smooth scrolling to sections and animated transitions
+- **Modern UI/UX**: Clean design with professional color scheme focused on gold/amber accents
+- **SEO Friendly**: Proper semantic HTML structure and routing
+- **Accessibility**: Keyboard navigable components and proper ARIA attributes
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Frontend Framework**: React 19
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **Routing**: React Router DOM
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **TypeScript**: Type safety and better developer experience
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Project Structure
+
+```
+KMSF/
+├── src/
+│   ├── assets/                 # Static assets like images
+│   ├── components/             # Reusable UI components
+│   ├── hooks/                  # Custom React hooks
+│   ├── layout/                 # Layout components (Navbar, Footer)
+│   ├── pages/                  # Page components
+│   ├── App.jsx                 # Main application component
+│   ├── main.jsx                # Entry point
+│   └── index.css               # Global styles
+├── public/                     # Public assets
+├── dist/                       # Build output
+├── node_modules/              # Node dependencies
+├── package.json               # Project dependencies and scripts
+├── vite.config.js             # Vite configuration
+└── README.md                  # This file
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Installation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd KMSF
 ```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+## Available Scripts
+
+- `npm run dev` - Start development server with hot-reload
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint for code quality
+- `npm run preview` - Preview production build locally
+
+## Deployment
+
+The project is configured to be deployed on Netlify (as indicated by `netlify.toml`). The build process uses Vite's optimized build system.
+
+## Design Principles
+
+### Visual Design
+- Professional color scheme with gold/amber accents representing excellence and tradition
+- Clean, modern interface that conveys trust and expertise
+- Consistent spacing and typography hierarchy
+- Responsive layout that adapts to all screen sizes
+
+### User Experience
+- Smooth scrolling navigation between sections
+- Mobile-friendly hamburger menu for smaller screens
+- Backdrop blur effects on navbar when scrolled
+- Loading states for better perceived performance
+- Clear visual hierarchy and information architecture
+
+### Technical Design
+- Component-based architecture for maintainability
+- Lazy loading of pages and sections for optimal performance
+- Proper routing with React Router DOM
+- TypeScript for enhanced code reliability
+- Tailwind CSS for utility-first styling approach
+
+## Navigation Structure
+
+The website includes the following main navigation items:
+1. Home
+2. About
+3. Events
+4. Gallery
+5. Archive
+6. Membership
+7. Donations
+8. Contact
+
+Each page is designed to be self-contained while maintaining consistent styling and user experience throughout the site.

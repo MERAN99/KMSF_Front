@@ -14,6 +14,7 @@ const Archive = lazy(() => import('./pages/Archive'));
 const Membership = lazy(() => import('./pages/Membership'));
 const Donations = lazy(() => import('./pages/Donations'));
 const Contact = lazy(() => import('./pages/Contact'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -37,6 +38,7 @@ function App() {
             <Route path="/membership" element={<Membership />} />
             <Route path="/donations" element={<Donations />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Routes>
         </Suspense>
       </div>
