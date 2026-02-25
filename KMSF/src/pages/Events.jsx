@@ -7,7 +7,7 @@ import { useGetEventsQuery } from '../store/api/apiSlice';
 
 export default function EventsSection() {
   const { data: eventsData, isLoading } = useGetEventsQuery();
-  const baseUrl = 'http://localhost:5000'; // Make sure this matches your backend
+  const baseUrl = 'https://kmsf-backend.fly.dev';
 
   const events = eventsData?.data?.map(ev => ({
     ...ev,

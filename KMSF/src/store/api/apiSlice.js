@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'http://localhost:5000', // Update this if backend port changes
+        baseUrl: 'https://kmsf-backend.fly.dev',
         prepareHeaders: (headers, { getState }) => {
             const token = getState().auth.token;
             if (token) {
