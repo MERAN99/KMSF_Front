@@ -1,9 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+const BASE_URL =
+    import.meta.env.MODE === 'development'
+        ? 'http://localhost:5000'
+        : 'https://kmsf-backend.fly.dev';
+
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
-        baseUrl: 'https://kmsf-backend.fly.dev',
+        baseUrl: BASE_URL,
         prepareHeaders: (headers, { getState }) => {
             const token = getState().auth.token;
             if (token) {
@@ -35,11 +40,17 @@ export const apiSlice = createApi({
                 body: { ...data },
             }),
         }),
-        startSubscription: builder.mutation({
+        register: builder.mutation({
             query: (profileData) => ({
-                url: '/start-subscription',
+                url: '/register',
                 method: 'POST',
                 body: { ...profileData },
+            }),
+        }),
+        startSubscription: builder.mutation({
+            query: () => ({
+                url: '/start-subscription',
+                method: 'POST',
             }),
         }),
         getSubscriptionStatus: builder.query({
@@ -151,6 +162,7 @@ export const apiSlice = createApi({
 
 export const {
     useLoginMutation,
+    useRegisterMutation,
     useRequestVerificationMutation,
     useConfirmVerificationMutation,
     useStartSubscriptionMutation,
