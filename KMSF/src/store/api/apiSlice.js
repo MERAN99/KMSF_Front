@@ -68,8 +68,13 @@ export const apiSlice = createApi({
             }),
         }),
         // Admin Endpoints
+        getAdminStats: builder.query({
+            query: () => '/admin/stats',
+            providesTags: ['User', 'Subscription'],
+        }),
         getAllUsers: builder.query({
-            query: () => '/admin/members',
+            query: ({ page = 1, limit = 20, search = '' } = {}) =>
+                `/admin/members?page=${page}&limit=${limit}${search ? `&search=${search}` : ''}`,
             providesTags: ['User'],
         }),
         adminGetEvents: builder.query({
@@ -165,6 +170,7 @@ export const {
     useGetSubscriptionStatusQuery,
     useRenewSubscriptionMutation,
     useVerifySessionMutation,
+    useGetAdminStatsQuery,
     useGetAllUsersQuery,
     useAdminGetEventsQuery,
     useAdminCreateEventMutation,
