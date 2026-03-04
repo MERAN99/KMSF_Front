@@ -2,12 +2,13 @@ import React from 'react';
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
 import LazyImage from '../components/LazyImage';
+import { API_BASE_URL } from '../config';
 
 import { useGetEventsQuery } from '../store/api/apiSlice';
 
 export default function EventsSection() {
   const { data: eventsData, isLoading } = useGetEventsQuery();
-  const baseUrl = 'https://kmsf-backend.fly.dev';
+  const baseUrl = API_BASE_URL;
 
   const events = eventsData?.data?.map(ev => ({
     ...ev,

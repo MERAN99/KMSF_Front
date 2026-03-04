@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { selectCurrentUser } from '../store/slices/authSlice';
+import { API_BASE_URL } from '../config';
 import {
     useGetAllUsersQuery,
     useAdminGetEventsQuery,
@@ -232,7 +233,7 @@ const AdminDashboard = () => {
                                             <div className="relative w-full h-32 mb-4 rounded-lg overflow-hidden bg-gray-800">
                                                 {ev.image ? (
                                                     <img
-                                                        src={ev.image.startsWith('/uploads') ? `https://kmsf-backend.fly.dev${ev.image}` : ev.image}
+                                                        src={ev.image.startsWith('/uploads') ? `${API_BASE_URL}${ev.image}` : ev.image}
                                                         alt={ev.title}
                                                         className="w-full h-full object-cover"
                                                         onError={(e) => { e.target.src = 'https://via.placeholder.com/400x200?text=Image+Not+Found'; }}

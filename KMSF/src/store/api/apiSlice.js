@@ -1,14 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
-const BASE_URL =
-    import.meta.env.MODE === 'development'
-        ? 'http://localhost:5000'
-        : 'https://kmsf-backend.fly.dev';
+import { API_BASE_URL } from '../../config';
 
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: fetchBaseQuery({
-        baseUrl: BASE_URL,
+        baseUrl: API_BASE_URL,
         prepareHeaders: (headers, { getState }) => {
             const token = getState().auth.token;
             if (token) {
