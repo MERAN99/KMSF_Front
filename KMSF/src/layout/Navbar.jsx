@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, LogOut, User as UserIcon, CreditCard, ChevronDown, Lock } from 'lucide-react';
+import { Menu, X, LogOut, User as UserIcon, CreditCard, ChevronDown, Lock, Zap, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -149,10 +149,20 @@ const Navbar = () => {
                 <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center space-x-2 bg-gray-800 border border-amber-500/50 p-1 pr-3 rounded-full hover:bg-gray-700 transition-all duration-200"
+                    className="flex items-center space-x-2 bg-gray-800 border border-amber-500/50 p-1 pr-3 rounded-full hover:bg-gray-700 transition-all duration-200 relative"
                   >
-                    <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-gray-900 font-bold">
+                    <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-gray-900 font-bold relative">
                       {user?.firstName?.[0] || 'U'}
+                      {/* Pulsing dot for free registered users */}
+                      {user?.membershipStatus === 'registered' && (
+                        <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-yellow-400 rounded-full border-2 border-gray-800 animate-pulse" />
+                      )}
+                      {/* Gold star for paid active members */}
+                      {user?.membershipStatus === 'active' && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full border-2 border-gray-800 flex items-center justify-center">
+                          <Star size={8} className="fill-gray-900 text-gray-900" />
+                        </span>
+                      )}
                     </div>
                     <span className="text-white text-sm font-medium hidden sm:inline-block">
                       {user?.firstName}
@@ -169,12 +179,29 @@ const Navbar = () => {
                         className="absolute right-0 mt-2 w-56 bg-gray-900 border border-gray-800 shadow-2xl rounded-lg overflow-hidden z-50"
                       >
                         <div className="p-4 border-b border-gray-800 bg-gray-850">
-                          <p className="text-xs text-amber-500 font-bold uppercase tracking-widest mb-1">Membership</p>
+                          <p className={`text-xs font-bold uppercase tracking-widest mb-1 flex items-center gap-1 ${user?.membershipStatus === 'active' ? 'text-amber-400' :
+                              user?.membershipStatus === 'registered' ? 'text-yellow-400' : 'text-gray-400'
+                            }`}>
+                            {user?.membershipStatus === 'active' && <Star size={10} className="fill-amber-400" />}
+                            {user?.membershipStatus === 'active' ? 'Full Member' :
+                              user?.membershipStatus === 'registered' ? 'Free Member' : 'Membership'}
+                          </p>
                           <p className="text-white font-bold truncate">{user?.firstName} {user?.lastName}</p>
                           <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
                         </div>
 
                         <div className="py-2">
+                          {/* Upgrade CTA — only for free registered users */}
+                          {user?.membershipStatus === 'registered' && (
+                            <button
+                              onClick={() => { navigate('/membership'); setIsProfileOpen(false); }}
+                              className="w-full flex items-center space-x-3 px-4 py-3 text-sm font-bold text-gray-900 bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 transition-all"
+                            >
+                              <Zap size={16} className="flex-shrink-0" />
+                              <span>Upgrade to Full Member</span>
+                            </button>
+                          )}
+
                           <button
                             onClick={() => { setIsIDCardOpen(true); setIsProfileOpen(false); }}
                             className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-300 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"

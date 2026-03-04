@@ -8,7 +8,9 @@ import {
   useLoginMutation,
   useRegisterMutation,
   useStartSubscriptionMutation,
-  useVerifySessionMutation
+  useVerifySessionMutation,
+  useRequestVerificationMutation,
+  useConfirmVerificationMutation,
 } from '../store/api/apiSlice';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
 import { setCredentials, selectCurrentToken, selectCurrentUser } from '../store/slices/authSlice';
@@ -69,6 +71,9 @@ const Membership = () => {
   const sessionId = searchParams.get('session_id');
 
   const [isSignIn, setIsSignIn] = useState(true);
+  // Register steps: 'INFO' | 'OTP'
+  const [registerStep, setRegisterStep] = useState('INFO');
+  const [otpCode, setOtpCode] = useState('');
   const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -88,11 +93,14 @@ const Membership = () => {
   const [register, { isLoading: isRegistering }] = useRegisterMutation();
   const [startSubscription, { isLoading: isStartingSub }] = useStartSubscriptionMutation();
   const [verifySession] = useVerifySessionMutation();
+  const [requestVerification, { isLoading: isSendingOTP }] = useRequestVerificationMutation();
+  const [confirmVerification, { isLoading: isConfirmingOTP }] = useConfirmVerificationMutation();
 
   // ─── Handle Stripe redirect ─────────────────────────────────────────────────
   useEffect(() => {
     const handleVerifySession = async () => {
-      if (sessionId && !token && !isVerifyingPayment) {
+      // Run for ANY user who lands here with a session_id (including already-logged-in registered users upgrading)
+      if (sessionId && !isVerifyingPayment) {
         setIsVerifyingPayment(true);
         setErrorMsg('');
         try {
@@ -108,7 +116,7 @@ const Membership = () => {
       }
     };
     handleVerifySession();
-  }, [sessionId, token, verifySession, dispatch, isVerifyingPayment]);
+  }, [sessionId]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -117,8 +125,8 @@ const Membership = () => {
   const validatePassword = (pw) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(pw);
 
-  // ─── Free registration ──────────────────────────────────────────────────────
-  const handleRegister = async () => {
+  // ─── Step 1: Validate form & send OTP ──────────────────────────────────────
+  const handleRequestOTP = async () => {
     setErrorMsg('');
     setSuccessMsg('');
     if (!validatePassword(formData.password)) {
@@ -126,17 +134,33 @@ const Membership = () => {
       return;
     }
     try {
+      await requestVerification(formData.email).unwrap();
+      setSuccessMsg(`Verification code sent to ${formData.email}`);
+      setRegisterStep('OTP');
+    } catch (err) {
+      if (err.data?.errors) setErrorMsg(err.data.errors.map(e => e.message).join(' '));
+      else setErrorMsg(err.data?.message || 'Failed to send verification code.');
+    }
+  };
+
+  // ─── Step 2: Confirm OTP then create account ────────────────────────────────
+  const handleConfirmAndRegister = async () => {
+    setErrorMsg('');
+    try {
+      await confirmVerification({ email: formData.email, code: otpCode }).unwrap();
       const result = await register(formData).unwrap();
       dispatch(setCredentials(result));
       setSuccessMsg('Account created! You are now logged in.');
       setFormData(emptyForm);
+      setOtpCode('');
+      setRegisterStep('INFO');
     } catch (err) {
       if (err.status === 409) {
         setErrorMsg('An account with this email already exists. Please sign in instead.');
       } else if (err.data?.errors) {
         setErrorMsg(err.data.errors.map(e => e.message).join(' '));
       } else {
-        setErrorMsg(err.data?.message || 'Registration failed. Please try again.');
+        setErrorMsg(err.data?.message || 'Verification or registration failed. Please try again.');
       }
     }
   };
@@ -232,6 +256,12 @@ const Membership = () => {
             {isStartingSub ? 'Preparing checkout…' : 'Upgrade to Full Membership'}
           </motion.button>
           <p className="text-center text-gray-500 text-sm mt-3">Secure payment powered by Stripe. Cancel anytime.</p>
+          <button
+            onClick={() => navigate('/')}
+            className="w-full mt-2 py-3 text-gray-500 hover:text-gray-300 text-sm transition-colors"
+          >
+            Skip for now → Go to Homepage
+          </button>
         </div>
       </section>
     );
@@ -414,7 +444,7 @@ const Membership = () => {
               Sign In
             </button>
             <button
-              onClick={() => { setIsSignIn(false); setErrorMsg(''); setSuccessMsg(''); setFormData(emptyForm); }}
+              onClick={() => { setIsSignIn(false); setErrorMsg(''); setSuccessMsg(''); setFormData(emptyForm); setRegisterStep('INFO'); setOtpCode(''); }}
               className={`flex-1 py-5 text-base font-semibold transition-all ${!isSignIn ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}
             >
               Register Free
@@ -454,153 +484,197 @@ const Membership = () => {
                 {errorMsg && <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg text-sm">{errorMsg}</div>}
                 {successMsg && <div className="bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3 rounded-lg text-sm">{successMsg}</div>}
 
-                {/* Title */}
-                <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Title *</label>
-                  <select name="title" value={formData.title} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
-                    <option value="">Select Title</option>
-                    <option>Dr</option><option>Mr</option><option>Mrs</option><option>Miss</option><option>Ms</option>
-                  </select>
-                </div>
-
-                {/* First / Last */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">First Name *</label>
-                    <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="First name" />
-                  </div>
-                  <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">Last Name *</label>
-                    <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Last name" />
-                  </div>
-                </div>
-
-                {/* Gender */}
-                <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Gender *</label>
-                  <select name="gender" value={formData.gender} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
-                    <option value="">Select Gender</option>
-                    <option>Male</option><option>Female</option><option>Other</option>
-                  </select>
-                </div>
-
-                {/* Organization */}
-                <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Organization *</label>
-                  <select name="organization" value={formData.organization} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
-                    <option value="">Select Organization</option>
-                    <option value="KSA">KSA (Kurdistan Scientific Association)</option>
-                    <option value="KuMA">KuMA (Kurdish Medical Association)</option>
-                  </select>
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Email *</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Enter your email" />
-                </div>
-
-                {/* Password */}
-                <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Password *</label>
-                  <div className="relative">
-                    <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 pr-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Create a strong password" />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {/* ── OTP Step ── */}
+                {registerStep === 'OTP' ? (
+                  <div className="space-y-6 text-center">
+                    <div className="w-16 h-16 bg-yellow-500/10 rounded-full flex items-center justify-center mx-auto">
+                      <CheckCircle size={32} className="text-yellow-400" />
+                    </div>
+                    <div>
+                      <h3 className="text-white font-bold text-xl mb-1">Check your email</h3>
+                      <p className="text-gray-400 text-sm">We sent a 6-digit verification code to</p>
+                      <p className="text-yellow-400 font-semibold text-sm mt-1">{formData.email}</p>
+                    </div>
+                    <div className="text-left">
+                      <label className="block text-gray-300 font-medium mb-1.5">Verification Code *</label>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                        className="w-full bg-gray-700 text-white px-4 py-4 rounded-lg text-center text-2xl tracking-[0.5em] font-mono focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all"
+                        placeholder="000000"
+                      />
+                    </div>
+                    <button
+                      onClick={handleConfirmAndRegister}
+                      disabled={isConfirmingOTP || isRegistering || otpCode.length < 6}
+                      className="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-white py-4 font-bold text-base rounded-xl hover:from-yellow-500 hover:to-yellow-400 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isConfirmingOTP || isRegistering ? 'Verifying & Creating Account…' : 'Confirm & Create Account'}
+                    </button>
+                    <button
+                      onClick={() => { setRegisterStep('INFO'); setOtpCode(''); setErrorMsg(''); setSuccessMsg(''); }}
+                      className="text-gray-500 hover:text-gray-300 text-sm transition-colors"
+                    >
+                      ← Back to form
                     </button>
                   </div>
-                  <p className="text-gray-500 text-xs mt-1">Min 8 chars — uppercase, lowercase, number & special char</p>
-                </div>
+                ) : (
+                  <>{/* ── INFO Step (full form) ── */}</>
+                )}
 
-                {/* Speciality */}
-                <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Speciality *</label>
-                  <input type="text" name="speciality" value={formData.speciality} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Your medical speciality" />
-                </div>
+                {/* The form is always mounted but hidden during OTP step for state preservation */}
+                <div className={`space-y-5 pb-8 ${registerStep === 'OTP' ? 'hidden' : ''}`}>
 
-                {/* Telephone */}
-                <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Telephone *</label>
-                  <input type="tel" name="telephone" value={formData.telephone} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Phone number" />
-                </div>
-
-                {/* Address Line 1 */}
-                <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Address Line 1 *</label>
-                  <input type="text" name="addressLine1" value={formData.addressLine1} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Street address, P.O. box, company name" />
-                </div>
-
-                {/* Address Line 2 */}
-                <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Address Line 2</label>
-                  <input type="text" name="addressLine2" value={formData.addressLine2} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Apartment, suite, unit, building, etc." />
-                </div>
-
-                {/* City + Post Code */}
-                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">City *</label>
-                    <input type="text" name="city" value={formData.city} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="City" />
+                    <label className="block text-gray-300 font-medium mb-1.5">Title *</label>
+                    <select name="title" value={formData.title} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                      <option value="">Select Title</option>
+                      <option>Dr</option><option>Mr</option><option>Mrs</option><option>Miss</option><option>Ms</option>
+                    </select>
                   </div>
+
+                  {/* First / Last */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-300 font-medium mb-1.5">First Name *</label>
+                      <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="First name" />
+                    </div>
+                    <div>
+                      <label className="block text-gray-300 font-medium mb-1.5">Last Name *</label>
+                      <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Last name" />
+                    </div>
+                  </div>
+
+                  {/* Gender */}
                   <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">Post Code *</label>
-                    <input type="text" name="postCode" value={formData.postCode} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Post / Zip code" />
+                    <label className="block text-gray-300 font-medium mb-1.5">Gender *</label>
+                    <select name="gender" value={formData.gender} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                      <option value="">Select Gender</option>
+                      <option>Male</option><option>Female</option><option>Other</option>
+                    </select>
                   </div>
-                </div>
 
-                {/* Country */}
-                <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Country *</label>
-                  <select name="country" value={formData.country} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
-                    <option value="">Select Country</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                    <option value="United States">United States</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
-                    <option value="Spain">Spain</option>
-                    <option value="Italy">Italy</option>
-                    <option value="Netherlands">Netherlands</option>
-                    <option value="Sweden">Sweden</option>
-                    <option value="Norway">Norway</option>
-                    <option value="Denmark">Denmark</option>
-                    <option value="Finland">Finland</option>
-                    <option value="Ireland">Ireland</option>
-                    <option value="New Zealand">New Zealand</option>
-                    <option value="Switzerland">Switzerland</option>
-                    <option value="Kurdistan Region">Kurdistan Region</option>
-                    <option value="Iraq">Iraq</option>
-                    <option value="United Arab Emirates">United Arab Emirates</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
+                  {/* Organization */}
+                  <div>
+                    <label className="block text-gray-300 font-medium mb-1.5">Organization *</label>
+                    <select name="organization" value={formData.organization} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                      <option value="">Select Organization</option>
+                      <option value="KSA">KSA (Kurdistan Scientific Association)</option>
+                      <option value="KuMA">KuMA (Kurdish Medical Association)</option>
+                    </select>
+                  </div>
 
-                {/* Terms */}
-                <div className="flex items-start gap-3">
-                  <input type="checkbox" id="terms" className="mt-1 w-4 h-4 accent-yellow-500" required />
-                  <label htmlFor="terms" className="text-gray-400 text-sm">
-                    I agree to the <span className="text-yellow-500 underline cursor-pointer">Terms and Conditions</span> and <span className="text-yellow-500 underline cursor-pointer">Privacy Policy</span>
-                  </label>
-                </div>
+                  {/* Email */}
+                  <div>
+                    <label className="block text-gray-300 font-medium mb-1.5">Email *</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Enter your email" />
+                  </div>
 
-                <button
-                  onClick={handleRegister}
-                  disabled={isRegistering}
-                  className="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-white py-4 font-bold text-base rounded-xl hover:from-yellow-500 hover:to-yellow-400 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isRegistering ? 'Creating Account…' : 'Create Free Account'}
-                </button>
+                  {/* Password */}
+                  <div>
+                    <label className="block text-gray-300 font-medium mb-1.5">Password *</label>
+                    <div className="relative">
+                      <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 pr-12 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Create a strong password" />
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+                    <p className="text-gray-500 text-xs mt-1">Min 8 chars — uppercase, lowercase, number & special char</p>
+                  </div>
 
-                <div className="flex items-center gap-3 mt-2">
-                  <div className="flex-1 h-px bg-gray-700" />
-                  <span className="text-gray-500 text-xs flex items-center gap-1"><Lock size={12} /> Want full access?</span>
-                  <div className="flex-1 h-px bg-gray-700" />
-                </div>
-                <p className="text-center text-gray-500 text-sm">
-                  After registering, you can upgrade to a{' '}
-                  <span className="text-yellow-400 font-semibold">Paying Membership</span> from your account page for full access.
-                </p>
+                  {/* Speciality */}
+                  <div>
+                    <label className="block text-gray-300 font-medium mb-1.5">Speciality *</label>
+                    <input type="text" name="speciality" value={formData.speciality} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Your medical speciality" />
+                  </div>
+
+                  {/* Telephone */}
+                  <div>
+                    <label className="block text-gray-300 font-medium mb-1.5">Telephone *</label>
+                    <input type="tel" name="telephone" value={formData.telephone} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Phone number" />
+                  </div>
+
+                  {/* Address Line 1 */}
+                  <div>
+                    <label className="block text-gray-300 font-medium mb-1.5">Address Line 1 *</label>
+                    <input type="text" name="addressLine1" value={formData.addressLine1} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Street address, P.O. box, company name" />
+                  </div>
+
+                  {/* Address Line 2 */}
+                  <div>
+                    <label className="block text-gray-300 font-medium mb-1.5">Address Line 2</label>
+                    <input type="text" name="addressLine2" value={formData.addressLine2} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Apartment, suite, unit, building, etc." />
+                  </div>
+
+                  {/* City + Post Code */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-300 font-medium mb-1.5">City *</label>
+                      <input type="text" name="city" value={formData.city} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="City" />
+                    </div>
+                    <div>
+                      <label className="block text-gray-300 font-medium mb-1.5">Post Code *</label>
+                      <input type="text" name="postCode" value={formData.postCode} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Post / Zip code" />
+                    </div>
+                  </div>
+
+                  {/* Country */}
+                  <div>
+                    <label className="block text-gray-300 font-medium mb-1.5">Country *</label>
+                    <select name="country" value={formData.country} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                      <option value="">Select Country</option>
+                      <option value="United Kingdom">United Kingdom</option>
+                      <option value="United States">United States</option>
+                      <option value="Canada">Canada</option>
+                      <option value="Australia">Australia</option>
+                      <option value="Germany">Germany</option>
+                      <option value="France">France</option>
+                      <option value="Spain">Spain</option>
+                      <option value="Italy">Italy</option>
+                      <option value="Netherlands">Netherlands</option>
+                      <option value="Sweden">Sweden</option>
+                      <option value="Norway">Norway</option>
+                      <option value="Denmark">Denmark</option>
+                      <option value="Finland">Finland</option>
+                      <option value="Ireland">Ireland</option>
+                      <option value="New Zealand">New Zealand</option>
+                      <option value="Switzerland">Switzerland</option>
+                      <option value="Kurdistan Region">Kurdistan Region</option>
+                      <option value="Iraq">Iraq</option>
+                      <option value="United Arab Emirates">United Arab Emirates</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  {/* Terms */}
+                  <div className="flex items-start gap-3">
+                    <input type="checkbox" id="terms" className="mt-1 w-4 h-4 accent-yellow-500" required />
+                    <label htmlFor="terms" className="text-gray-400 text-sm">
+                      I agree to the <span className="text-yellow-500 underline cursor-pointer">Terms and Conditions</span> and <span className="text-yellow-500 underline cursor-pointer">Privacy Policy</span>
+                    </label>
+                  </div>
+
+                  <button
+                    onClick={handleRequestOTP}
+                    disabled={isSendingOTP}
+                    className="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 text-white py-4 font-bold text-base rounded-xl hover:from-yellow-500 hover:to-yellow-400 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSendingOTP ? 'Sending verification code…' : 'Continue → Verify Email'}
+                  </button>
+
+                  <div className="flex items-center gap-3 mt-2">
+                    <div className="flex-1 h-px bg-gray-700" />
+                    <span className="text-gray-500 text-xs flex items-center gap-1"><Lock size={12} /> Want full access?</span>
+                    <div className="flex-1 h-px bg-gray-700" />
+                  </div>
+                  <p className="text-center text-gray-500 text-sm">
+                    After registering, you can upgrade to a{' '}
+                    <span className="text-yellow-400 font-semibold">Paying Membership</span> from your account page for full access.
+                  </p>
+                </div>{/* end hidden-during-OTP wrapper */}
               </motion.div>
             )}
           </AnimatePresence>

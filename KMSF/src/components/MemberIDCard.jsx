@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { User, Shield, Calendar, MapPin, Briefcase } from 'lucide-react';
+import { User, Shield, Calendar, Briefcase, Star } from 'lucide-react';
 
 const MemberIDCard = ({ user }) => {
     if (!user) return null;
@@ -24,10 +24,17 @@ const MemberIDCard = ({ user }) => {
                 </div>
                 <div className="text-right">
                     <div className="text-[10px] text-gray-500 uppercase tracking-tighter">Status</div>
-                    <div className="flex items-center gap-1 text-green-500 text-xs font-bold">
-                        <Shield size={12} />
-                        ACTIVE
-                    </div>
+                    {user.membershipStatus === 'active' ? (
+                        <div className="flex items-center gap-1 text-green-400 text-xs font-bold">
+                            <Star size={12} className="fill-green-400" />
+                            PAID MEMBER
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-1 text-yellow-400 text-xs font-bold">
+                            <Shield size={12} />
+                            FREE
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -71,8 +78,16 @@ const MemberIDCard = ({ user }) => {
                 </div>
             </div>
 
-            {/* Card Footer Decor */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent opacity-50"></div>
+            {/* Card Footer - shows paid member banner */}
+            {user.membershipStatus === 'active' && (
+                <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-r from-yellow-700 via-amber-500 to-yellow-700 flex items-center justify-center gap-1">
+                    <Star size={10} className="fill-white text-white" />
+                    <span className="text-[9px] font-bold text-white uppercase tracking-widest">Full Paid Member</span>
+                    <Star size={10} className="fill-white text-white" />
+                </div>
+            )}
+            {/* Bottom line decor */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent opacity-50" />
         </div>
     );
 };

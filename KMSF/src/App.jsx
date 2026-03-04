@@ -4,6 +4,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './layout/Navbar';
 import Footer from './layout/Footer';
+import RouteScrollToTop from './components/RouteScrollToTop';
 
 // Lazy load components for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -26,6 +27,7 @@ const LoadingSpinner = () => (
 function App() {
   return (
     <Router>
+      <RouteScrollToTop />
       <div className="">
         <Navbar />
         <Suspense fallback={<LoadingSpinner />}>
