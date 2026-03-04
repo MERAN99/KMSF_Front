@@ -199,7 +199,7 @@ const AdminDashboard = () => {
                                         </div>
                                         <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 relative overflow-hidden group">
                                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><Clock size={64} className="text-amber-500" /></div>
-                                            <h3 className="text-gray-400 font-medium text-sm mb-1">Registered (Pending)</h3>
+                                            <h3 className="text-gray-400 font-medium text-sm mb-1">Registered</h3>
                                             <p className="text-4xl font-bold text-amber-500">{statsData.data.statusCounts.registered || 0}</p>
                                         </div>
                                         <div className="bg-gray-800 border border-red-900/50 rounded-xl p-6 relative overflow-hidden group">
@@ -220,15 +220,13 @@ const AdminDashboard = () => {
                                                     <PieChart>
                                                         <Pie
                                                             data={[
-                                                                { name: 'Active', value: statsData.data.statusCounts.active || 0 },
-                                                                { name: 'Inactive', value: statsData.data.statusCounts.inactive || 0 },
-                                                                { name: 'Registered', value: statsData.data.statusCounts.registered || 0 },
+                                                                { name: 'Active Users', value: statsData.data.statusCounts.active || 0 },
+                                                                { name: 'Registered Users', value: statsData.data.statusCounts.registered || 0 },
                                                             ]}
                                                             cx="50%" cy="50%" innerRadius={60} outerRadius={80}
                                                             paddingAngle={5} dataKey="value"
                                                         >
                                                             <Cell fill="#10B981" />
-                                                            <Cell fill="#EF4444" />
                                                             <Cell fill="#F59E0B" />
                                                         </Pie>
                                                         <RechartsTooltip contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#fff' }} itemStyle={{ color: '#fff' }} />
@@ -358,8 +356,8 @@ const AdminDashboard = () => {
                                                     <td className="px-6 py-4 text-gray-400">{u.city || '-'}, {u.country || '-'}</td>
                                                     <td className="px-6 py-4">
                                                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${u.membershipStatus === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                                                                u.membershipStatus === 'registered' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
-                                                                    'bg-red-500/10 text-red-500 border-red-500/20'
+                                                            u.membershipStatus === 'registered' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
+                                                                'bg-red-500/10 text-red-500 border-red-500/20'
                                                             }`}>
                                                             {u.membershipStatus}
                                                         </span>
