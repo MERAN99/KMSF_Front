@@ -1,5 +1,21 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0 }
+};
 
 const Members = () => {
   const ksaMembers = [
@@ -29,14 +45,16 @@ const Members = () => {
       name: 'Dr Aras Asaad',
       position: 'Machine Learning Scientist',
       image: '/Team/Dr - Aras.jpg',
-      bio: ''
+      bio: 'Machine Learning Scientist at Oxford Innovation Centre and Honorary Research Fellow at Buckingham.',
+      detail: 'Dr. Aras is a Machine Learning Scientist at Oxford Innovation Centre and Honorary Research Fellow at the University of Buckingham, UK. His research spans artificial intelligence, drug discovery, topological data analysis, medical image analysis, computer-aided diagnostics, and DeepFake detection. He supervises PhD and MSc students at Oxford, Durham, and Buckingham universities. His academic excellence has earned him multiple prestigious awards, including best paper honours from the IWDW Conference (2017), the London Mathematical Society (2019), and a Springer Award, with one publication ranked 2nd among 42,000 papers by Kscien. He is also CEO and Co-founder of DAAR AI, a UK-based health-tech startup company.'
     },
     {
       id: 5,
       name: 'Araz Agha',
       position: 'Architect, Academic & Researcher',
-      image: '',
-      bio: ''
+      image: '/Team/araz agha.jpeg',
+      bio: 'Architect, academic leader, and sustainability advocate integrating high-level design with international education.',
+      detail: 'Architect, academic leader, and sustainability advocate Araz Agha integrates high-level design with international education. As a Fellow of CABE, Araz specialises in sustainable retrofitting and residential architecture. He currently serves as Head of Built Environment Courses and International Programme Leader at Coventry University, while also acting as Regional Manager (Europe & Central Asia).\n\nIn these roles, he oversees academic excellence across six universities in five countries. A prolific researcher with two books and over 27 articles, Araz is a leading voice in the transition to net-zero. His expertise in MMC, BREEAM, and Passive design ensures that he doesn’t just design buildings; he shapes the global academic standards defining the future of the construction industry.'
     },
     {
       id: 6,
@@ -148,64 +166,7 @@ const Members = () => {
     }
   ];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0 }
-  };
-
-  const MemberCard = ({ member }) => (
-    <motion.div
-      variants={cardVariants}
-      className="group relative bg-gray-800 bg-opacity-50 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:bg-opacity-70"
-      whileHover={{ y: -10 }}
-    >
-      {/* Background gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-      {/* Image */}
-      <div className="relative w-full h-48 overflow-hidden">
-        <img
-          src={member.image || '/Team/user.png'}
-          alt={member.name}
-          className="w-full h-full object-cover filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none"
-        />
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent"></div>
-      </div>
-
-      {/* Content */}
-      <div className="relative p-6">
-        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#C8A441] transition-colors duration-300">
-          {member.name}
-        </h3>
-        <p className="text-[#C8A441] font-medium mb-3 text-sm">
-          {member.position}
-        </p>
-        <p className="text-gray-300 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100">
-          {member.bio}
-        </p>
-
-        {/* Decorative elements */}
-        <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <div className="w-3 h-3 bg-[#C8A441]"></div>
-        </div>
-      </div>
-
-      {/* Hover border effect */}
-      <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#C8A441]/50 transition-all duration-300"></div>
-    </motion.div>
-  );
-
+  const [selectedMember, setSelectedMember] = useState(null);
   return (
     <section className="py-16 w-full bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -248,7 +209,28 @@ const Members = () => {
             className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
           >
             {ksaMembers.map((member) => (
-              <MemberCard key={member.id} member={member} />
+              <motion.div
+                key={member.id}
+                variants={cardVariants}
+                className="group relative bg-gray-800 bg-opacity-50 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:bg-opacity-70 flex flex-col"
+                whileHover={{ y: -10 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                <div className="relative w-full h-48 overflow-hidden flex-shrink-0">
+                  <img src={member.image || '/Team/user.png'} alt={member.name} className="w-full h-full object-cover filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
+                </div>
+                <div className="relative p-6 flex flex-col flex-grow">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
+                  <p className="text-[#C8A441] font-medium mb-3 text-sm">{member.position}</p>
+                  <p className="text-gray-300 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100 mb-4 flex-grow">{member.bio}</p>
+                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold text-white border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
+                  <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                    <div className="w-3 h-3 bg-[#C8A441]"></div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#C8A441]/50 transition-all duration-300 pointer-events-none"></div>
+              </motion.div>
             ))}
           </motion.div>
         </div>
@@ -276,7 +258,28 @@ const Members = () => {
             className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
           >
             {kumaMembers.map((member) => (
-              <MemberCard key={member.id} member={member} />
+              <motion.div
+                key={member.id}
+                variants={cardVariants}
+                className="group relative bg-gray-800 bg-opacity-50 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:bg-opacity-70 flex flex-col"
+                whileHover={{ y: -10 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                <div className="relative w-full h-48 overflow-hidden flex-shrink-0">
+                  <img src={member.image || '/Team/user.png'} alt={member.name} className="w-full h-full object-cover filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
+                </div>
+                <div className="relative p-6 flex flex-col flex-grow">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
+                  <p className="text-[#C8A441] font-medium mb-3 text-sm">{member.position}</p>
+                  <p className="text-gray-300 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100 mb-4 flex-grow">{member.bio}</p>
+                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold text-white border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
+                  <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                    <div className="w-3 h-3 bg-[#C8A441]"></div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#C8A441]/50 transition-all duration-300 pointer-events-none"></div>
+              </motion.div>
             ))}
           </motion.div>
         </div>
@@ -301,6 +304,58 @@ const Members = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Detail Modal */}
+      <AnimatePresence>
+        {selectedMember && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/80 backdrop-blur-sm"
+            onClick={() => setSelectedMember(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl bg-gray-800 border border-gray-700 shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#C8A441] to-[#F2AE02]"></div>
+
+              <button
+                onClick={() => setSelectedMember(null)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10 p-1 bg-gray-900/50 hover:bg-gray-700"
+              >
+                <X size={24} />
+              </button>
+
+              <div className="flex flex-col md:flex-row max-h-[90vh]">
+                <div className="md:w-1/3 flex-shrink-0">
+                  <img src={selectedMember?.image || '/Team/user.png'} alt={selectedMember?.name} className="w-full h-48 md:h-full object-cover" />
+                </div>
+                <div className="p-6 md:p-8 md:w-2/3 flex flex-col">
+                  <h3 className="text-2xl font-bold text-white mb-1">{selectedMember?.name}</h3>
+                  <p className="text-[#C8A441] font-medium mb-4 text-sm bg-[#C8A441]/10 self-start px-2 py-1 inline-block border border-[#C8A441]/20">
+                    {selectedMember?.position}
+                  </p>
+
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+                    {selectedMember?.detail ? (
+                      selectedMember.detail.split('\n\n').map((paragraph, idx) => (
+                        <p key={idx}>{paragraph}</p>
+                      ))
+                    ) : (
+                      <p className="italic text-gray-500">No details yet.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 };

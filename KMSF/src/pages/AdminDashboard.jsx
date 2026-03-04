@@ -16,7 +16,7 @@ import {
 } from '../store/api/apiSlice';
 import {
     Users, Calendar, Plus, Edit, Trash2, X, CheckCircle,
-    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban
+    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -279,6 +279,28 @@ const AdminDashboard = () => {
                                                         </BarChart>
                                                     </ResponsiveContainer>
                                                 ) : <p className="text-gray-500 text-center mt-10">Not enough geographic data to display yet.</p>}
+                                            </div>
+                                        </div>
+
+                                        {/* Top Professions Bar Chart */}
+                                        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 lg:col-span-3 shadow-inner">
+                                            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2"><Briefcase size={20} className="text-amber-500" /> Top Professions</h3>
+                                            <div className="h-72">
+                                                {statsData.data.professionCounts && statsData.data.professionCounts.length > 0 ? (
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <BarChart data={statsData.data.professionCounts} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                                                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" horizontal={false} />
+                                                            <XAxis type="number" stroke="#9CA3AF" />
+                                                            <YAxis dataKey="_id" type="category" stroke="#9CA3AF" width={100} />
+                                                            <RechartsTooltip contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#fff' }} cursor={{ fill: '#374151', opacity: 0.4 }} />
+                                                            <Bar dataKey="count" name="Professionals" fill="#10B981" radius={[0, 4, 4, 0]} barSize={30}>
+                                                                {statsData.data.professionCounts.map((entry, index) => (
+                                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                                ))}
+                                                            </Bar>
+                                                        </BarChart>
+                                                    </ResponsiveContainer>
+                                                ) : <p className="text-gray-500 text-center mt-10">Not enough profession data to display yet.</p>}
                                             </div>
                                         </div>
                                     </div>
