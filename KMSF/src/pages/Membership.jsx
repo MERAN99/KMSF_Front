@@ -173,6 +173,8 @@ const Membership = () => {
     if (submissionData.profession === 'Other' && submissionData.customProfession.trim() !== '') {
       submissionData.profession = submissionData.customProfession;
     }
+    // Backend uses 'speciality' field name
+    submissionData.speciality = submissionData.profession;
 
     try {
       await requestVerification(submissionData.email).unwrap();
@@ -193,6 +195,8 @@ const Membership = () => {
     if (submissionData.profession === 'Other' && submissionData.customProfession.trim() !== '') {
       submissionData.profession = submissionData.customProfession;
     }
+    // Backend uses 'speciality' field name
+    submissionData.speciality = submissionData.profession;
 
     try {
       await confirmVerification({ email: submissionData.email, code: otpCode }).unwrap();
