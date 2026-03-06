@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Users, Stethoscope, GraduationCap, CreditCard, DollarSign, Check } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { useCreateDonationSessionMutation } from '../store/api/apiSlice';
+import { useCreateDonationSessionMutation, useConfirmDonationSessionMutation } from '../store/api/apiSlice';
 
 const DonationPage = () => {
   const [selectedAmount, setSelectedAmount] = useState(50);
@@ -14,10 +14,19 @@ const DonationPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [createDonationSession, { isLoading }] = useCreateDonationSessionMutation();
+  const [confirmDonationSession] = useConfirmDonationSessionMutation();
 
   useEffect(() => {
     if (searchParams.get('donation') === 'success') {
       setSuccessMsg('Thank you so much for your generous donation! Your support means the world to us.');
+      // Confirm donation directly with backend using the Stripe session_id
+      const sessionId = searchParams.get('session_id');
+      if (sessionId) {
+        confirmDonationSession(sessionId)
+          .unwrap()
+          .then(() => console.log('Donation confirmed and saved.'))
+          .catch((err) => console.error('Failed to confirm donation:', err));
+      }
     } else if (searchParams.get('donation') === 'canceled') {
       setErrorMsg('Donation checkout was canceled. Feel free to try again when you are ready.');
     }

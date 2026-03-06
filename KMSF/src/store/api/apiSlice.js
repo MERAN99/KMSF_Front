@@ -137,6 +137,14 @@ export const apiSlice = createApi({
                 body: data,
             }),
         }),
+        confirmDonationSession: builder.mutation({
+            query: (sessionId) => ({
+                url: '/donations/confirm',
+                method: 'POST',
+                body: { sessionId },
+            }),
+            invalidatesTags: ['Donation'],
+        }),
         getAdminDonations: builder.query({
             query: () => '/donations/admin',
             providesTags: ['Donation'],
@@ -196,5 +204,6 @@ export const {
     useVerifyResetCodeMutation,
     useResetPasswordMutation,
     useCreateDonationSessionMutation,
+    useConfirmDonationSessionMutation,
     useGetAdminDonationsQuery,
 } = apiSlice;
