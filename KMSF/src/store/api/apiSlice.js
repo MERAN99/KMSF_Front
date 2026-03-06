@@ -13,7 +13,7 @@ export const apiSlice = createApi({
             return headers;
         },
     }),
-    tagTypes: ['User', 'Subscription'],
+    tagTypes: ['User', 'Subscription', 'Event', 'Donation'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (credentials) => ({
@@ -130,6 +130,17 @@ export const apiSlice = createApi({
             query: () => '/events',
             providesTags: ['Event'],
         }),
+        createDonationSession: builder.mutation({
+            query: (data) => ({
+                url: '/donations/create-session',
+                method: 'POST',
+                body: data,
+            }),
+        }),
+        getAdminDonations: builder.query({
+            query: () => '/donations/admin',
+            providesTags: ['Donation'],
+        }),
         changePassword: builder.mutation({
             query: (passwords) => ({
                 url: '/change-password',
@@ -184,4 +195,6 @@ export const {
     useForgotPasswordMutation,
     useVerifyResetCodeMutation,
     useResetPasswordMutation,
+    useCreateDonationSessionMutation,
+    useGetAdminDonationsQuery,
 } = apiSlice;

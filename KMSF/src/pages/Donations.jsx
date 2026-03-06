@@ -1,15 +1,30 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Heart, Users, Stethoscope, GraduationCap, CreditCard, Building2, Smartphone, DollarSign, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Heart, Users, Stethoscope, GraduationCap, CreditCard, DollarSign, Check } from 'lucide-react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useCreateDonationSessionMutation } from '../store/api/apiSlice';
 
 const DonationPage = () => {
   const [selectedAmount, setSelectedAmount] = useState(50);
   const [customAmount, setCustomAmount] = useState('');
   const [selectedFrequency, setSelectedFrequency] = useState('one-time');
-  const [paymentMethod, setPaymentMethod] = useState('card');
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [createDonationSession, { isLoading }] = useCreateDonationSessionMutation();
+
+  useEffect(() => {
+    if (searchParams.get('donation') === 'success') {
+      setSuccessMsg('Thank you so much for your generous donation! Your support means the world to us.');
+    } else if (searchParams.get('donation') === 'canceled') {
+      setErrorMsg('Donation checkout was canceled. Feel free to try again when you are ready.');
+    }
+  }, [searchParams]);
 
   const predefinedAmounts = [10, 25, 50, 100, 250, 500];
-  
+
   const impactAreas = [
     {
       icon: <Stethoscope className="w-8 h-8" />,
@@ -44,9 +59,24 @@ const DonationPage = () => {
     { number: '$2M+', label: 'Funds Raised' }
   ];
 
-  const handleDonate = () => {
-    const amount = customAmount || selectedAmount;
-    alert(`Thank you for your ${selectedFrequency} donation of $${amount}!`);
+  const handleDonate = async () => {
+    setErrorMsg('');
+    setSuccessMsg('');
+    const amount = customAmount ? parseFloat(customAmount) : selectedAmount;
+
+    if (!amount || amount <= 0) {
+      setErrorMsg('Please select or enter a valid donation amount.');
+      return;
+    }
+
+    try {
+      const response = await createDonationSession({ amount, currency: 'USD' }).unwrap();
+      if (response.url) {
+        window.location.href = response.url;
+      }
+    } catch (err) {
+      setErrorMsg(err.data?.message || 'Failed to initialize payment. Please try again.');
+    }
   };
 
   return (
@@ -58,7 +88,7 @@ const DonationPage = () => {
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-yellow-500 blur-3xl"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-yellow-500 blur-3xl"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -66,7 +96,7 @@ const DonationPage = () => {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <motion.span 
+            <motion.span
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
@@ -136,100 +166,88 @@ const DonationPage = () => {
             transition={{ duration: 0.8 }}
             className="lg:col-span-2 bg-gray-800 p-8 md:p-10"
           >
-            <h3 className="text-3xl font-bold text-white mb-8">Make Your Donation</h3>
-
-            
-
-            {/* Amount Selection */}
-            <div className="mb-8">
-              <label className="block text-gray-300 font-semibold mb-4">Select Amount (USD)</label>
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                {predefinedAmounts.map((amount) => (
-                  <button
-                    key={amount}
-                    onClick={() => {
-                      setSelectedAmount(amount);
-                      setCustomAmount('');
-                    }}
-                    className={`py-4 px-6 font-bold text-lg transition-all duration-300 ${
-                      selectedAmount === amount && !customAmount
-                        ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white'
-                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
+            {successMsg ? (
+              <div className="flex flex-col items-center justify-center py-10 text-center space-y-6">
+                <div className="w-24 h-24 bg-green-500/20 flex items-center justify-center mb-4">
+                  <Heart className="w-12 h-12 text-green-500" />
+                </div>
+                <h3 className="text-4xl font-bold text-white">Thank You!</h3>
+                <p className="text-xl text-green-400 max-w-lg mx-auto leading-relaxed">
+                  {successMsg}
+                </p>
+                <div className="pt-8">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => navigate('/')}
+                    className="bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white py-4 px-10 font-bold text-lg shadow-lg hover:shadow-yellow-500/50 transition-all duration-300"
                   >
-                    ${amount}
-                  </button>
-                ))}
+                    Return to Homepage
+                  </motion.button>
+                </div>
               </div>
-              
-              <div className="relative">
-                <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="number"
-                  placeholder="Custom amount"
-                  value={customAmount}
-                  onChange={(e) => {
-                    setCustomAmount(e.target.value);
-                    setSelectedAmount(0);
-                  }}
-                  className="w-full bg-gray-700 text-white py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all"
-                />
-              </div>
-            </div>
+            ) : (
+              <>
+                <h3 className="text-3xl font-bold text-white mb-6">Make Your Donation</h3>
 
-            {/* Payment Method */}
-            <div className="mb-8">
-              <label className="block text-gray-300 font-semibold mb-4">Payment Method</label>
-              <div className="grid grid-cols-3 gap-4">
-                <button
-                  onClick={() => setPaymentMethod('card')}
-                  className={`py-4 px-4 font-semibold transition-all duration-300 flex flex-col items-center gap-2 ${
-                    paymentMethod === 'card'
-                      ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
-                >
-                  <CreditCard className="w-6 h-6" />
-                  <span className="text-sm">Card</span>
-                </button>
-                <button
-                  onClick={() => setPaymentMethod('bank')}
-                  className={`py-4 px-4 font-semibold transition-all duration-300 flex flex-col items-center gap-2 ${
-                    paymentMethod === 'bank'
-                      ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
-                >
-                  <Building2 className="w-6 h-6" />
-                  <span className="text-sm">Bank</span>
-                </button>
-                <button
-                  onClick={() => setPaymentMethod('mobile')}
-                  className={`py-4 px-4 font-semibold transition-all duration-300 flex flex-col items-center gap-2 ${
-                    paymentMethod === 'mobile'
-                      ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  }`}
-                >
-                  <Smartphone className="w-6 h-6" />
-                  <span className="text-sm">Mobile</span>
-                </button>
-              </div>
-            </div>
+                {errorMsg && (
+                  <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 mb-6">
+                    {errorMsg}
+                  </div>
+                )}
 
-            {/* Donate Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleDonate}
-              className="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white py-5 px-8 font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-yellow-500/50"
-            >
-              Donate ${customAmount || selectedAmount} {selectedFrequency === 'monthly' ? '/ Month' : 'Now'}
-            </motion.button>
+                {/* Amount Selection */}
+                <div className="mb-8">
+                  <label className="block text-gray-300 font-semibold mb-4">Select Amount (USD)</label>
+                  <div className="grid grid-cols-3 gap-4 mb-4">
+                    {predefinedAmounts.map((amount) => (
+                      <button
+                        key={amount}
+                        onClick={() => {
+                          setSelectedAmount(amount);
+                          setCustomAmount('');
+                        }}
+                        className={`py-4 px-6 font-bold text-lg transition-all duration-300 ${selectedAmount === amount && !customAmount
+                          ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          }`}
+                      >
+                        ${amount}
+                      </button>
+                    ))}
+                  </div>
 
-            <p className="text-gray-400 text-sm text-center mt-6">
-              Your donation is secure and tax-deductible. We respect your privacy.
-            </p>
+                  <div className="relative">
+                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="number"
+                      placeholder="Custom amount"
+                      value={customAmount}
+                      onChange={(e) => {
+                        setCustomAmount(e.target.value);
+                        setSelectedAmount(0);
+                      }}
+                      className="w-full bg-gray-700 text-white py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Donate Button */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleDonate}
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white py-5 px-8 font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-yellow-500/50 disabled:opacity-75 disabled:cursor-not-allowed"
+                >
+                  {isLoading ? 'Preparing Checkout...' : `Donate $${customAmount || selectedAmount} ${selectedFrequency === 'monthly' ? '/ Month' : 'Now'}`}
+                </motion.button>
+
+                <p className="text-gray-400 text-sm text-center mt-6">
+                  Your donation is secure and tax-deductible. We respect your privacy.
+                </p>
+              </>
+            )}
           </motion.div>
 
           {/* Sidebar - Impact Stats */}
@@ -245,11 +263,11 @@ const DonationPage = () => {
               <Heart className="w-12 h-12 text-white mb-4" />
               <h4 className="text-2xl font-bold text-white mb-3">Your Impact Today</h4>
               <p className="text-white/90 text-sm leading-relaxed">
-                {customAmount || selectedAmount >= 100 ? 
+                {customAmount || selectedAmount >= 100 ?
                   'Your generous donation will provide essential medical equipment for a healthcare facility.' :
                   customAmount || selectedAmount >= 50 ?
-                  'Your contribution will support medical training for healthcare professionals.' :
-                  'Your gift will help provide vital medical supplies to those in need.'}
+                    'Your contribution will support medical training for healthcare professionals.' :
+                    'Your gift will help provide vital medical supplies to those in need.'}
               </p>
             </div>
 
@@ -372,7 +390,7 @@ const DonationPage = () => {
           </div>
         </div>
       </motion.div>
-    </section>
+    </section >
   );
 };
 

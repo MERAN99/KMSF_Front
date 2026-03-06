@@ -12,11 +12,12 @@ import {
     useToggleBlockUserMutation,
     useDeleteMemberMutation,
     useNotifyEventMutation,
-    useGetAdminStatsQuery
+    useGetAdminStatsQuery,
+    useGetAdminDonationsQuery
 } from '../store/api/apiSlice';
 import {
     Users, Calendar, Plus, Edit, Trash2, X, CheckCircle,
-    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase
+    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -48,6 +49,7 @@ const AdminDashboard = () => {
     const { data: statsData, isLoading: statsLoading } = useGetAdminStatsQuery();
     const { data: usersData, isLoading: usersLoading } = useGetAllUsersQuery({ page, limit, search: debouncedSearch });
     const { data: eventsData, isLoading: eventsLoading } = useAdminGetEventsQuery();
+    const { data: donationsData, isLoading: donationsLoading } = useGetAdminDonationsQuery();
 
     const [createEvent] = useAdminCreateEventMutation();
     const [updateEvent] = useAdminUpdateEventMutation();
@@ -172,6 +174,14 @@ const AdminDashboard = () => {
                     >
                         <Calendar size={20} />
                         <span>Events</span>
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('donations')}
+                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'donations' ? 'text-amber-500 border-b-2 border-amber-500' : 'text-gray-400 hover:text-white'
+                            }`}
+                    >
+                        <Heart size={20} />
+                        <span>Donations</span>
                     </button>
                 </div>
 
@@ -520,6 +530,69 @@ const AdminDashboard = () => {
                                     ))}
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {/* DONATIONS VIEW */}
+                    {activeTab === 'donations' && (
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xl font-bold text-white flex items-center gap-2"><Heart className="text-amber-500" /> Donations & Contributions</h2>
+                            </div>
+
+                            <div className="overflow-x-auto min-h-[400px]">
+                                {donationsLoading ? (
+                                    <div className="flex justify-center py-20"><Loader2 className="animate-spin text-amber-500" size={48} /></div>
+                                ) : donationsData?.data?.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+                                        <Heart size={48} className="mb-4 opacity-20" />
+                                        <p>No donations recorded yet.</p>
+                                    </div>
+                                ) : (
+                                    <table className="w-full text-left">
+                                        <thead className="bg-gray-900/80 text-gray-400 text-xs uppercase tracking-wider sticky top-0 backdrop-blur-md z-10">
+                                            <tr>
+                                                <th className="px-6 py-4 font-semibold">Date</th>
+                                                <th className="px-6 py-4 font-semibold">Donor</th>
+                                                <th className="px-6 py-4 font-semibold">Amount</th>
+                                                <th className="px-6 py-4 font-semibold">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-700/50 relative">
+                                            {donationsData?.data?.map((d) => (
+                                                <tr key={d._id} className="hover:bg-gray-700/30 transition-colors text-sm">
+                                                    <td className="px-6 py-4 text-gray-400">
+                                                        {new Date(d.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex items-center space-x-3">
+                                                            <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold tracking-wider">
+                                                                {d.donorName === 'Anonymous' ? 'A' : (d.userId?.firstName?.[0] || d.donorName?.[0])}
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-white font-medium flex items-center gap-2">
+                                                                    {d.userId ? `${d.userId.firstName} ${d.userId.lastName}` : d.donorName}
+                                                                </div>
+                                                                <div className="text-gray-500 text-xs mt-0.5">
+                                                                    {d.userId ? d.userId.email : 'Unknown / Guest'}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4 font-bold text-green-500">
+                                                        {d.currency === 'USD' ? '$' : d.currency === 'GBP' ? '£' : ''}{d.amount.toFixed(2)}
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${d.paymentStatus === 'completed' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                                                            {d.paymentStatus}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>

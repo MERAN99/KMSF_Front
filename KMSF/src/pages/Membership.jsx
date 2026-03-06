@@ -15,6 +15,29 @@ import {
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
 import { setCredentials, selectCurrentToken, selectCurrentUser } from '../store/slices/authSlice';
 
+// ─── Constants ───────────────────────────────────────────────────────────────
+const KUMA_PROFESSIONS = [
+  'Dental Hygienist', 'Dental Nurse', 'Dental Technician',
+  'Dentist', 'Dietitian', 'Doctor', 'Healthcare Assistant', 'Midwife', 'Nurse',
+  'Occupational Therapist', 'Orthodontist', 'Osteopath', 'Paramedic', 'Pharmacist',
+  'Pharmacy Technician', 'Phlebotomist', 'Physiotherapist', 'Podiatrist',
+  'Prosthetist', 'Psychologist', 'Psychotherapist', 'Radiographer',
+  'Speech and Language Therapist', 'Other'
+];
+
+const KSA_PROFESSIONS = [
+  'Biochemist', 'Biologist', 'Biomedical Scientist', 'Biotechnologist',
+  'Chemist', 'Computer Scientist', 'Data Scientist', 'Earth Scientist', 'Ecologist',
+  'Environmental Scientist', 'Epidemiologist', 'Geneticist', 'Geologist',
+  'Materials Scientist', 'Mathematician', 'Microbiologist', 'Neuroscientist',
+  'Oceanographer', 'Physicist', 'Psychologist', 'Statistician', 'Other'
+];
+
+const DEFAULT_PROFESSIONS = [
+  'Doctor', 'Dentist', 'Pharmacist', 'Nurse', 'Engineer', 'Teacher',
+  'Professor', 'Scientist', 'Physicist', 'Biologist', 'Other'
+];
+
 // ─── Tier benefits config ────────────────────────────────────────────────────
 const TIERS = [
   {
@@ -121,7 +144,13 @@ const Membership = () => {
   }, [sessionId]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // If user changes organization, reset their profession choice
+    if (name === 'organization' && value !== formData.organization) {
+      setFormData(prev => ({ ...prev, [name]: value, profession: '', customProfession: '' }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const validatePassword = (pw) =>
@@ -596,17 +625,12 @@ const Membership = () => {
                       <label className="block text-gray-300 font-medium mb-1.5">Profession *</label>
                       <select name="profession" value={formData.profession} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
                         <option value="">Select Profession</option>
-                        <option value="Doctor">Doctor</option>
-                        <option value="Dentist">Dentist</option>
-                        <option value="Pharmacist">Pharmacist</option>
-                        <option value="Nurse">Nurse</option>
-                        <option value="Engineer">Engineer</option>
-                        <option value="Teacher">Teacher</option>
-                        <option value="Professor">Professor</option>
-                        <option value="Scientist">Scientist</option>
-                        <option value="Physicist">Physicist</option>
-                        <option value="Biologist">Biologist</option>
-                        <option value="Other">Other</option>
+                        {formData.organization === 'KuMA'
+                          ? KUMA_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
+                          : formData.organization === 'KSA'
+                            ? KSA_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
+                            : DEFAULT_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
+                        }
                       </select>
                     </div>
                   </div>
