@@ -160,6 +160,21 @@ const Membership = () => {
   const handleRequestOTP = async () => {
     setErrorMsg('');
     setSuccessMsg('');
+
+    // Validate required fields upfront before any API call
+    const resolvedProfession = formData.profession === 'Other'
+      ? formData.customProfession.trim()
+      : formData.profession;
+
+    if (!resolvedProfession) {
+      setErrorMsg('Please select your profession before continuing.');
+      return;
+    }
+    if (!formData.title || !formData.firstName || !formData.lastName || !formData.gender) {
+      setErrorMsg('Please fill in all required personal details (Title, Name, Gender).');
+      return;
+    }
+
     if (!validatePassword(formData.password)) {
       setErrorMsg('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.');
       return;
@@ -170,11 +185,9 @@ const Membership = () => {
     }
 
     const submissionData = { ...formData };
-    if (submissionData.profession === 'Other' && submissionData.customProfession.trim() !== '') {
-      submissionData.profession = submissionData.customProfession;
-    }
+    submissionData.profession = resolvedProfession;
     // Backend uses 'speciality' field name
-    submissionData.speciality = submissionData.profession;
+    submissionData.speciality = resolvedProfession;
 
     try {
       await requestVerification(submissionData.email).unwrap();
@@ -191,12 +204,14 @@ const Membership = () => {
   const handleConfirmAndRegister = async () => {
     setErrorMsg('');
 
+    const resolvedProfession = formData.profession === 'Other'
+      ? formData.customProfession.trim()
+      : formData.profession;
+
     const submissionData = { ...formData };
-    if (submissionData.profession === 'Other' && submissionData.customProfession.trim() !== '') {
-      submissionData.profession = submissionData.customProfession;
-    }
+    submissionData.profession = resolvedProfession;
     // Backend uses 'speciality' field name
-    submissionData.speciality = submissionData.profession;
+    submissionData.speciality = resolvedProfession;
 
     try {
       await confirmVerification({ email: submissionData.email, code: otpCode }).unwrap();
@@ -682,7 +697,7 @@ const Membership = () => {
                   {/* Speciality */}
                   <div>
                     <label className="block text-gray-300 font-medium mb-1.5">Speciality *</label>
-                    <input type="text" name="speciality" value={formData.speciality} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Your medical speciality" />
+                    <input type="text" name="speciality" value={formData.speciality} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Your medical speciality e.g. Cardiology" />
                   </div>
 
                   {/* Telephone */}
