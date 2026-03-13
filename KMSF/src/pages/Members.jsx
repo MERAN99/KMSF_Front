@@ -306,43 +306,55 @@ const Members = () => {
         </motion.div>
       </div>
 
-      {/* Detail Modal */}
       <AnimatePresence>
         {selectedMember && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-950/80 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-gray-950/80 backdrop-blur-sm"
             onClick={() => setSelectedMember(null)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-gray-800 border border-gray-700 shadow-2xl overflow-hidden"
+              className="relative w-full max-w-2xl bg-gray-800 border border-gray-700 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#C8A441] to-[#F2AE02]"></div>
+              {/* gold top bar */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#C8A441] to-[#F2AE02] z-10"></div>
 
+              {/* close button */}
               <button
                 onClick={() => setSelectedMember(null)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10 p-1 bg-gray-900/50 hover:bg-gray-700"
+                className="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors z-20 p-1 bg-gray-900/60 hover:bg-gray-700 rounded"
               >
-                <X size={24} />
+                <X size={22} />
               </button>
 
-              <div className="flex flex-col md:flex-row max-h-[90vh]">
-                <div className="md:w-1/3 flex-shrink-0">
-                  <img src={selectedMember?.image || '/Team/user.png'} alt={selectedMember?.name} className="w-full h-48 md:h-full object-cover" />
+              {/* body — stacks vertically on mobile, side-by-side on md+ */}
+              <div className="flex flex-col md:flex-row min-h-0 flex-1 overflow-hidden">
+
+                {/* Image panel */}
+                <div className="w-full md:w-2/5 flex-shrink-0 h-56 sm:h-64 md:h-auto relative">
+                  <img
+                    src={selectedMember?.image || '/Team/user.png'}
+                    alt={selectedMember?.name}
+                    className="absolute inset-0 w-full h-full object-cover object-top"
+                  />
+                  {/* subtle gradient overlay at bottom of image */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-gray-800/40 pointer-events-none"></div>
                 </div>
-                <div className="p-6 md:p-8 md:w-2/3 flex flex-col">
-                  <h3 className="text-2xl font-bold text-white mb-1">{selectedMember?.name}</h3>
-                  <p className="text-[#C8A441] font-medium mb-4 text-sm bg-[#C8A441]/10 self-start px-2 py-1 inline-block border border-[#C8A441]/20">
+
+                {/* Content panel — scrollable */}
+                <div className="flex-1 p-5 sm:p-7 flex flex-col min-h-0 overflow-y-auto custom-scrollbar">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-1 pr-8">{selectedMember?.name}</h3>
+                  <p className="text-[#C8A441] font-medium mb-4 text-xs sm:text-sm bg-[#C8A441]/10 self-start px-2 py-1 border border-[#C8A441]/20">
                     {selectedMember?.position}
                   </p>
 
-                  <div className="text-gray-300 text-sm leading-relaxed space-y-4 overflow-y-auto pr-2 custom-scrollbar">
+                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
                     {selectedMember?.detail ? (
                       selectedMember.detail.split('\n\n').map((paragraph, idx) => (
                         <p key={idx}>{paragraph}</p>
@@ -352,6 +364,7 @@ const Members = () => {
                     )}
                   </div>
                 </div>
+
               </div>
             </motion.div>
           </motion.div>
