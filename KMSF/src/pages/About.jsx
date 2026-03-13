@@ -1,12 +1,14 @@
 
 
 import React, { useRef, useState, useEffect } from 'react';
+import ConstitutionModal from '../components/ConstitutionModal';
 
 const About = () => {
   const historyRef = useRef(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [openConstitution, setOpenConstitution] = useState(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -68,7 +70,7 @@ const About = () => {
         </div>
         <div
           className="absolute inset-0 bg-cover bg-center opacity-10"
-          style={{ }}
+          style={{}}
         ></div>
       </div>
 
@@ -88,8 +90,8 @@ const About = () => {
               backgroundImage: 'url(/Events/Eve-1.jpg)',
               transform: isVisible
                 ? (isHovering
-                    ? `translate(${(mousePosition.x - 300) * 0.02}px, ${(mousePosition.y - 200) * 0.02}px)`
-                    : 'translate(0, 0)')
+                  ? `translate(${(mousePosition.x - 300) * 0.02}px, ${(mousePosition.y - 200) * 0.02}px)`
+                  : 'translate(0, 0)')
                 : 'translateY(100%)'
             }}
           ></div>
@@ -104,11 +106,19 @@ const About = () => {
             <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">Our History</h2>
             <div className="space-y-6 text-lg leading-relaxed">
               <p>
-                Since 1988, Kurdish medical and scientific professionals in the UK have provided continuous support to institutions of higher education in Kurdistan and have played an important role in promoting Kurdish human rights. Most of this support and activities have been through established organizations or committees.
+                Since 1988, the Kurdish medical and scientific professionals in the UK have provided continuous support to the institutions of higher education in Kurdistan, and have played an important role in promoting Kurdish human rights. Most of this support and activities have been through established organizations or committees, namely, Kurdish Scientific and Medical Association (KSMA), Support Committee for Higher Education in Iraqi Kurdistan – UK (SCHEIKUK), Kurdish Academic Network (KAN) and Kurdistan Medical Association (KMA).
               </p>
+              <div>
+                <button
+                  onClick={() => setOpenConstitution('HISTORY')}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#C8A441]/60 hover:border-[#C8A441] bg-gray-800/60 hover:bg-gray-700/60 text-[#C8A441] font-semibold text-sm rounded transition-all duration-200"
+                >
+                  Read Full History
+                </button>
+              </div>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-gray-700 bg-opacity-50 p-6">
-                  <h3 className="text-xl font-semibold mb-3 bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">Key Organizations</h3>
+                  <h3 className="text-xl font-semibold mb-3 bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">Key Historical Organisations</h3>
                   <ul className="space-y-2 text-gray-300">
                     <li>• Kurdish Scientific and Medical Association (KSMA)</li>
                     <li>• Support Committee for Higher Education in Iraqi Kurdistan – UK (SCHEIKUK)</li>
@@ -172,12 +182,24 @@ const About = () => {
                 <h3 className="text-xl font-semibold mb-2">Board Oversight</h3>
                 <p className="text-gray-200">Guided by our constitution for unified excellence</p>
               </div>
+              <div className="flex flex-wrap justify-center gap-3 pt-2">
+                {['KMSF', 'KSA', 'KuMA'].map((org) => (
+                  <button
+                    key={org}
+                    onClick={() => setOpenConstitution(org)}
+                    className="px-6 py-2.5 bg-gray-800/80 hover:bg-gray-700 border border-[#C8A441]/50 hover:border-[#C8A441] text-white font-semibold rounded transition-all duration-200 text-sm tracking-wide"
+                  >
+                    {org} Constitution
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </section>
       </div>
 
 
+      <ConstitutionModal org={openConstitution} onClose={() => setOpenConstitution(null)} />
     </div>
   );
 };

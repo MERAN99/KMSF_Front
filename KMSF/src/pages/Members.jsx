@@ -61,7 +61,8 @@ const Members = () => {
       name: 'Bayad Omar',
       position: 'Technology Consultant',
       image: '/Team/Dr-Bayad.jpg',
-      bio: ''
+      bio: 'Technology Consultant at Oracle, supporting hospitals across the UK and Europe with digital transformation projects.',
+      detail: 'Bayad Omar is a Technology Consultant at Oracle. The role involves supporting hospitals around the UK and Europe with their digital transformation projects. He holds a Masters degree in Medical Engineering from Cardiff University. His hobbies include learning languages, playing football and the Daf.'
     },
     {
       id: 7,
@@ -73,20 +74,29 @@ const Members = () => {
     },
     {
       id: 8,
-      name: 'Soma Hadad',
-      position: 'Architect, Academic & CEO of S.A.',
-      image: '',
-      bio: ''
+      name: 'Dr Hero Xoshnaw',
+      position: 'Consultant Physician & Chair of KMSF Executive Board',
+      image: '/Team/DrHeroXoshnaw.jpg',
+      bio: 'Consultant Physician and Geriatrician at Royal Surrey NHS Foundation Trust and Chair of the KMSF Executive Board.',
+      detail: 'Dr Hiro Khoshnaw, MD, MA, FRCP, FAcadMEd, is a Consultant Physician and Geriatrician at the Royal Surrey NHS Foundation Trust (RSFT). She has special interest in medical education and she is currently the Director of Medical Education at RSFT.\n\nDr Khoshnaw is also a fellow and Council member of The Academy of Medical Educators (AoME).\n\nDr Khoshnaw has been an active member of the KMSF leadership for many years and is currently the chair of KMSF Executive Board.'
     },
     {
       id: 9,
+      name: 'Tara Tofec',
+      position: 'Administrator & Community Organiser',
+      image: '/Team/DrTara.jpg',
+      bio: 'Active KMSF-UK member since 2018, organising medical conferences and charitable fundraising initiatives for Kurdish healthcare.',
+      detail: 'Tara Tofec is a Kurdish British professional with a BSc in Chemistry from the University of Salahaddin, Iraq. She has extensive experience in administration, management, and customer service, having held leadership roles including supervisor at Bally Heathrow, Company Secretary at Metropolitan International Service, and Managing Director of Café Sorrento.\n\nSince 2018, she has been an active member of the Kurdistan Medical Scientific Federation (KMSF-UK), contributing to the organization of medical and scientific conferences and seminars. She also organises charitable initiatives, including fundraising events for cancer hospitals in the Kurdistan Region, particularly in Erbil and Sulaymaniyah, demonstrating her strong commitment to community and healthcare support.'
+    },
+    {
+      id: 10,
       name: 'Dr Tahir Hassan',
       position: 'Research Fellow in Machine Learning',
       image: '/Team/Dr-Tahir.jpg',
       bio: ''
     },
     {
-      id: 10,
+      id: 11,
       name: 'Dr Zana Hussain',
       position: 'Business Management',
       image: '',
@@ -100,14 +110,16 @@ const Members = () => {
       name: 'Zhyar Said',
       position: 'Chair - Pharmacist, Lecturer & Director',
       image: '/Team/Zhyar.jpg',
-      bio: ''
+      bio: 'Chair of KuMA and founder of RevisePharma, the UK\'s largest private training company for foundation year pharmacists.',
+      detail: 'Zhyar Said is the chair of KuMA but also runs the largest private training company in the UK for foundation year pharmacists, RevisePharma. After completing his MPharm at UEA, Zhyar pivoted into becoming a senior healthcare analyst, followed by becoming a senior lecturer all while building his own companies.\n\nAs well as RevisePharma, Zhyar runs a clinical services company, CliniTools, and also founded the charity, The PharmAssists\' Project where money is invested back into the local community to help those in need.\n\nZhyar is from Slemani, Kurdistan, and came to the UK at 10 months old. He is extremely proud of his Kurdish roots and you can always count on him to start the halperke line.'
     },
     {
       id: 2,
       name: 'Dr Chinar Osman',
       position: 'Secretary - Consultant Neurologist',
-      image: '',
-      bio: ''
+      image: '/Team/DrChinarOsman.jpg',
+      bio: 'Consultant Neurologist at University of Southampton NHS Trust with special interest in peripheral nerve disorders and neuromuscular conditions.',
+      detail: 'MBBS, BSc (Hons), MRCP\n\nDr Osman graduated at Barts and The London School of Medicine and Dentistry and attained first-class honours in Neuroscience Intercalated BSc. Dr Osman has completed a fellowship in neuromuscular disorders and appointed in 2019 as a consultant neurologist at the University of Southampton NHS Trust with a special interest in peripheral nerve disorders.\n\nShe established the UK\'s first Neurology led-outpatient Plasma Exchange Service and is the lead for the Neurology Immunoglobulin service in the South-East region. She is a member of the neuromuscular advisory board for the Association of British Neurologists and a member of the Neurology SCE question writing committee. She is involved in various international clinical trials for MMN and CIDP and research publications.\n\nShe is a Trustee for a non-profit charity KR-UK Impakt founded in 2020 committed to improving mental health provision in the KRI.'
     },
     {
       id: 3,
@@ -218,7 +230,7 @@ const Members = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 <div className="relative w-full h-48 overflow-hidden flex-shrink-0">
-                  <img src={member.image || '/Team/user.png'} alt={member.name} className="w-full h-full object-cover filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none" />
+                  <img src={member.image || '/Team/user.png'} alt={member.name} className="w-full h-full object-cover object-[center_20%] filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none" />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
                 </div>
                 <div className="relative p-6 flex flex-col flex-grow">
@@ -267,7 +279,7 @@ const Members = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                 <div className="relative w-full h-48 overflow-hidden flex-shrink-0">
-                  <img src={member.image || '/Team/user.png'} alt={member.name} className="w-full h-full object-cover filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none" />
+                  <img src={member.image || '/Team/user.png'} alt={member.name} className="w-full h-full object-cover object-[center_20%] filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none" />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
                 </div>
                 <div className="relative p-6 flex flex-col flex-grow">

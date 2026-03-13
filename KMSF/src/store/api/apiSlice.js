@@ -177,6 +177,33 @@ export const apiSlice = createApi({
                 body: data,
             }),
         }),
+        getProfile: builder.query({
+            query: () => '/profile',
+            providesTags: ['User'],
+        }),
+        updateProfile: builder.mutation({
+            query: (data) => ({
+                url: '/update-profile',
+                method: 'PATCH',
+                body: data,
+            }),
+            invalidatesTags: ['User'],
+        }),
+        requestEmailChange: builder.mutation({
+            query: (data) => ({
+                url: '/request-email-change',
+                method: 'POST',
+                body: data,
+            }),
+        }),
+        confirmEmailChange: builder.mutation({
+            query: (data) => ({
+                url: '/confirm-email-change',
+                method: 'PATCH',
+                body: data,
+            }),
+            invalidatesTags: ['User'],
+        }),
     }),
 });
 
@@ -206,4 +233,8 @@ export const {
     useCreateDonationSessionMutation,
     useConfirmDonationSessionMutation,
     useGetAdminDonationsQuery,
+    useGetProfileQuery,
+    useUpdateProfileMutation,
+    useRequestEmailChangeMutation,
+    useConfirmEmailChangeMutation,
 } = apiSlice;

@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, LogOut, User as UserIcon, CreditCard, ChevronDown, Lock, Zap, Star } from 'lucide-react';
+import { Menu, X, LogOut, User as UserIcon, CreditCard, ChevronDown, Lock, Zap, Star, Pencil } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { selectCurrentUser, selectCurrentToken, logout } from '../store/slices/authSlice';
 import MemberIDCard from '../components/MemberIDCard';
 import ChangePasswordModal from '../components/ChangePasswordModal';
+import EditProfileModal from '../components/EditProfileModal';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -13,6 +14,7 @@ const Navbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isIDCardOpen, setIsIDCardOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const mobileMenuRef = useRef(null);
   const profileRef = useRef(null);
   const toggleButtonRef = useRef(null);
@@ -180,7 +182,7 @@ const Navbar = () => {
                       >
                         <div className="p-4 border-b border-gray-800 bg-gray-850">
                           <p className={`text-xs font-bold uppercase tracking-widest mb-1 flex items-center gap-1 ${user?.membershipStatus === 'active' ? 'text-amber-400' :
-                              user?.membershipStatus === 'registered' ? 'text-yellow-400' : 'text-gray-400'
+                            user?.membershipStatus === 'registered' ? 'text-yellow-400' : 'text-gray-400'
                             }`}>
                             {user?.membershipStatus === 'active' && <Star size={10} className="fill-amber-400" />}
                             {user?.membershipStatus === 'active' ? 'Full Member' :
@@ -203,6 +205,14 @@ const Navbar = () => {
                           )}
 
                           <button
+                            onClick={() => { setIsEditProfileOpen(true); setIsProfileOpen(false); }}
+                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-300 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
+                          >
+                            <Pencil size={18} />
+                            <span>Edit Profile</span>
+                          </button>
+
+                          <button
                             onClick={() => { setIsIDCardOpen(true); setIsProfileOpen(false); }}
                             className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-300 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
                           >
@@ -219,14 +229,6 @@ const Navbar = () => {
                               <span>Admin Dashboard</span>
                             </button>
                           )}
-
-                          <button
-                            onClick={() => { setIsChangePasswordOpen(true); setIsProfileOpen(false); }}
-                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-300 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
-                          >
-                            <Lock size={18} />
-                            <span>Change Password</span>
-                          </button>
 
                           <button
                             onClick={handleLogout}
@@ -326,6 +328,7 @@ const Navbar = () => {
           </div>
         )}
       </AnimatePresence>
+      <EditProfileModal isOpen={isEditProfileOpen} onClose={() => setIsEditProfileOpen(false)} />
       <ChangePasswordModal
         isOpen={isChangePasswordOpen}
         onClose={() => setIsChangePasswordOpen(false)}
