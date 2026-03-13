@@ -67,7 +67,7 @@ const Members = () => {
       id: 7,
       name: 'Niga S. Nawroly',
       position: 'Scientist, Immunologist',
-      image: '/Team/Niga.jpeg',
+      image: '/Team/Niga.jpg',
       bio: 'Experienced Immunologist, Biotechnologist, and Flow Cytometry Expert with 25+ years supporting scientists across the UK, Europe, Africa, and the Middle East.',
       detail: 'Niga Sirwan Nawroly is an experienced Immunologist, Biotechnologist, and Flow Cytometry Expert with a career spanning scientific research, the biotechnology industry, and pharmaceutical institutions.\n\nShe began her career as a researcher at several prestigious institutions, including Imperial College London, the Institute of Child Health, Queen Mary University of London, and the Kennedy Institute of Rheumatology.\n\nNiga is widely recognised within the international cytometry community as a scientific leader, speaker, and mentor. Over the past 25 years, she has trained and supported scientists and clinical researchers across the UK, Europe, Africa, and the Middle East in cytometry, immunophenotyping, business development and immunology.\n\nShe is also a passionate advocate for scientific leadership and diversity and is the Co-Founder and Chair of the HERizon Leadership Network, which supports under-represented women in drug discovery and scientific innovation.\n\nNiga has played an active role in shaping the scientific community through long-term professional service. She served as Secretary and Committee Member of the London Cytometry Club and has been involved with several scientific organisations, including the Cytometry Section of the Royal Microscopical Society (RMS). She also contributes to ELRIG (European Laboratory Research & Innovation Group) as a Scientific Programme Work Group Member and Scientific Director for High Content Imaging in Drug Discovery, and serves as a Committee Member of Augmented Health.'
     },
@@ -337,14 +337,12 @@ const Members = () => {
               <div className="flex flex-col md:flex-row min-h-0 flex-1 overflow-hidden">
 
                 {/* Image panel */}
-                <div className="w-full md:w-2/5 flex-shrink-0 h-56 sm:h-64 md:h-auto relative">
+                <div className="w-full md:w-2/5 flex-shrink-0 h-64 sm:h-72 md:h-auto relative bg-gray-900 flex items-center justify-center">
                   <img
                     src={selectedMember?.image || '/Team/user.png'}
                     alt={selectedMember?.name}
-                    className="absolute inset-0 w-full h-full object-cover object-top"
+                    className="w-full h-full object-contain"
                   />
-                  {/* subtle gradient overlay at bottom of image */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/60 via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:to-gray-800/40 pointer-events-none"></div>
                 </div>
 
                 {/* Content panel — scrollable */}
