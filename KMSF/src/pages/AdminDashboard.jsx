@@ -142,18 +142,18 @@ const AdminDashboard = () => {
     const COLORS = ['#F59E0B', '#10B981', '#EF4444', '#3B82F6', '#8B5CF6'];
 
     return (
-        <div className="min-h-screen bg-gray-900 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen dark:bg-gray-900 bg-gray-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <header className="mb-8">
-                    <h1 className="text-3xl font-bold text-white mb-2">Admin Control Panel</h1>
-                    <p className="text-gray-400">Manage KMSF statistics, users, and events</p>
+                    <h1 className="text-3xl font-bold dark:text-white text-gray-900 mb-2">Admin Control Panel</h1>
+                    <p className="dark:text-gray-400 text-gray-500">Manage KMSF statistics, users, and events</p>
                 </header>
 
                 {/* Tabs */}
-                <div className="flex space-x-4 mb-8 border-b border-gray-800 overflow-x-auto">
+                <div className="flex space-x-4 mb-8 border-b dark:border-gray-800 border-gray-200 overflow-x-auto">
                     <button
                         onClick={() => setActiveTab('dashboard')}
-                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'dashboard' ? 'text-amber-500 border-b-2 border-amber-500' : 'text-gray-400 hover:text-white'
+                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'dashboard' ? 'text-amber-500 border-b-2 border-amber-500' : 'dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'
                             }`}
                     >
                         <LayoutDashboard size={20} />
@@ -161,7 +161,7 @@ const AdminDashboard = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('users')}
-                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'users' ? 'text-amber-500 border-b-2 border-amber-500' : 'text-gray-400 hover:text-white'
+                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'users' ? 'text-amber-500 border-b-2 border-amber-500' : 'dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'
                             }`}
                     >
                         <Users size={20} />
@@ -169,7 +169,7 @@ const AdminDashboard = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('events')}
-                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'events' ? 'text-amber-500 border-b-2 border-amber-500' : 'text-gray-400 hover:text-white'
+                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'events' ? 'text-amber-500 border-b-2 border-amber-500' : 'dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'
                             }`}
                     >
                         <Calendar size={20} />
@@ -177,7 +177,7 @@ const AdminDashboard = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('donations')}
-                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'donations' ? 'text-amber-500 border-b-2 border-amber-500' : 'text-gray-400 hover:text-white'
+                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'donations' ? 'text-amber-500 border-b-2 border-amber-500' : 'dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'
                             }`}
                     >
                         <Heart size={20} />
@@ -186,7 +186,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Content */}
-                <div className="bg-gray-800/50 border border-gray-700/50 rounded-xl overflow-hidden backdrop-blur-sm shadow-xl">
+                <div className="dark:bg-gray-800/50 bg-white dark:border-gray-700/50 border-gray-200 border rounded-xl overflow-hidden backdrop-blur-sm shadow-xl">
 
                     {/* STATS VIEW */}
                     {activeTab === 'dashboard' && (
@@ -197,24 +197,24 @@ const AdminDashboard = () => {
                                 <div className="space-y-8">
                                     {/* Top Metric Cards */}
                                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                                        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 relative overflow-hidden group">
+                                        <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6 relative overflow-hidden group">
                                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><Users size={64} /></div>
-                                            <h3 className="text-gray-400 font-medium text-sm mb-1">Total Users</h3>
-                                            <p className="text-4xl font-bold text-white">{statsData.data.totalUsers}</p>
+                                            <h3 className="dark:text-gray-400 text-gray-500 font-medium text-sm mb-1">Total Users</h3>
+                                            <p className="text-4xl font-bold dark:text-white text-gray-900">{statsData.data.totalUsers}</p>
                                         </div>
-                                        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 relative overflow-hidden group">
+                                        <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6 relative overflow-hidden group">
                                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><CheckCircle size={64} className="text-green-500" /></div>
-                                            <h3 className="text-gray-400 font-medium text-sm mb-1">Active Subscriptions</h3>
+                                            <h3 className="dark:text-gray-400 text-gray-500 font-medium text-sm mb-1">Active Subscriptions</h3>
                                             <p className="text-4xl font-bold text-green-500">{statsData.data.statusCounts.active || 0}</p>
                                         </div>
-                                        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 relative overflow-hidden group">
+                                        <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6 relative overflow-hidden group">
                                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><Clock size={64} className="text-amber-500" /></div>
-                                            <h3 className="text-gray-400 font-medium text-sm mb-1">Registered</h3>
+                                            <h3 className="dark:text-gray-400 text-gray-500 font-medium text-sm mb-1">Registered</h3>
                                             <p className="text-4xl font-bold text-amber-500">{statsData.data.statusCounts.registered || 0}</p>
                                         </div>
-                                        <div className="bg-gray-800 border border-red-900/50 rounded-xl p-6 relative overflow-hidden group">
+                                        <div className="dark:bg-gray-800 bg-white dark:border-red-900/50 border-red-200/70 border rounded-xl p-6 relative overflow-hidden group">
                                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><Ban size={64} className="text-red-500" /></div>
-                                            <h3 className="text-gray-400 font-medium text-sm mb-1">Blocked Users</h3>
+                                            <h3 className="dark:text-gray-400 text-gray-500 font-medium text-sm mb-1">Blocked Users</h3>
                                             <p className="text-4xl font-bold text-red-500">{statsData.data.blockCounts.blocked || 0}</p>
                                         </div>
                                     </div>
@@ -223,8 +223,8 @@ const AdminDashboard = () => {
                                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
                                         {/* Status Pie Chart */}
-                                        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
-                                            <h3 className="text-lg font-bold text-white mb-6">Membership Status Distribution</h3>
+                                        <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6">
+                                            <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-6">Membership Status Distribution</h3>
                                             <div className="h-64">
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <PieChart>
@@ -247,8 +247,8 @@ const AdminDashboard = () => {
                                         </div>
 
                                         {/* Role Pie Chart */}
-                                        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6">
-                                            <h3 className="text-lg font-bold text-white mb-6">Role Distribution</h3>
+                                        <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6">
+                                            <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-6">Role Distribution</h3>
                                             <div className="h-64">
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <PieChart>
@@ -271,8 +271,8 @@ const AdminDashboard = () => {
                                         </div>
 
                                         {/* Top Countries Bar Chart */}
-                                        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 lg:col-span-2 shadow-inner">
-                                            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2"><MapPin size={20} className="text-amber-500" /> Top Locations (Countries)</h3>
+                                        <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6 lg:col-span-2 shadow-inner">
+                                            <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-6 flex items-center gap-2"><MapPin size={20} className="text-amber-500" /> Top Locations (Countries)</h3>
                                             <div className="h-72">
                                                 {statsData.data.countryCounts.length > 0 ? (
                                                     <ResponsiveContainer width="100%" height="100%">
@@ -293,8 +293,8 @@ const AdminDashboard = () => {
                                         </div>
 
                                         {/* Top Professions Bar Chart */}
-                                        <div className="bg-gray-800 border border-gray-700 rounded-xl p-6 lg:col-span-3 shadow-inner">
-                                            <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2"><Briefcase size={20} className="text-amber-500" /> Top Professions</h3>
+                                        <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6 lg:col-span-3 shadow-inner">
+                                            <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-6 flex items-center gap-2"><Briefcase size={20} className="text-amber-500" /> Top Professions</h3>
                                             <div className="h-72">
                                                 {statsData.data.professionCounts && statsData.data.professionCounts.length > 0 ? (
                                                     <ResponsiveContainer width="100%" height="100%">
@@ -327,7 +327,7 @@ const AdminDashboard = () => {
                     {activeTab === 'users' && (
                         <div>
                             {/* Toolbar */}
-                            <div className="p-4 border-b border-gray-700/50 bg-gray-900/30 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div className="p-4 border-b dark:border-gray-700/50 border-gray-200 dark:bg-gray-900/30 bg-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
                                 <div className="relative w-full sm:w-96">
                                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                     <input
@@ -335,7 +335,7 @@ const AdminDashboard = () => {
                                         placeholder="Search by name, email, or member ID..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-amber-500 transition-colors"
+                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg pl-10 pr-4 py-2 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors"
                                     />
                                     {searchTerm && (
                                         <button onClick={() => setSearchTerm('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white">
@@ -369,14 +369,14 @@ const AdminDashboard = () => {
                                         </thead>
                                         <tbody className="divide-y divide-gray-700/50 relative">
                                             {usersData?.data?.map((u) => (
-                                                <tr key={u._id} className={`hover:bg-gray-700/30 transition-colors text-sm ${u.isBlocked ? 'bg-red-900/10' : ''}`}>
+                                                <tr key={u._id} className={`dark:hover:bg-gray-700/30 hover:bg-gray-50 transition-colors text-sm ${u.isBlocked ? 'dark:bg-red-900/10 bg-red-50/50' : ''}`}>
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center space-x-3">
                                                             <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold tracking-wider">
                                                                 {u.firstName?.[0]}{u.lastName?.[0]}
                                                             </div>
                                                             <div>
-                                                                <div className="text-white font-medium flex items-center gap-2">
+                                                                <div className="dark:text-white text-gray-900 font-medium flex items-center gap-2">
                                                                     {u.firstName} {u.lastName}
                                                                     {u.isBlocked && <span className="bg-red-500/20 text-red-500 border border-red-500/30 text-[9px] uppercase px-1.5 py-0.5 rounded font-bold tracking-wider">Blocked</span>}
                                                                 </div>
@@ -384,8 +384,8 @@ const AdminDashboard = () => {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4 text-gray-400">{u.email}</td>
-                                                    <td className="px-6 py-4 text-gray-400">{u.city || '-'}, {u.country || '-'}</td>
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.email}</td>
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.city || '-'}, {u.country || '-'}</td>
                                                     <td className="px-6 py-4">
                                                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${u.membershipStatus === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
                                                             u.membershipStatus === 'registered' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
@@ -398,14 +398,14 @@ const AdminDashboard = () => {
                                                         <button
                                                             onClick={() => handleToggleBlock(u._id, u.isBlocked)}
                                                             title={u.isBlocked ? 'Unblock User (Allow Login)' : 'Block User (Prevent Login)'}
-                                                            className={`p-2 rounded-lg transition-all ${u.isBlocked ? 'bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white' : 'bg-gray-800 text-amber-500 hover:bg-amber-500/20 hover:text-amber-400'}`}
+                                                            className={`p-2 rounded-lg transition-all ${u.isBlocked ? 'bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white' : 'dark:bg-gray-800 bg-gray-100 text-amber-500 hover:bg-amber-500/20 hover:text-amber-400'}`}
                                                         >
                                                             {u.isBlocked ? <CheckCircle size={16} /> : <Ban size={16} />}
                                                         </button>
                                                         <button
                                                             onClick={() => handleDeleteUser(u._id)}
                                                             title="Permanently Delete User"
-                                                            className="p-2 rounded-lg bg-gray-800 text-red-500 hover:bg-red-500 hover:text-white transition-all"
+                                                            className="p-2 rounded-lg dark:bg-gray-800 bg-gray-100 text-red-500 hover:bg-red-500 hover:text-white transition-all"
                                                         >
                                                             <Trash2 size={16} />
                                                         </button>
@@ -419,9 +419,9 @@ const AdminDashboard = () => {
 
                             {/* Pagination Controls */}
                             {usersData?.pagination?.pages > 1 && (
-                                <div className="p-4 border-t border-gray-700/50 bg-gray-900/50 flex justify-between items-center">
-                                    <div className="text-sm text-gray-400">
-                                        Showing page <span className="text-white font-medium">{usersData.pagination.page}</span> of <span className="text-white font-medium">{usersData.pagination.pages}</span>
+                                <div className="p-4 border-t dark:border-gray-700/50 border-gray-200 dark:bg-gray-900/50 bg-gray-50 flex justify-between items-center">
+                                    <div className="text-sm dark:text-gray-400 text-gray-500">
+                                        Showing page <span className="dark:text-white text-gray-900 font-medium">{usersData.pagination.page}</span> of <span className="dark:text-white text-gray-900 font-medium">{usersData.pagination.pages}</span>
                                     </div>
                                     <div className="flex space-x-2">
                                         <button
@@ -450,7 +450,7 @@ const AdminDashboard = () => {
                     {activeTab === 'events' && (
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-bold text-white">Events Management</h2>
+                                <h2 className="text-xl font-bold dark:text-white text-gray-900">Events Management</h2>
                                 <button
                                     onClick={() => setIsEventModalOpen(true)}
                                     className="flex items-center space-x-2 bg-amber-500 hover:bg-amber-400 text-gray-900 px-4 py-2 rounded-lg font-bold transition-all shadow-lg shadow-amber-500/20"
@@ -467,7 +467,7 @@ const AdminDashboard = () => {
                             ) : (
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                     {eventsData?.data?.map((ev) => (
-                                        <div key={ev._id} className="bg-gray-900 border border-gray-700/50 rounded-xl p-5 flex flex-col sm:flex-row gap-5 group hover:border-amber-500/50 transition-all shadow-lg hover:shadow-amber-500/5">
+                                        <div key={ev._id} className="dark:bg-gray-900 bg-white dark:border-gray-700/50 border-gray-200 border rounded-xl p-5 flex flex-col sm:flex-row gap-5 group hover:border-amber-500/50 transition-all shadow-lg hover:shadow-amber-500/5">
                                             <div className="relative w-full sm:w-48 h-48 sm:h-full shrink-0 rounded-lg overflow-hidden bg-gray-800">
                                                 {ev.image ? (
                                                     <img
@@ -487,8 +487,8 @@ const AdminDashboard = () => {
                                                 </div>
                                             </div>
                                             <div className="flex-1 flex flex-col py-1">
-                                                <h3 className="text-white font-bold text-lg mb-2 line-clamp-2">{ev.title}</h3>
-                                                <div className="space-y-2 text-sm text-gray-400 mb-4 flex-1">
+                                                <h3 className="dark:text-white text-gray-900 font-bold text-lg mb-2 line-clamp-2">{ev.title}</h3>
+                                                <div className="space-y-2 text-sm dark:text-gray-400 text-gray-500 mb-4 flex-1">
                                                     <div className="flex items-center space-x-2">
                                                         <Calendar size={14} className="text-amber-500 shrink-0" />
                                                         <span className="truncate">{new Date(ev.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
@@ -502,25 +502,25 @@ const AdminDashboard = () => {
                                                         <span className="truncate">{ev.location}</span>
                                                     </div>
                                                 </div>
-                                                <div className="flex justify-end gap-2 pt-4 border-t border-gray-800">
+                                                <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-800 border-gray-200">
                                                     <button
                                                         onClick={() => handleNotifyMembers(ev._id)}
                                                         disabled={isNotifying}
                                                         title="Email to All Members"
-                                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors text-sm disabled:opacity-50"
+                                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-200 transition-colors text-sm disabled:opacity-50"
                                                     >
                                                         {notifyingId === ev._id ? <Loader2 size={14} className="animate-spin text-amber-500" /> : <Mail size={14} className="text-blue-400" />}
                                                         <span>Notify</span>
                                                     </button>
                                                     <button
                                                         onClick={() => { setEditingEvent(ev); setIsEventModalOpen(true); }}
-                                                        className="p-1.5 rounded-lg bg-gray-800 text-gray-400 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
+                                                        className="p-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-400 text-gray-500 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
                                                     >
                                                         <Edit size={16} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteEvent(ev._id)}
-                                                        className="p-1.5 rounded-lg bg-gray-800 text-gray-400 hover:bg-red-500/10 hover:text-red-500 transition-colors"
+                                                        className="p-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-400 text-gray-500 hover:bg-red-500/10 hover:text-red-500 transition-colors"
                                                     >
                                                         <Trash2 size={16} />
                                                     </button>
@@ -537,7 +537,7 @@ const AdminDashboard = () => {
                     {activeTab === 'donations' && (
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-bold text-white flex items-center gap-2"><Heart className="text-amber-500" /> Donations & Contributions</h2>
+                                <h2 className="text-xl font-bold dark:text-white text-gray-900 flex items-center gap-2"><Heart className="text-amber-500" /> Donations & Contributions</h2>
                             </div>
 
                             <div className="overflow-x-auto min-h-[400px]">
@@ -560,7 +560,7 @@ const AdminDashboard = () => {
                                         </thead>
                                         <tbody className="divide-y divide-gray-700/50 relative">
                                             {donationsData?.data?.map((d) => (
-                                                <tr key={d._id} className="hover:bg-gray-700/30 transition-colors text-sm">
+                                                <tr key={d._id} className="dark:hover:bg-gray-700/30 hover:bg-gray-50 transition-colors text-sm">
                                                     <td className="px-6 py-4 text-gray-400">
                                                         {new Date(d.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                                     </td>
@@ -570,7 +570,7 @@ const AdminDashboard = () => {
                                                                 {d.donorName === 'Anonymous' ? 'A' : (d.userId?.firstName?.[0] || d.donorName?.[0])}
                                                             </div>
                                                             <div>
-                                                                <div className="text-white font-medium flex items-center gap-2">
+                                                                <div className="dark:text-white text-gray-900 font-medium flex items-center gap-2">
                                                                     {d.userId ? `${d.userId.firstName} ${d.userId.lastName}` : d.donorName}
                                                                 </div>
                                                                 <div className="text-gray-500 text-xs mt-0.5">
@@ -613,11 +613,11 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="relative w-full max-w-2xl bg-gray-900 border border-gray-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar"
+                            className="relative w-full max-w-2xl dark:bg-gray-900 bg-white dark:border-gray-800 border-gray-200 border rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar"
                         >
                             <form onSubmit={handleCreateEvent} className="p-8">
                                 <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-800">
-                                    <h2 className="text-2xl font-bold text-white">
+                                    <h2 className="text-2xl font-bold dark:text-white text-gray-900">
                                         {editingEvent ? 'Edit Event' : 'Create New Event'}
                                     </h2>
                                     <button type="button" onClick={() => { setIsEventModalOpen(false); setEditingEvent(null); }} className="text-gray-400 hover:text-white p-2 hover:bg-gray-800 rounded-lg transition-colors">
@@ -628,7 +628,7 @@ const AdminDashboard = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Event Title</label>
-                                        <input name="title" defaultValue={editingEvent?.title} required className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
+                                        <input name="title" defaultValue={editingEvent?.title} required className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Event Image</label>
@@ -641,23 +641,23 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Description</label>
-                                        <textarea name="description" defaultValue={editingEvent?.description} rows="4" className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all resize-none" />
+                                        <textarea name="description" defaultValue={editingEvent?.description} rows="4" className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all resize-none" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Date</label>
-                                        <input type="date" name="date" defaultValue={editingEvent?.date?.split('T')[0]} required className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
+                                        <input type="date" name="date" defaultValue={editingEvent?.date?.split('T')[0]} required className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Time Frame</label>
-                                        <input name="time" defaultValue={editingEvent?.time} placeholder="e.g., 9:00 AM - 5:00 PM" required className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
+                                        <input name="time" defaultValue={editingEvent?.time} placeholder="e.g., 9:00 AM - 5:00 PM" required className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Location</label>
-                                        <input name="location" defaultValue={editingEvent?.location} required className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
+                                        <input name="location" defaultValue={editingEvent?.location} required className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Category</label>
-                                        <input name="category" defaultValue={editingEvent?.category} placeholder="e.g., Conference, Training" required className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
+                                        <input name="category" defaultValue={editingEvent?.category} placeholder="e.g., Conference, Training" required className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
                                     </div>
 
                                     <div className="md:col-span-2 mt-4 p-5 bg-gray-800/80 rounded-xl border border-gray-700">

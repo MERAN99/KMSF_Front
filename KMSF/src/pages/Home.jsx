@@ -9,7 +9,7 @@ const Members = lazy(() => import('./Members'));
 
 // Loading component for sections
 const SectionLoader = () => (
-  <div className="min-h-[50vh] bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+  <div className="min-h-[50vh] dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-gray-50 flex items-center justify-center">
     <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#C8A441]"></div>
   </div>
 );

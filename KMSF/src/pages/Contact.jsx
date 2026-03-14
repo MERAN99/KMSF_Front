@@ -18,17 +18,15 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission here
     console.log('Form submitted:', formData);
-    // Reset form
     setFormData({ name: '', email: '', subject: '', message: '' });
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 text-white">
+    <div className="min-h-screen dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-gradient-to-b from-gray-50 via-white to-gray-50 dark:text-white text-gray-900">
       {/* Hero Section */}
       <div className="relative overflow-hidden pt-32 pb-20">
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-850 to-gray-900"></div>
+        <div className="absolute inset-0 dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-850 dark:to-gray-900 bg-gradient-to-b from-gray-50 to-white"></div>
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-20 left-1/4 w-96 h-96 bg-yellow-500 blur-3xl"></div>
           <div className="absolute top-40 right-1/3 w-80 h-80 bg-yellow-600 blur-3xl"></div>
@@ -39,12 +37,12 @@ const Contact = () => {
             <span className="inline-block text-yellow-500 font-semibold text-sm uppercase tracking-widest mb-4">
               Get In Touch
             </span>
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-6">
+            <h1 className="text-6xl md:text-8xl font-bold mb-6">
               <span className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 bg-clip-text text-transparent">
                 Contact Us
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl dark:text-gray-300 text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Get in touch with the Kurdistan Medical and Scientific Federation
             </p>
           </div>
@@ -58,7 +56,7 @@ const Contact = () => {
           <div className="space-y-8">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">Get In Touch</h2>
-              <p className="text-lg text-gray-300 leading-relaxed">
+              <p className="text-lg dark:text-gray-300 text-gray-600 leading-relaxed">
                 We're here to help you connect with our community of Kurdish medical and scientific professionals.
                 Reach out to us for inquiries, partnerships, or membership information.
               </p>
@@ -66,31 +64,31 @@ const Contact = () => {
 
             {/* Contact Cards */}
             <div className="space-y-6">
-              <div className="bg-gray-800 bg-opacity-50 p-6 shadow-2xl">
+              <div className="dark:bg-gray-800 bg-white dark:bg-opacity-50 p-6 shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 border dark:border-gray-700/50 border-gray-200">
                 <div className="flex items-center mb-4">
                   <Mail className="w-8 h-8 text-[#C8A441] mr-4" />
-                  <h3 className="text-xl font-semibold">Email Us</h3>
+                  <h3 className="text-xl font-semibold dark:text-white text-gray-900">Email Us</h3>
                 </div>
-                <p className="text-gray-300 mb-2">info@kmsf.org</p>
-                <p className="text-sm text-gray-400">We respond within 24 hours</p>
+                <p className="dark:text-gray-300 text-gray-600 mb-2">info@kmsf.org</p>
+                <p className="text-sm dark:text-gray-400 text-gray-500">We respond within 24 hours</p>
               </div>
 
-              <div className="bg-gray-800 bg-opacity-50 p-6 shadow-2xl">
+              <div className="dark:bg-gray-800 bg-white dark:bg-opacity-50 p-6 shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 border dark:border-gray-700/50 border-gray-200">
                 <div className="flex items-center mb-4">
                   <Phone className="w-8 h-8 text-[#C8A441] mr-4" />
-                  <h3 className="text-xl font-semibold">Call Us</h3>
+                  <h3 className="text-xl font-semibold dark:text-white text-gray-900">Call Us</h3>
                 </div>
-                <p className="text-gray-300 mb-2">+44 20 1234 5678</p>
-                <p className="text-sm text-gray-400">Mon-Fri, 9 AM - 6 PM GMT</p>
+                <p className="dark:text-gray-300 text-gray-600 mb-2">+44 20 1234 5678</p>
+                <p className="text-sm dark:text-gray-400 text-gray-500">Mon-Fri, 9 AM - 6 PM GMT</p>
               </div>
 
-              <div className="bg-gray-800 bg-opacity-50 p-6 shadow-2xl">
+              <div className="dark:bg-gray-800 bg-white dark:bg-opacity-50 p-6 shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 border dark:border-gray-700/50 border-gray-200">
                 <div className="flex items-center mb-4">
                   <MapPin className="w-8 h-8 text-[#C8A441] mr-4" />
-                  <h3 className="text-xl font-semibold">Visit Us</h3>
+                  <h3 className="text-xl font-semibold dark:text-white text-gray-900">Visit Us</h3>
                 </div>
-                <p className="text-gray-300 mb-2">London, United Kingdom</p>
-                <p className="text-sm text-gray-400">Headquarters Office</p>
+                <p className="dark:text-gray-300 text-gray-600 mb-2">London, United Kingdom</p>
+                <p className="text-sm dark:text-gray-400 text-gray-500">Headquarters Office</p>
               </div>
             </div>
 
@@ -100,7 +98,7 @@ const Contact = () => {
                 <Clock className="w-8 h-8 text-white mr-4" />
                 <h3 className="text-xl font-semibold text-white">Office Hours</h3>
               </div>
-              <div className="space-y-2 text-gray-200">
+              <div className="space-y-2 text-gray-100">
                 <p>Monday - Friday: 9:00 AM - 6:00 PM GMT</p>
                 <p>Saturday: 10:00 AM - 4:00 PM GMT</p>
                 <p>Sunday: Closed</p>
@@ -109,12 +107,12 @@ const Contact = () => {
           </div>
 
           {/* Contact Form */}
-          <div className="bg-gray-800 bg-opacity-50 p-8 shadow-2xl">
+          <div className="dark:bg-gray-800 bg-white dark:bg-opacity-50 p-8 shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 border dark:border-gray-700/50 border-gray-200">
             <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">Send us a Message</h3>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="name" className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
                     Full Name *
                   </label>
                   <input
@@ -124,12 +122,12 @@ const Contact = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-[#C8A441] focus:border-transparent text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 dark:bg-gray-700 bg-gray-50 border dark:border-gray-600 border-gray-300 focus:ring-2 focus:ring-[#C8A441] focus:border-transparent dark:text-white text-gray-900 dark:placeholder-gray-400 placeholder-gray-400 outline-none"
                     placeholder="Your full name"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
                     Email Address *
                   </label>
                   <input
@@ -139,14 +137,14 @@ const Contact = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-[#C8A441] focus:border-transparent text-white placeholder-gray-400"
+                    className="w-full px-4 py-3 dark:bg-gray-700 bg-gray-50 border dark:border-gray-600 border-gray-300 focus:ring-2 focus:ring-[#C8A441] focus:border-transparent dark:text-white text-gray-900 dark:placeholder-gray-400 placeholder-gray-400 outline-none"
                     placeholder="your.email@example.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="subject" className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
                   Subject *
                 </label>
                 <select
@@ -155,7 +153,7 @@ const Contact = () => {
                   value={formData.subject}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-[#C8A441] focus:border-transparent text-white"
+                  className="w-full px-4 py-3 dark:bg-gray-700 bg-gray-50 border dark:border-gray-600 border-gray-300 focus:ring-2 focus:ring-[#C8A441] focus:border-transparent dark:text-white text-gray-900 outline-none"
                 >
                   <option value="">Select a subject</option>
                   <option value="membership">Membership Inquiry</option>
@@ -167,7 +165,7 @@ const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="message" className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">
                   Message *
                 </label>
                 <textarea
@@ -177,7 +175,7 @@ const Contact = () => {
                   onChange={handleChange}
                   required
                   rows={6}
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-[#C8A441] focus:border-transparent text-white placeholder-gray-400 resize-none"
+                  className="w-full px-4 py-3 dark:bg-gray-700 bg-gray-50 border dark:border-gray-600 border-gray-300 focus:ring-2 focus:ring-[#C8A441] focus:border-transparent dark:text-white text-gray-900 dark:placeholder-gray-400 placeholder-gray-400 resize-none outline-none"
                   placeholder="Tell us how we can help you..."
                 />
               </div>
@@ -194,11 +192,11 @@ const Contact = () => {
         </div>
 
         {/* Additional Info */}
-        <div className="mt-16 bg-gray-800 bg-opacity-50 p-8 shadow-2xl">
+        <div className="mt-16 dark:bg-gray-800 bg-white dark:bg-opacity-50 p-8 shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 border dark:border-gray-700/50 border-gray-200">
           <div className="text-center">
             <Users className="w-12 h-12 text-[#C8A441] mx-auto mb-4" />
-            <h3 className="text-2xl font-bold mb-4">Join Our Community</h3>
-            <p className="text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            <h3 className="text-2xl font-bold mb-4 dark:text-white text-gray-900">Join Our Community</h3>
+            <p className="dark:text-gray-300 text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Become part of a network of over 120 Kurdish medical and scientific professionals working together
               to advance healthcare and scientific excellence in Kurdistan and beyond.
             </p>

@@ -11,7 +11,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative w-full min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 overflow-hidden"
+      className="relative w-full min-h-screen dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 overflow-hidden"
     >
       {/* Background World Map */}
       <img
@@ -84,7 +84,7 @@ export default function HeroSection() {
       </motion.div>
 
       {/* Decorative Elements */}
-      <div className="absolute bottom-0 left-0 w-full h-24 sm:h-32 bg-gradient-to-t from-gray-900 to-transparent"></div>
+      <div className="absolute bottom-0 left-0 w-full h-24 sm:h-32 bg-gradient-to-t dark:from-gray-900 from-slate-900 to-transparent"></div>
     </section>
   );
 }

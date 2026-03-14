@@ -5,6 +5,7 @@ import { store } from './store'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import './index.css'
 import App from './App.jsx'
+import { ThemeProvider } from './context/ThemeContext';
 
 // Use placeholder or actual ID from environment if available
 const GOOGLE_CLIENT_ID = "343552883443-7nih4cfq5el24qmlg9tdiclomarmbrc5.apps.googleusercontent.com";
@@ -12,7 +13,9 @@ const GOOGLE_CLIENT_ID = "343552883443-7nih4cfq5el24qmlg9tdiclomarmbrc5.apps.goo
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </Provider>
   </StrictMode>,
 )

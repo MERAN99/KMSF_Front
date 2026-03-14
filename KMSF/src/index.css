@@ -1,9 +1,12 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
 
-
-
-
-
-
-
+/* Only apply theme color transitions during the toggle — never during normal hover */
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition-property: background-color, border-color, color, fill, stroke !important;
+  transition-timing-function: ease !important;
+  transition-duration: 300ms !important;
+}

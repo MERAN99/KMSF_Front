@@ -265,7 +265,7 @@ const Membership = () => {
   // ─── Logged-in upgrade panel (shown when user is registered but not active) ─
   if (token && currentUser?.membershipStatus === 'registered') {
     return (
-      <section className="min-h-screen bg-gray-900 pt-28 pb-20 px-4">
+      <section className="min-h-screen dark:bg-gray-900 bg-gray-50 pt-28 pb-20 px-4">
         <div className="max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -273,10 +273,10 @@ const Membership = () => {
             className="text-center mb-10"
           >
             <span className="inline-block text-yellow-500 font-semibold text-sm uppercase tracking-widest mb-3">Free Account Active</span>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
+            <h1 className="text-4xl md:text-5xl font-bold dark:text-white text-gray-900 mb-3">
               Welcome, <span className="text-yellow-400">{currentUser.firstName}</span>!
             </h1>
-            <p className="text-gray-400 text-lg">
+            <p className="dark:text-gray-400 text-gray-500 text-lg">
               You're registered as a free member. Upgrade to unlock the full KMSF experience.
             </p>
           </motion.div>
@@ -299,7 +299,7 @@ const Membership = () => {
                 </div>
                 <ul className="space-y-1.5">
                   {tier.benefits.map((b, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                    <li key={i} className="flex items-start gap-2 text-sm dark:text-gray-300 text-gray-600">
                       <CheckCircle size={14} className={`mt-0.5 flex-shrink-0 ${tier.id === 'public' ? 'text-gray-500' : tier.color}`} />
                       {b}
                     </li>
@@ -323,7 +323,7 @@ const Membership = () => {
             <Zap size={20} />
             {isStartingSub ? 'Preparing checkout…' : 'Upgrade to Full Membership'}
           </motion.button>
-          <p className="text-center text-gray-500 text-sm mt-3">Secure payment powered by Stripe. Cancel anytime.</p>
+          <p className="text-center dark:text-gray-500 text-gray-500 text-sm mt-3">Secure payment powered by Stripe. Cancel anytime.</p>
           <button
             onClick={() => navigate('/')}
             className="w-full mt-2 py-3 text-gray-500 hover:text-gray-300 text-sm transition-colors"
@@ -338,13 +338,13 @@ const Membership = () => {
   // ─── Active paying member ───────────────────────────────────────────────────
   if (token && currentUser?.membershipStatus === 'active') {
     return (
-      <section className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <section className="min-h-screen dark:bg-gray-900 bg-gray-50 flex items-center justify-center">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center px-4">
           <div className="w-20 h-20 bg-amber-500/10  flex items-center justify-center mx-auto mb-6">
             <Star size={40} className="text-amber-400" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-3">You're a Paying Member!</h1>
-          <p className="text-gray-400 text-lg mb-6">You have full access to everything KMSF has to offer.</p>
+          <h1 className="text-4xl font-bold dark:text-white text-gray-900 mb-3">You're a Paying Member!</h1>
+          <p className="dark:text-gray-400 text-gray-500 text-lg mb-6">You have full access to everything KMSF has to offer.</p>
           <button onClick={() => navigate('/')} className="bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold px-8 py-3  transition-all">
             Go to Homepage
           </button>
@@ -354,10 +354,10 @@ const Membership = () => {
   }
 
   return (
-    <section className="min-h-screen bg-gray-900">
+    <section className="min-h-screen dark:bg-gray-900 bg-gray-50">
       {/* Hero */}
       <div className="relative overflow-hidden pt-32 pb-16">
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-850 to-gray-900" />
+        <div className="absolute inset-0 dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-850 dark:to-gray-900 bg-gradient-to-b from-gray-50 to-white" />
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-20 left-1/4 w-96 h-96 bg-yellow-500 blur-3xl" />
           <div className="absolute top-40 right-1/3 w-80 h-80 bg-yellow-600 blur-3xl" />
@@ -373,7 +373,7 @@ const Membership = () => {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-bold text-white mb-4"
+            className="text-5xl md:text-7xl font-bold dark:text-white text-gray-900 mb-4"
           >
             <span className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 bg-clip-text text-transparent">Membership</span>
           </motion.h1>
@@ -381,7 +381,7 @@ const Membership = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-xl text-gray-300 max-w-2xl mx-auto"
+            className="text-xl dark:text-gray-300 text-gray-600 max-w-2xl mx-auto"
           >
             Register for free or upgrade to a paying membership to unlock the full KMSF experience.
           </motion.p>
@@ -396,19 +396,19 @@ const Membership = () => {
             {/* ── Public ── */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-              className=" border border-gray-700 bg-gray-800/60 overflow-hidden"
+              className=" border border-gray-700 dark:bg-gray-800/60 bg-gray-100 overflow-hidden"
             >
               <div className="px-6 pt-6 pb-4 border-b border-gray-700/60">
                 <div className="flex items-center gap-2 mb-1 text-gray-400">
                   <Users size={18} />
                   <span className="text-xs font-semibold uppercase tracking-widest">Public</span>
                 </div>
-                <p className="text-white font-bold text-2xl">Free</p>
-                <p className="text-gray-500 text-sm mt-0.5">No registration needed</p>
+                <p className="dark:text-white text-gray-900 font-bold text-2xl">Free</p>
+                <p className="dark:text-gray-500 text-gray-500 text-sm mt-0.5">No registration needed</p>
               </div>
               <ul className="px-6 py-5 space-y-3">
                 {['Browse the website surface', 'Read about KMSF mission & team', 'Contact & donations pages'].map((b, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-gray-400">
+                  <li key={i} className="flex items-start gap-3 text-sm dark:text-gray-400 text-gray-500">
                     <CheckCircle size={15} className="text-gray-500 mt-0.5 flex-shrink-0" />
                     {b}
                   </li>
@@ -426,7 +426,7 @@ const Membership = () => {
                   <Bell size={18} />
                   <span className="text-xs font-semibold uppercase tracking-widest">Registered</span>
                 </div>
-                <p className="text-white font-bold text-2xl">Free</p>
+                <p className="dark:text-white text-gray-900 font-bold text-2xl">Free</p>
                 <p className="text-yellow-500/70 text-sm mt-0.5">Create a free account</p>
               </div>
               <ul className="px-6 py-5 space-y-3">
@@ -436,7 +436,7 @@ const Membership = () => {
                   'Get notified of upcoming events',
                   'See full events list with prices',
                 ].map((b, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-gray-300">
+                  <li key={i} className="flex items-start gap-3 text-sm dark:text-gray-300 text-gray-600">
                     <CheckCircle size={15} className="text-yellow-400 mt-0.5 flex-shrink-0" />
                     {b}
                   </li>
@@ -447,7 +447,7 @@ const Membership = () => {
             {/* ── Paying Member ── */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
-              className=" border border-amber-500/60 bg-gradient-to-br from-amber-900/30 to-yellow-900/10 overflow-hidden relative"
+              className=" border border-amber-500/60 dark:bg-gray-800 bg-amber-50 overflow-hidden relative"
             >
               <div className="absolute top-3 right-3">
                 <span className="bg-amber-500 text-gray-900 text-xs font-bold px-2.5 py-1 ">FULL ACCESS</span>
@@ -457,7 +457,7 @@ const Membership = () => {
                   <Star size={18} />
                   <span className="text-xs font-semibold uppercase tracking-widest">Paying Member</span>
                 </div>
-                <p className="text-white font-bold text-2xl">Subscription</p>
+                <p className="dark:text-white text-gray-900 font-bold text-2xl">Subscription</p>
                 <p className="text-amber-400/70 text-sm mt-0.5">via Stripe — cancel anytime</p>
               </div>
               <ul className="px-6 py-5 space-y-3">
@@ -468,7 +468,7 @@ const Membership = () => {
                   'Access full archive',
                   'Priority event registration',
                 ].map((b, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-gray-200">
+                  <li key={i} className="flex items-start gap-3 text-sm dark:text-gray-200 text-gray-700">
                     <CheckCircle size={15} className="text-amber-400 mt-0.5 flex-shrink-0" />
                     {b}
                   </li>
@@ -504,19 +504,19 @@ const Membership = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-gray-800 shadow-2xl overflow-hidden"
+          className="dark:bg-gray-800 bg-white shadow-2xl overflow-hidden border dark:border-gray-700/50 border-gray-200"
         >
           {/* Tab Switcher */}
-          <div className="flex border-b border-gray-700">
+          <div className="flex border-b dark:border-gray-700 border-gray-200">
             <button
               onClick={() => { setIsSignIn(true); setErrorMsg(''); setSuccessMsg(''); setFormData(emptyForm); }}
-              className={`flex-1 py-5 text-base font-semibold transition-all ${isSignIn ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}
+              className={`flex-1 py-5 text-base font-semibold transition-all ${isSignIn ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white' : 'dark:bg-gray-800 bg-white dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'}`}
             >
               Sign In
             </button>
             <button
               onClick={() => { setIsSignIn(false); setErrorMsg(''); setSuccessMsg(''); setFormData(emptyForm); setRegisterStep('INFO'); setOtpCode(''); }}
-              className={`flex-1 py-5 text-base font-semibold transition-all ${!isSignIn ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'}`}
+              className={`flex-1 py-5 text-base font-semibold transition-all ${!isSignIn ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white' : 'dark:bg-gray-800 bg-white dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'}`}
             >
               Register Free
             </button>
@@ -530,13 +530,13 @@ const Membership = () => {
                 {successMsg && <div className="bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3  text-sm">{successMsg}</div>}
 
                 <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Email *</label>
-                  <input type="email" name="email" onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Enter your email" />
+                  <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Email *</label>
+                  <input type="email" name="email" onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all border dark:border-gray-600 border-gray-300" placeholder="Enter your email" />
                 </div>
                 <div>
-                  <label className="block text-gray-300 font-medium mb-1.5">Password *</label>
+                  <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Password *</label>
                   <div className="relative">
-                    <input type={showSignInPassword ? 'text' : 'password'} name="password" onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 pr-12  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Enter your password" />
+                    <input type={showSignInPassword ? 'text' : 'password'} name="password" onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 pr-12  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all border dark:border-gray-600 border-gray-300" placeholder="Enter your password" />
                     <button type="button" onClick={() => setShowSignInPassword(!showSignInPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
                       {showSignInPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
@@ -600,8 +600,8 @@ const Membership = () => {
                 <div className={`space-y-5 pb-8 ${registerStep === 'OTP' ? 'hidden' : ''}`}>
 
                   <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">Title *</label>
-                    <select name="title" value={formData.title} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Title *</label>
+                    <select name="title" value={formData.title} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
                       <option value="">Select Title</option>
                       <option>Dr</option><option>Mr</option><option>Mrs</option><option>Miss</option><option>Ms</option>
                     </select>
@@ -610,19 +610,19 @@ const Membership = () => {
                   {/* First / Last */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-gray-300 font-medium mb-1.5">First Name *</label>
-                      <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="First name" />
+                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">First Name *</label>
+                      <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="First name" />
                     </div>
                     <div>
-                      <label className="block text-gray-300 font-medium mb-1.5">Last Name *</label>
-                      <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Last name" />
+                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Last Name *</label>
+                      <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Last name" />
                     </div>
                   </div>
 
                   {/* Gender */}
                   <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">Gender *</label>
-                    <select name="gender" value={formData.gender} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Gender *</label>
+                    <select name="gender" value={formData.gender} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
                       <option value="">Select Gender</option>
                       <option>Male</option><option>Female</option><option>Other</option>
                     </select>
@@ -631,8 +631,8 @@ const Membership = () => {
                   <div className="grid grid-cols-2 gap-4">
                     {/* Organization */}
                     <div>
-                      <label className="block text-gray-300 font-medium mb-1.5">Organization *</label>
-                      <select name="organization" value={formData.organization} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Organization *</label>
+                      <select name="organization" value={formData.organization} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
                         <option value="">Select Organization</option>
                         <option value="KSA">KSA (Kurdistan Scientific Association)</option>
                         <option value="KuMA">KuMA (Kurdish Medical Association)</option>
@@ -641,8 +641,8 @@ const Membership = () => {
 
                     {/* Profession */}
                     <div>
-                      <label className="block text-gray-300 font-medium mb-1.5">Profession *</label>
-                      <select name="profession" value={formData.profession} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Profession *</label>
+                      <select name="profession" value={formData.profession} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
                         <option value="">Select Profession</option>
                         {formData.organization === 'KuMA'
                           ? KUMA_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
@@ -658,36 +658,36 @@ const Membership = () => {
                   <AnimatePresence>
                     {formData.profession === 'Other' && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
-                        <label className="block text-gray-300 font-medium mb-1.5">Please Specify Your Profession *</label>
-                        <input type="text" name="customProfession" value={formData.customProfession} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Enter your profession" />
+                        <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Please Specify Your Profession *</label>
+                        <input type="text" name="customProfession" value={formData.customProfession} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Enter your profession" />
                       </motion.div>
                     )}
                   </AnimatePresence>
 
                   {/* Email */}
                   <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">Email *</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Enter your email" />
+                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Email *</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Enter your email" />
                   </div>
 
                   {/* Password */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-gray-300 font-medium mb-1.5">Password *</label>
+                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Password *</label>
                       <div className="relative">
-                        <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Create a strong password" />
-                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
+                        <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 pr-12 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Create a strong password" />
+                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800 transition-colors">
                           {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                       </div>
-                      <p className="text-gray-500 text-xs mt-1">Min 8 chars — uppercase, lowercase, number & special char</p>
+                      <p className="dark:text-gray-500 text-gray-400 text-xs mt-1">Min 8 chars — uppercase, lowercase, number & special char</p>
                     </div>
 
                     <div>
-                      <label className="block text-gray-300 font-medium mb-1.5">Confirm Password *</label>
+                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Confirm Password *</label>
                       <div className="relative">
-                        <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Re-enter your password" />
-                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors">
+                        <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 pr-12 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Re-enter your password" />
+                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800 transition-colors">
                           {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
                       </div>
@@ -696,64 +696,150 @@ const Membership = () => {
 
                   {/* Speciality */}
                   <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">Speciality *</label>
-                    <input type="text" name="speciality" value={formData.speciality} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Your medical speciality e.g. Cardiology" />
+                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Speciality *</label>
+                    <input type="text" name="speciality" value={formData.speciality} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Your medical speciality e.g. Cardiology" />
                   </div>
 
                   {/* Telephone */}
                   <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">Telephone *</label>
-                    <input type="tel" name="telephone" value={formData.telephone} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Phone number" />
+                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Telephone *</label>
+                    <input type="tel" name="telephone" value={formData.telephone} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Phone number" />
                   </div>
 
                   {/* Address Line 1 */}
                   <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">Address Line 1 *</label>
-                    <input type="text" name="addressLine1" value={formData.addressLine1} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Street address, P.O. box, company name" />
+                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Address Line 1 *</label>
+                    <input type="text" name="addressLine1" value={formData.addressLine1} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Street address, P.O. box, company name" />
                   </div>
 
                   {/* Address Line 2 */}
                   <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">Address Line 2</label>
-                    <input type="text" name="addressLine2" value={formData.addressLine2} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Apartment, suite, unit, building, etc." />
+                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Address Line 2</label>
+                    <input type="text" name="addressLine2" value={formData.addressLine2} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Apartment, suite, unit, building, etc." />
                   </div>
 
                   {/* City + Post Code */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-gray-300 font-medium mb-1.5">City *</label>
-                      <input type="text" name="city" value={formData.city} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="City" />
+                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">City *</label>
+                      <input type="text" name="city" value={formData.city} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="City" />
                     </div>
                     <div>
-                      <label className="block text-gray-300 font-medium mb-1.5">Post Code *</label>
-                      <input type="text" name="postCode" value={formData.postCode} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Post / Zip code" />
+                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Post Code *</label>
+                      <input type="text" name="postCode" value={formData.postCode} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Post / Zip code" />
                     </div>
                   </div>
 
                   {/* Country */}
                   <div>
-                    <label className="block text-gray-300 font-medium mb-1.5">Country *</label>
-                    <select name="country" value={formData.country} onChange={handleChange} className="w-full bg-gray-700 text-white px-4 py-3  focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Country *</label>
+                    <select name="country" value={formData.country} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
                       <option value="">Select Country</option>
-                      <option value="United Kingdom">United Kingdom</option>
-                      <option value="United States">United States</option>
-                      <option value="Canada">Canada</option>
-                      <option value="Australia">Australia</option>
-                      <option value="Germany">Germany</option>
-                      <option value="France">France</option>
-                      <option value="Spain">Spain</option>
-                      <option value="Italy">Italy</option>
-                      <option value="Netherlands">Netherlands</option>
-                      <option value="Sweden">Sweden</option>
-                      <option value="Norway">Norway</option>
-                      <option value="Denmark">Denmark</option>
-                      <option value="Finland">Finland</option>
-                      <option value="Ireland">Ireland</option>
-                      <option value="New Zealand">New Zealand</option>
-                      <option value="Switzerland">Switzerland</option>
-                      <option value="Kurdistan Region">Kurdistan Region</option>
-                      <option value="Iraq">Iraq</option>
-                      <option value="United Arab Emirates">United Arab Emirates</option>
+                      <optgroup label="🇬🇧 United Kingdom">
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="England">England</option>
+                        <option value="Scotland">Scotland</option>
+                        <option value="Wales">Wales</option>
+                        <option value="Northern Ireland">Northern Ireland</option>
+                      </optgroup>
+                      <optgroup label="🌍 Middle East & Kurdistan">
+                        <option value="Kurdistan Region">Kurdistan Region</option>
+                        <option value="Iraq">Iraq</option>
+                        <option value="Syria">Syria</option>
+                        <option value="Turkey">Turkey</option>
+                        <option value="Iran">Iran</option>
+                        <option value="United Arab Emirates">United Arab Emirates</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
+                        <option value="Kuwait">Kuwait</option>
+                        <option value="Qatar">Qatar</option>
+                        <option value="Bahrain">Bahrain</option>
+                        <option value="Oman">Oman</option>
+                        <option value="Jordan">Jordan</option>
+                        <option value="Lebanon">Lebanon</option>
+                        <option value="Israel">Israel</option>
+                        <option value="Palestine">Palestine</option>
+                        <option value="Yemen">Yemen</option>
+                        <option value="Egypt">Egypt</option>
+                        <option value="Libya">Libya</option>
+                        <option value="Tunisia">Tunisia</option>
+                        <option value="Algeria">Algeria</option>
+                        <option value="Morocco">Morocco</option>
+                      </optgroup>
+                      <optgroup label="🌍 Europe">
+                        <option value="Germany">Germany</option>
+                        <option value="France">France</option>
+                        <option value="Netherlands">Netherlands</option>
+                        <option value="Sweden">Sweden</option>
+                        <option value="Norway">Norway</option>
+                        <option value="Denmark">Denmark</option>
+                        <option value="Finland">Finland</option>
+                        <option value="Ireland">Ireland</option>
+                        <option value="Spain">Spain</option>
+                        <option value="Italy">Italy</option>
+                        <option value="Switzerland">Switzerland</option>
+                        <option value="Austria">Austria</option>
+                        <option value="Belgium">Belgium</option>
+                        <option value="Portugal">Portugal</option>
+                        <option value="Poland">Poland</option>
+                        <option value="Czech Republic">Czech Republic</option>
+                        <option value="Hungary">Hungary</option>
+                        <option value="Romania">Romania</option>
+                        <option value="Bulgaria">Bulgaria</option>
+                        <option value="Greece">Greece</option>
+                        <option value="Croatia">Croatia</option>
+                        <option value="Serbia">Serbia</option>
+                        <option value="Slovakia">Slovakia</option>
+                        <option value="Ukraine">Ukraine</option>
+                        <option value="Russia">Russia</option>
+                        <option value="Iceland">Iceland</option>
+                        <option value="Luxembourg">Luxembourg</option>
+                        <option value="Malta">Malta</option>
+                        <option value="Cyprus">Cyprus</option>
+                        <option value="Estonia">Estonia</option>
+                        <option value="Latvia">Latvia</option>
+                        <option value="Lithuania">Lithuania</option>
+                      </optgroup>
+                      <optgroup label="🌎 North America">
+                        <option value="United States">United States</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Mexico">Mexico</option>
+                      </optgroup>
+                      <optgroup label="🌏 Asia & Pacific">
+                        <option value="Australia">Australia</option>
+                        <option value="New Zealand">New Zealand</option>
+                        <option value="India">India</option>
+                        <option value="Pakistan">Pakistan</option>
+                        <option value="Afghanistan">Afghanistan</option>
+                        <option value="Bangladesh">Bangladesh</option>
+                        <option value="Sri Lanka">Sri Lanka</option>
+                        <option value="China">China</option>
+                        <option value="Japan">Japan</option>
+                        <option value="South Korea">South Korea</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Philippines">Philippines</option>
+                        <option value="Azerbaijan">Azerbaijan</option>
+                        <option value="Armenia">Armenia</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Kazakhstan">Kazakhstan</option>
+                      </optgroup>
+                      <optgroup label="🌍 Africa">
+                        <option value="South Africa">South Africa</option>
+                        <option value="Nigeria">Nigeria</option>
+                        <option value="Kenya">Kenya</option>
+                        <option value="Ethiopia">Ethiopia</option>
+                        <option value="Ghana">Ghana</option>
+                        <option value="Sudan">Sudan</option>
+                        <option value="Somalia">Somalia</option>
+                      </optgroup>
+                      <optgroup label="🌎 South America">
+                        <option value="Brazil">Brazil</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="Chile">Chile</option>
+                        <option value="Peru">Peru</option>
+                      </optgroup>
                       <option value="Other">Other</option>
                     </select>
                   </div>
@@ -761,7 +847,7 @@ const Membership = () => {
                   {/* Terms */}
                   <div className="flex items-start gap-3">
                     <input type="checkbox" id="terms" className="mt-1 w-4 h-4 accent-yellow-500" required />
-                    <label htmlFor="terms" className="text-gray-400 text-sm">
+                    <label htmlFor="terms" className="dark:text-gray-400 text-gray-500 text-sm">
                       I agree to the <span className="text-yellow-500 underline cursor-pointer">Terms and Conditions</span> and <span className="text-yellow-500 underline cursor-pointer">Privacy Policy</span>
                     </label>
                   </div>
@@ -775,9 +861,9 @@ const Membership = () => {
                   </button>
 
                   <div className="flex items-center gap-3 mt-2">
-                    <div className="flex-1 h-px bg-gray-700" />
-                    <span className="text-gray-500 text-xs flex items-center gap-1"><Lock size={12} /> Want full access?</span>
-                    <div className="flex-1 h-px bg-gray-700" />
+                    <div className="flex-1 h-px dark:bg-gray-700 bg-gray-200" />
+                    <span className="dark:text-gray-500 text-gray-400 text-xs flex items-center gap-1"><Lock size={12} /> Want full access?</span>
+                    <div className="flex-1 h-px dark:bg-gray-700 bg-gray-200" />
                   </div>
                   <p className="text-center text-gray-500 text-sm">
                     After registering, you can upgrade to a{' '}

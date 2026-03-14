@@ -89,10 +89,10 @@ const DonationPage = () => {
   };
 
   return (
-    <section className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+    <section className="min-h-screen dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-gradient-to-b from-gray-50 via-white to-gray-50">
       {/* Hero Section */}
       <div className="relative overflow-hidden pt-32 pb-20">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900"></div>
+        <div className="absolute inset-0 dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-gradient-to-r from-gray-50 via-white to-gray-50"></div>
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-yellow-500 blur-3xl"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-yellow-500 blur-3xl"></div>
@@ -113,12 +113,12 @@ const DonationPage = () => {
             >
               Make a Difference
             </motion.span>
-            <h1 className="text-6xl md:text-8xl font-bold text-white mb-6">
+            <h1 className="text-6xl md:text-8xl font-bold dark:text-white text-gray-900 mb-6">
               <span className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 bg-clip-text text-transparent">
                 Support Our Mission
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl dark:text-gray-300 text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Your generosity empowers Kurdish healthcare excellence and transforms lives across the region
             </p>
           </motion.div>
@@ -134,10 +134,10 @@ const DonationPage = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-gray-900 mb-4">
             Your Impact
           </h2>
-          <p className="text-lg text-gray-400 max-w-2xl mx-auto">
+          <p className="text-lg dark:text-gray-400 text-gray-500 max-w-2xl mx-auto">
             Every donation directly supports critical areas of our healthcare mission
           </p>
         </motion.div>
@@ -151,15 +151,15 @@ const DonationPage = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               whileHover={{ scale: 1.05 }}
-              className="bg-gray-800 p-6 relative overflow-hidden group cursor-pointer"
+              className="dark:bg-gray-800 bg-white border dark:border-gray-700/50 border-gray-200 p-6 relative overflow-hidden group cursor-pointer shadow-md"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${area.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
               <div className="relative z-10">
                 <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${area.color} text-white mb-4`}>
                   {area.icon}
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">{area.title}</h3>
-                <p className="text-gray-400 text-sm leading-relaxed">{area.description}</p>
+                <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-3">{area.title}</h3>
+                <p className="dark:text-gray-400 text-gray-500 text-sm leading-relaxed">{area.description}</p>
               </div>
             </motion.div>
           ))}
@@ -173,14 +173,14 @@ const DonationPage = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="lg:col-span-2 bg-gray-800 p-8 md:p-10"
+            className="lg:col-span-2 dark:bg-gray-800 bg-white border dark:border-gray-700/50 border-gray-200 p-8 md:p-10 shadow-lg"
           >
             {successMsg ? (
               <div className="flex flex-col items-center justify-center py-10 text-center space-y-6">
                 <div className="w-24 h-24 bg-green-500/20 flex items-center justify-center mb-4">
                   <Heart className="w-12 h-12 text-green-500" />
                 </div>
-                <h3 className="text-4xl font-bold text-white">Thank You!</h3>
+                <h3 className="text-4xl font-bold dark:text-white text-gray-900">Thank You!</h3>
                 <p className="text-xl text-green-400 max-w-lg mx-auto leading-relaxed">
                   {successMsg}
                 </p>
@@ -197,7 +197,7 @@ const DonationPage = () => {
               </div>
             ) : (
               <>
-                <h3 className="text-3xl font-bold text-white mb-6">Make Your Donation</h3>
+                <h3 className="text-3xl font-bold dark:text-white text-gray-900 mb-6">Make Your Donation</h3>
 
                 {errorMsg && (
                   <div className="bg-red-500/10 border border-red-500/50 text-red-400 p-4 mb-6">
@@ -207,7 +207,7 @@ const DonationPage = () => {
 
                 {/* Amount Selection */}
                 <div className="mb-8">
-                  <label className="block text-gray-300 font-semibold mb-4">Select Amount (USD)</label>
+                  <label className="block dark:text-gray-300 text-gray-700 font-semibold mb-4">Select Amount (USD)</label>
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     {predefinedAmounts.map((amount) => (
                       <button
@@ -218,7 +218,7 @@ const DonationPage = () => {
                         }}
                         className={`py-4 px-6 font-bold text-lg transition-all duration-300 ${selectedAmount === amount && !customAmount
                           ? 'bg-gradient-to-r from-yellow-600 to-yellow-500 text-white'
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          : 'dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700 dark:hover:bg-gray-600 hover:bg-gray-200'
                           }`}
                       >
                         ${amount}
@@ -236,7 +236,7 @@ const DonationPage = () => {
                         setCustomAmount(e.target.value);
                         setSelectedAmount(0);
                       }}
-                      className="w-full bg-gray-700 text-white py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all"
+                      className="w-full dark:bg-gray-700 bg-gray-100 dark:text-white text-gray-900 py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all border dark:border-gray-600 border-gray-300"
                     />
                   </div>
                 </div>
@@ -252,7 +252,7 @@ const DonationPage = () => {
                   {isLoading ? 'Preparing Checkout...' : `Donate $${customAmount || selectedAmount} ${selectedFrequency === 'monthly' ? '/ Month' : 'Now'}`}
                 </motion.button>
 
-                <p className="text-gray-400 text-sm text-center mt-6">
+                <p className="dark:text-gray-400 text-gray-500 text-sm text-center mt-6">
                   Your donation is secure and tax-deductible. We respect your privacy.
                 </p>
               </>
@@ -281,15 +281,15 @@ const DonationPage = () => {
             </div>
 
             {/* Trust Indicators */}
-            <div className="bg-gray-800 p-6">
-              <h4 className="text-xl font-bold text-white mb-4">Why Donate?</h4>
+            <div className="dark:bg-gray-800 bg-white border dark:border-gray-700/50 border-gray-200 p-6 shadow-md">
+              <h4 className="text-xl font-bold dark:text-white text-gray-900 mb-4">Why Donate?</h4>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="bg-green-500 p-1 mt-1">
                     <Check className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-300 text-sm">100% transparent use of funds</p>
+                    <p className="dark:text-gray-300 text-gray-600 text-sm">100% transparent use of funds</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -297,7 +297,7 @@ const DonationPage = () => {
                     <Check className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-300 text-sm">Direct impact on Kurdish healthcare</p>
+                    <p className="dark:text-gray-300 text-gray-600 text-sm">Direct impact on Kurdish healthcare</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -305,7 +305,7 @@ const DonationPage = () => {
                     <Check className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-300 text-sm">Regular updates on your contribution</p>
+                    <p className="dark:text-gray-300 text-gray-600 text-sm">Regular updates on your contribution</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -313,22 +313,22 @@ const DonationPage = () => {
                     <Check className="w-4 h-4 text-white" />
                   </div>
                   <div>
-                    <p className="text-gray-300 text-sm">Tax-deductible donations</p>
+                    <p className="dark:text-gray-300 text-gray-600 text-sm">Tax-deductible donations</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Achievement Stats */}
-            <div className="bg-gray-800 p-6">
-              <h4 className="text-xl font-bold text-white mb-6">Our Achievements</h4>
+            <div className="dark:bg-gray-800 bg-white border dark:border-gray-700/50 border-gray-200 p-6 shadow-md">
+              <h4 className="text-xl font-bold dark:text-white text-gray-900 mb-6">Our Achievements</h4>
               <div className="grid grid-cols-2 gap-4">
                 {achievements.map((achievement, index) => (
                   <div key={index} className="text-center">
                     <div className="text-2xl font-bold text-yellow-500 mb-1">
                       {achievement.number}
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs dark:text-gray-400 text-gray-500">
                       {achievement.label}
                     </div>
                   </div>
@@ -347,12 +347,12 @@ const DonationPage = () => {
         transition={{ duration: 0.8 }}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20"
       >
-        <div className="bg-gray-800 p-8 md:p-12 relative overflow-hidden">
+        <div className="dark:bg-gray-800 bg-white border dark:border-gray-700/50 border-gray-200 p-8 md:p-12 relative overflow-hidden shadow-lg">
           <div className="absolute top-0 left-0 w-32 h-32 bg-yellow-500 opacity-10 blur-3xl"></div>
           <div className="absolute bottom-0 right-0 w-32 h-32 bg-yellow-500 opacity-10 blur-3xl"></div>
           <div className="relative z-10">
             <div className="text-yellow-500 text-6xl font-serif mb-4">"</div>
-            <blockquote className="text-xl md:text-2xl text-white font-medium mb-6 leading-relaxed">
+            <blockquote className="text-xl md:text-2xl dark:text-white text-gray-900 font-medium mb-6 leading-relaxed">
               Thanks to the generous support of our donors, we've been able to establish state-of-the-art medical facilities that serve thousands of Kurdish families every year.
             </blockquote>
             <div className="flex items-center gap-4">
@@ -360,8 +360,8 @@ const DonationPage = () => {
                 <span className="text-white font-bold text-xl">DR</span>
               </div>
               <div>
-                <p className="text-white font-bold">Dr. Ahmed Hassan</p>
-                <p className="text-gray-400 text-sm">Director of Medical Programs</p>
+                <p className="dark:text-white text-gray-900 font-bold">Dr. Ahmed Hassan</p>
+                <p className="dark:text-gray-400 text-gray-500 text-sm">Director of Medical Programs</p>
               </div>
             </div>
           </div>

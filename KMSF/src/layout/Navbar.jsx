@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, LogOut, User as UserIcon, CreditCard, ChevronDown, Lock, Zap, Star, Pencil } from 'lucide-react';
+import { Menu, X, LogOut, User as UserIcon, CreditCard, ChevronDown, Lock, Zap, Star, Pencil, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { selectCurrentUser, selectCurrentToken, logout } from '../store/slices/a
 import MemberIDCard from '../components/MemberIDCard';
 import ChangePasswordModal from '../components/ChangePasswordModal';
 import EditProfileModal from '../components/EditProfileModal';
+import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -19,6 +20,7 @@ const Navbar = () => {
   const profileRef = useRef(null);
   const toggleButtonRef = useRef(null);
 
+  const { isDark, toggleTheme } = useTheme();
   const user = useSelector(selectCurrentUser);
   const token = useSelector(selectCurrentToken);
   const dispatch = useDispatch();
@@ -40,7 +42,6 @@ const Navbar = () => {
   // Handle click outside to close menus
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Close mobile menu if clicked outside, BUT NOT if clicking the toggle button itself
       if (
         isMobileMenuOpen &&
         mobileMenuRef.current &&
@@ -105,12 +106,16 @@ const Navbar = () => {
     setIsProfileOpen(false);
   };
 
+  const navTextColor = isScrolled
+    ? 'dark:text-white text-gray-800'
+    : 'dark:text-white text-gray-900';
+
   return (
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-          ? 'bg-gray-900/80 backdrop-blur-lg shadow-lg'
-          : 'bg-transparent'
+          ? 'dark:bg-gray-900/80 bg-white/90 backdrop-blur-lg shadow-lg dark:shadow-gray-900/50 shadow-gray-200/70'
+          : 'dark:bg-transparent bg-white/80 backdrop-blur-sm dark:shadow-none shadow-sm'
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,7 +123,7 @@ const Navbar = () => {
             {/* Left side - KMSF Title */}
             <div className="flex-shrink-0 flex-row flex items-center space-x-2 cursor-pointer" onClick={() => navigate('/')}>
               <img src="/KMSF_logo.png" className='w-8 ' alt="" />
-              <h1 className="text-2xl font-bold text-white">KMSF</h1>
+              <h1 className={`text-2xl font-bold ${navTextColor}`}>KMSF</h1>
             </div>
 
             {/* Center - Desktop Navigation Links */}
@@ -128,7 +133,7 @@ const Navbar = () => {
                   <button
                     key={link.name}
                     onClick={(e) => handleNavClick(e, link)}
-                    className="text-white hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 cursor-pointer bg-transparent border-none"
+                    className={`${navTextColor} hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 cursor-pointer bg-transparent border-none`}
                   >
                     {link.name}
                   </button>
@@ -136,7 +141,7 @@ const Navbar = () => {
                   <a
                     key={link.name}
                     href={link.href}
-                    className="text-white hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 cursor-pointer"
+                    className={`${navTextColor} hover:text-amber-400 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 cursor-pointer`}
                   >
                     {link.name}
                   </a>
@@ -144,29 +149,40 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Right side - Sign In Button / Profile & Mobile Menu */}
-            <div className="flex items-center space-x-4">
+            {/* Right side */}
+            <div className="flex items-center space-x-3">
+
+              {/* Theme Toggle Button */}
+              <button
+                onClick={toggleTheme}
+                className={`p-2 rounded-full transition-all duration-200 ${isScrolled
+                  ? 'dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-amber-400 bg-gray-100 hover:bg-gray-200 text-amber-600'
+                  : 'dark:bg-white/10 dark:hover:bg-white/20 dark:text-white bg-gray-100 hover:bg-gray-200 text-amber-600'
+                  }`}
+                title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                {isDark ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+
               {token ? (
                 /* Logged In Profile Icon */
                 <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center space-x-2 bg-gray-800 border border-amber-500/50 p-1 pr-3 rounded-full hover:bg-gray-700 transition-all duration-200 relative"
+                    className="flex items-center space-x-2 dark:bg-gray-800 bg-gray-100 dark:border-amber-500/50 border-amber-500/70 border p-1 pr-3 rounded-full dark:hover:bg-gray-700 hover:bg-gray-200 transition-all duration-200 relative"
                   >
                     <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-gray-900 font-bold relative">
                       {user?.firstName?.[0] || 'U'}
-                      {/* Pulsing dot for free registered users */}
                       {user?.membershipStatus === 'registered' && (
                         <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-yellow-400 rounded-full border-2 border-gray-800 animate-pulse" />
                       )}
-                      {/* Gold star for paid active members */}
                       {user?.membershipStatus === 'active' && (
                         <span className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full border-2 border-gray-800 flex items-center justify-center">
                           <Star size={8} className="fill-gray-900 text-gray-900" />
                         </span>
                       )}
                     </div>
-                    <span className="text-white text-sm font-medium hidden sm:inline-block">
+                    <span className="dark:text-white text-gray-800 text-sm font-medium hidden sm:inline-block">
                       {user?.firstName}
                     </span>
                     <ChevronDown size={16} className={`text-amber-500 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
@@ -178,9 +194,9 @@ const Navbar = () => {
                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute right-0 mt-2 w-56 bg-gray-900 border border-gray-800 shadow-2xl rounded-lg overflow-hidden z-50"
+                        className="absolute right-0 mt-2 w-56 dark:bg-gray-900 bg-white dark:border-gray-800 border-gray-200 border shadow-2xl rounded-lg overflow-hidden z-50"
                       >
-                        <div className="p-4 border-b border-gray-800 bg-gray-850">
+                        <div className="p-4 border-b dark:border-gray-800 border-gray-200 dark:bg-gray-800 bg-gray-100">
                           <p className={`text-xs font-bold uppercase tracking-widest mb-1 flex items-center gap-1 ${user?.membershipStatus === 'active' ? 'text-amber-400' :
                             user?.membershipStatus === 'registered' ? 'text-yellow-400' : 'text-gray-400'
                             }`}>
@@ -188,12 +204,11 @@ const Navbar = () => {
                             {user?.membershipStatus === 'active' ? 'Full Member' :
                               user?.membershipStatus === 'registered' ? 'Free Member' : 'Membership'}
                           </p>
-                          <p className="text-white font-bold truncate">{user?.firstName} {user?.lastName}</p>
-                          <p className="text-[10px] text-gray-400 truncate">{user?.email}</p>
+                          <p className="dark:text-white text-gray-900 font-bold truncate">{user?.firstName} {user?.lastName}</p>
+                          <p className="text-[10px] dark:text-gray-400 text-gray-500 truncate">{user?.email}</p>
                         </div>
 
                         <div className="py-2">
-                          {/* Upgrade CTA — only for free registered users */}
                           {user?.membershipStatus === 'registered' && (
                             <button
                               onClick={() => { navigate('/membership'); setIsProfileOpen(false); }}
@@ -206,7 +221,7 @@ const Navbar = () => {
 
                           <button
                             onClick={() => { setIsEditProfileOpen(true); setIsProfileOpen(false); }}
-                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-300 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
+                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm dark:text-gray-300 text-gray-600 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
                           >
                             <Pencil size={18} />
                             <span>Edit Profile</span>
@@ -214,7 +229,7 @@ const Navbar = () => {
 
                           <button
                             onClick={() => { setIsIDCardOpen(true); setIsProfileOpen(false); }}
-                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-300 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
+                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm dark:text-gray-300 text-gray-600 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
                           >
                             <CreditCard size={18} />
                             <span>My ID Card</span>
@@ -232,7 +247,7 @@ const Navbar = () => {
 
                           <button
                             onClick={handleLogout}
-                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors border-t border-gray-800/50"
+                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-red-400 hover:bg-red-500/10 transition-colors border-t dark:border-gray-800/50 border-gray-200"
                           >
                             <LogOut size={18} />
                             <span>Sign Out</span>
@@ -257,7 +272,7 @@ const Navbar = () => {
                 <button
                   ref={toggleButtonRef}
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="text-white p-2 rounded-md hover:bg-white/10 transition-colors flex items-center justify-center w-10 h-10 relative z-10"
+                  className={`${navTextColor} p-2 rounded-md hover:bg-white/10 transition-colors flex items-center justify-center w-10 h-10 relative z-10`}
                 >
                   {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                 </button>
@@ -274,14 +289,14 @@ const Navbar = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden bg-gray-900 overflow-hidden"
+              className="lg:hidden dark:bg-gray-900 bg-white border-t dark:border-gray-800 border-gray-200 overflow-hidden"
             >
               <div className="px-4 pt-2 pb-6 space-y-1">
                 {navLinks.map((link) => (
                   <a
                     key={link.name}
                     href={link.href}
-                    className="block text-white hover:bg-white/10 px-3 py-4 rounded-md text-lg font-medium"
+                    className="block dark:text-white text-gray-800 dark:hover:bg-white/10 hover:bg-gray-100 px-3 py-4 rounded-md text-lg font-medium"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {link.name}

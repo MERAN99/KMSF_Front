@@ -181,7 +181,7 @@ const Members = () => {
 
   const [selectedMember, setSelectedMember] = useState(null);
   return (
-    <section className="py-16 w-full bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 overflow-hidden">
+    <section className="py-16 w-full dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -191,10 +191,10 @@ const Members = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-gray-900 mb-6">
             Meet Our <span className="bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">Members</span>
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl dark:text-gray-300 text-gray-600 max-w-3xl mx-auto">
             Our dedicated team of professionals from KSA and KuMA working together to advance Kurdish healthcare and scientific excellence.
           </p>
         </motion.div>
@@ -208,8 +208,8 @@ const Members = () => {
             transition={{ duration: 0.8 }}
             className="text-center mb-12"
           >
-            <h3 className="text-3xl font-bold text-white mb-4">Kurdistan Scientific Association (KSA)</h3>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <h3 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">Kurdistan Scientific Association (KSA)</h3>
+            <p className="dark:text-gray-400 text-gray-500 max-w-2xl mx-auto">
               Leading scientific research and academic excellence in Kurdistan
             </p>
           </motion.div>
@@ -225,7 +225,7 @@ const Members = () => {
               <motion.div
                 key={member.id}
                 variants={cardVariants}
-                className="group relative bg-gray-800 bg-opacity-50 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:bg-opacity-70 flex flex-col"
+                className="group relative dark:bg-gray-800 bg-white dark:bg-opacity-50 bg-opacity-100 overflow-hidden shadow-xl hover:shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 transition-all duration-500 flex flex-col border dark:border-gray-700/50 border-gray-200"
                 whileHover={{ y: -10 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
@@ -234,10 +234,10 @@ const Members = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
                 </div>
                 <div className="relative p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
+                  <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
                   <p className="text-[#C8A441] font-medium mb-3 text-sm">{member.position}</p>
-                  <p className="text-gray-300 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100 mb-4 flex-grow">{member.bio}</p>
-                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold text-white border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
+                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100 mb-4 flex-grow">{member.bio}</p>
+                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
                   <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
                     <div className="w-3 h-3 bg-[#C8A441]"></div>
                   </div>
@@ -257,8 +257,8 @@ const Members = () => {
             transition={{ duration: 0.8 }}
             className="text-center mb-12"
           >
-            <h3 className="text-3xl font-bold text-white mb-4">Kurdish Medical Association (KuMA)</h3>
-            <p className="text-gray-400 max-w-2xl mx-auto">
+            <h3 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">Kurdish Medical Association (KuMA)</h3>
+            <p className="dark:text-gray-400 text-gray-500 max-w-2xl mx-auto">
               Advancing medical practice and healthcare standards across Kurdistan
             </p>
           </motion.div>
@@ -274,7 +274,7 @@ const Members = () => {
               <motion.div
                 key={member.id}
                 variants={cardVariants}
-                className="group relative bg-gray-800 bg-opacity-50 overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-500 hover:bg-opacity-70 flex flex-col"
+                className="group relative dark:bg-gray-800 bg-white dark:bg-opacity-50 bg-opacity-100 overflow-hidden shadow-xl hover:shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 transition-all duration-500 flex flex-col border dark:border-gray-700/50 border-gray-200"
                 whileHover={{ y: -10 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
@@ -283,10 +283,10 @@ const Members = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
                 </div>
                 <div className="relative p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
+                  <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
                   <p className="text-[#C8A441] font-medium mb-3 text-sm">{member.position}</p>
-                  <p className="text-gray-300 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100 mb-4 flex-grow">{member.bio}</p>
-                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold text-white border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
+                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100 mb-4 flex-grow">{member.bio}</p>
+                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
                   <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
                     <div className="w-3 h-3 bg-[#C8A441]"></div>
                   </div>
@@ -331,7 +331,7 @@ const Members = () => {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-2xl bg-gray-800 border border-gray-700 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+              className="relative w-full max-w-2xl dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               {/* gold top bar */}
@@ -359,18 +359,18 @@ const Members = () => {
 
                 {/* Content panel — scrollable */}
                 <div className="flex-1 p-5 sm:p-7 flex flex-col min-h-0 overflow-y-auto custom-scrollbar">
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-1 pr-8">{selectedMember?.name}</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold dark:text-white text-gray-900 mb-1 pr-8">{selectedMember?.name}</h3>
                   <p className="text-[#C8A441] font-medium mb-4 text-xs sm:text-sm bg-[#C8A441]/10 self-start px-2 py-1 border border-[#C8A441]/20">
                     {selectedMember?.position}
                   </p>
 
-                  <div className="text-gray-300 text-sm leading-relaxed space-y-3">
+                  <div className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed space-y-3">
                     {selectedMember?.detail ? (
                       selectedMember.detail.split('\n\n').map((paragraph, idx) => (
                         <p key={idx}>{paragraph}</p>
                       ))
                     ) : (
-                      <p className="italic text-gray-500">No details yet.</p>
+                      <p className="italic dark:text-gray-500 text-gray-400">No details yet.</p>
                     )}
                   </div>
                 </div>

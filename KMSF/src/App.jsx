@@ -19,7 +19,7 @@ const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 // Loading component
 const LoadingSpinner = () => (
-  <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+  <div className="min-h-screen dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-gray-50 flex items-center justify-center">
     <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#C8A441]"></div>
   </div>
 );
@@ -28,7 +28,7 @@ function App() {
   return (
     <Router>
       <RouteScrollToTop />
-      <div className="">
+      <div className="dark:bg-gray-900 bg-white min-h-screen">
         <Navbar />
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
