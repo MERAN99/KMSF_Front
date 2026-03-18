@@ -23,7 +23,7 @@ const Members = () => {
       id: 1,
       name: 'Dr Sayah Saied',
       position: 'Chair - Atomic Physicist',
-      image: '',
+      image: '/Team/Dr-Saya.jpeg',
       bio: ''
     },
     {

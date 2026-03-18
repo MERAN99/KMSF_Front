@@ -69,7 +69,7 @@ const Archives = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="group relative dark:bg-gray-800 bg-white overflow-hidden dark:hover:bg-gray-750 hover:shadow-xl transition-all duration-500 cursor-pointer border dark:border-gray-700/50 border-gray-200"
+              className="group relative dark:bg-gray-900 bg-white overflow-hidden dark:hover:bg-gray-850 hover:shadow-xl transition-all duration-500 cursor-pointer border dark:border-gray-700/50 border-gray-200"
               onClick={() => setSelectedEvent(event)}
             >
               <div className="flex flex-col lg:flex-row">
@@ -123,7 +123,7 @@ const Archives = () => {
       {selectedEvent && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 backdrop-blur-sm overflow-y-auto" onClick={() => setSelectedEvent(null)}>
           <motion.div initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }} transition={{ type: "spring", damping: 25 }} className="relative max-w-4xl w-full my-8" onClick={(e) => e.stopPropagation()}>
-            <div className="dark:bg-gray-800 bg-white overflow-hidden shadow-2xl">
+            <div className="dark:bg-gray-900 bg-white overflow-hidden shadow-2xl">
               <div className="relative h-96">
                 <img src={selectedEvent.image} alt={selectedEvent.title} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t dark:from-gray-800 from-white to-transparent"></div>

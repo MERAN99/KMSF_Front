@@ -78,7 +78,7 @@ export default function EventsSection() {
             <motion.div
               key={event.id}
               variants={cardVariants}
-              className="group relative dark:bg-gradient-to-br dark:from-[#C8A441]/10 dark:to-[#F2AE02]/10 bg-white backdrop-blur-sm overflow-hidden border dark:border-white/10 border-gray-200 hover:border-[#C8A441]/50 transition-all duration-300 shadow-xl hover:shadow-2xl min-h-[500px] flex flex-col"
+              className="group relative dark:bg-gray-900 bg-white backdrop-blur-sm overflow-hidden border dark:border-white/10 border-gray-200 hover:border-[#C8A441]/50 transition-all duration-300 shadow-xl hover:shadow-2xl min-h-[500px] flex flex-col"
             >
               {/* Category Badge */}
               <div className="absolute top-4 right-4 z-10">

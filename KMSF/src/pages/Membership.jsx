@@ -396,7 +396,7 @@ const Membership = () => {
             {/* ── Public ── */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-              className=" border border-gray-700 dark:bg-gray-800/60 bg-gray-100 overflow-hidden"
+              className=" border border-gray-700 dark:bg-gray-900/80 bg-gray-100 overflow-hidden"
             >
               <div className="px-6 pt-6 pb-4 border-b border-gray-700/60">
                 <div className="flex items-center gap-2 mb-1 text-gray-400">
@@ -447,7 +447,7 @@ const Membership = () => {
             {/* ── Paying Member ── */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
-              className=" border border-amber-500/60 dark:bg-gray-800 bg-amber-50 overflow-hidden relative"
+              className=" border border-amber-500/60 dark:bg-gray-900 bg-amber-50 overflow-hidden relative"
             >
               <div className="absolute top-3 right-3">
                 <span className="bg-amber-500 text-gray-900 text-xs font-bold px-2.5 py-1 ">FULL ACCESS</span>
