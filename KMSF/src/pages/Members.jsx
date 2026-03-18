@@ -84,7 +84,7 @@ const Members = () => {
     {
       id: 9,
       name: 'Tara Tofec',
-      position: 'Administrator & Community Organiser',
+      position: 'KMSF Secretary, Company Secretary',
       image: '/Team/DrTara.jpg',
       bio: 'Active KMSF-UK member since 2018, organising medical conferences and charitable fundraising initiatives for Kurdish healthcare.',
       detail: 'Tara Tofec is a Kurdish British professional with a BSc in Chemistry from the University of Salahaddin, Iraq. She has extensive experience in administration, management, and customer service, having held leadership roles including supervisor at Bally Heathrow, Company Secretary at Metropolitan International Service, and Managing Director of Café Sorrento.\n\nSince 2018, she has been an active member of the Kurdistan Medical Scientific Federation (KMSF-UK), contributing to the organization of medical and scientific conferences and seminars. She also organises charitable initiatives, including fundraising events for cancer hospitals in the Kurdistan Region, particularly in Erbil and Sulaymaniyah, demonstrating her strong commitment to community and healthcare support.'
