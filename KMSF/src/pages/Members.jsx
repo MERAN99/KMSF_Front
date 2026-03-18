@@ -38,7 +38,8 @@ const Members = () => {
       name: 'Dr Barzan Rahman',
       position: 'Treasurer - Psychologist',
       image: '/Team/Dr-Barzan.jpg',
-      bio: ''
+      bio: 'Former Psychologist with a PhD in Applied Behaviour Analysis, now a property professional applying analytical skills to investment.',
+      detail: 'Former Psychologist with a PhD in Applied Behaviour Analysis practiced in the field of traumatic brain injury. Clinical specialty in the assessment and treatment of complex and challenging behaviours. Research focus on behavioural interventions for adults with acquired brain injury, combining functional analyses with therapeutic applications. Prior clinical placements in private hospitals in Leeds and Northampton. Now a property professional, applying analytical and strategic skills to investment and development.\n\nHas 30 publications in peer reviewed journals with over 70 citations and is an international presenter in ISOUG and FMF.'
     },
     {
       id: 4,
@@ -93,7 +94,8 @@ const Members = () => {
       name: 'Dr Tahir Hassan',
       position: 'Research Fellow in Machine Learning',
       image: '/Team/Dr-Tahir.jpg',
-      bio: ''
+      bio: 'Senior Lecturer in AI and Data Science at Solent University and Executive Committee member of KSA, specializing in deep learning and healthcare.',
+      detail: 'Dr Tahir Hassan is a Senior Lecturer in Artificial Intelligence and Data Science at Solent University and an Executive Committee member of the Kurdistan Scientific Association (KSA). With a PhD in Computing, his expertise lies at the intersection of deep learning and healthcare, specifically focusing on fairness-aware AI and medical image analysis.\n\nFormerly a Research Fellow at the University of Surrey, Tahir led critical work on the OPTIMAM mammography dataset to improve diagnostic equity. He is a passionate advocate for explainable, mathematically grounded AI systems and dedicated to leveraging his UK-based expertise to support Kurdistan’s healthcare and academic advancement.'
     },
     {
       id: 11,
@@ -130,17 +132,19 @@ const Members = () => {
     },
     {
       id: 4,
-      name: 'Dr Badenan Fathulla',
+      name: 'Dr Badenan Ibraheem Fathulla',
       position: 'Consultant Obstetrician & Gynaecologist',
-      image: '',
-      bio: ''
+      image: '/Team/Dr Badenan.jpeg',
+      bio: 'Consultant Obstetrician and Gynaecologist at Royal Free London NHS Foundation Trust and Lead for Postnatal Services.',
+      detail: 'Dr. Badenan Ibraheem Fathulla is a Consultant Obstetrician and Gynaecologist at the Royal Free London NHS Foundation Trust. She serves as Labour Ward Lead, Lead for Postnatal Services, and Lead for Postgraduate Medical Teaching and Education.\n\nDr. Fathulla grew up in Baghdad, Iraq, and graduated from Baghdad Medical School in 1984. Her clinical interests include high-risk pregnancies, gynaecological emergencies, and minimally invasive surgery.\n\nShe was awarded “Top Teacher” by University College Hospital London in recognition of her excellence in medical education. Dr. Fathulla is also a dedicated advocate for women’s health and rights.'
     },
     {
       id: 5,
-      name: 'Dr Dlovan Taha',
+      name: 'Dr Dlovan',
       position: 'General Practitioner',
-      image: '',
-      bio: ''
+      image: '/Team/Dr Dlovan.jpeg',
+      bio: 'General Practitioner with a specialist interest in metabolic health and diabetes management, based in South Wales.',
+      detail: 'Dr Dlovan is a General Practitioner based in South Wales, with a specialist interest in metabolic health and diabetes management. Holding a Postgraduate Diploma in Diabetes from the University of South Wales and an MSc in Diabetes from Cardiff University, they bring an evidence-based approach to complex long-term conditions.\n\nTheir practice is patient-centred, integrating mindfulness and self-awareness to support individuals in understanding and managing their health.\n\nDr Dlovan has also contributed to medical education as a Clinical Teaching Fellow in Neurology and Honorary Lecturer at Cardiff University, and is committed to providing compassionate, high-quality, personalised care.'
     },
     {
       id: 6,
@@ -158,10 +162,11 @@ const Members = () => {
     },
     {
       id: 8,
-      name: 'Dr Sanaria Raouf',
+      name: 'Dr Sanaria. A. Raouf',
       position: 'Consultant Obstetrician & Maternal Medicine',
-      image: '',
-      bio: ''
+      image: '/Team/Dr-Sanaria.jpeg',
+      bio: 'Senior Consultant in Obstetrics and Fetal Medicine at University Hospitals of Derby and Burton NHS Foundation Trust.',
+      detail: 'MBChB, MRCOG, FRCOG\nSenior Consultant in Obstetrics and Fetal Medicine\nUniversity Hospitals of Derby and Burton NHS Foundation Trust.UK DE22-3NE\n\nHas 24 years experience of NHS in UK and 16 years as a consultant and subspecialist in Fetal medicine and prenatal invasive and noninvasive diagnosis \nNational UK Maternity Units Marvel Awardee 2025- for providing outstanding care through complications in pregnancy \nFormer Clinical Director for Obstetrics in the 5th largest Maternity Unit in UK\nEast Midlands Regional lead for Preterm Birth Prevention and Fetal growth Restriction'
     },
     {
       id: 9,
@@ -174,8 +179,9 @@ const Members = () => {
       id: 10,
       name: 'Dr Teshk Nakshbandi',
       position: 'General Practitioner',
-      image: '',
-      bio: ''
+      image: '/Team/Dr Teshk Nakshbandi.png',
+      bio: 'General Practitioner based in rural Herefordshire with interests in exercise medicine, sports injuries, and rehabilitation.',
+      detail: 'I am a General Practitioner based in rural Herefordshire. I graduated from Norwich Medical School in 2011, having previously completed a Pharmacy degree at University College London in 2003. I am originally from Sulaymania, Kurdistan, and was fortunate to spend part of my childhood between Sulaymania and Baghdad.\n\nI am married and the proud father of two beautiful daughters. My professional interests include exercise medicine, sports injuries, and rehabilitation, alongside a strong grounding in general medicine and gastroenterology.\n\nI hope to support KUMA and KSMF to the best of my ability.'
     }
   ];
 
