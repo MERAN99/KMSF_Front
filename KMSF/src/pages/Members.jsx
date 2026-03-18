@@ -101,7 +101,7 @@ const Members = () => {
       id: 11,
       name: 'Dr Zana Hussain',
       position: 'Business Management',
-      image: '',
+      image: '/Team/Mr-Zana-Hussain.jpeg',
       bio: ''
     }
   ];
