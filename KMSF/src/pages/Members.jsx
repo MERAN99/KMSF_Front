@@ -93,7 +93,7 @@ const Members = () => {
       id: 10,
       name: 'Dr Tahir Hassan',
       position: 'Research Fellow in Machine Learning',
-      image: '/Team/Dr-Tahir.jpg',
+      image: '/Team/Dr-Tahir.jpeg',
       bio: 'Senior Lecturer in AI and Data Science at Solent University and Executive Committee member of KSA, specializing in deep learning and healthcare.',
       detail: 'Dr Tahir Hassan is a Senior Lecturer in Artificial Intelligence and Data Science at Solent University and an Executive Committee member of the Kurdistan Scientific Association (KSA). With a PhD in Computing, his expertise lies at the intersection of deep learning and healthcare, specifically focusing on fairness-aware AI and medical image analysis.\n\nFormerly a Research Fellow at the University of Surrey, Tahir led critical work on the OPTIMAM mammography dataset to improve diagnostic equity. He is a passionate advocate for explainable, mathematically grounded AI systems and dedicated to leveraging his UK-based expertise to support Kurdistan’s healthcare and academic advancement.'
     },
