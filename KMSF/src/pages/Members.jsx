@@ -216,7 +216,7 @@ const Members = () => {
           >
             <h3 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">Kurdistan Scientific Association (KSA)</h3>
             <p className="dark:text-gray-400 text-gray-500 max-w-2xl mx-auto">
-              Leading scientific research and academic excellence in Kurdistan
+              Advancing scientific research and academic excellence in Kurdistan
             </p>
           </motion.div>
 
