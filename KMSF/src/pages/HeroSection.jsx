@@ -15,9 +15,9 @@ export default function HeroSection() {
     >
       {/* Background World Map */}
       <img
-        src="/Worldmap.png"
+        src="/worldmap-1.png"
         alt="World Map"
-        className="absolute inset-0 w-full h-full object-cover opacity-10 pointer-events-none select-none"
+        className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none select-none"
       />
 
       {/* Main Content Container */}

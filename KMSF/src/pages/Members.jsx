@@ -18,6 +18,25 @@ const cardVariants = {
 };
 
 const Members = () => {
+  const kmsfMembers = [
+    {
+      id: 1,
+      name: 'Dr Hero Xoshnaw',
+      position: 'Consultant Physician & Chair of KMSF Executive Board',
+      image: '/Team/DrHeroXoshnaw.jpg',
+      bio: 'Consultant Physician and Geriatrician at Royal Surrey NHS Foundation Trust and Chair of the KMSF Executive Board.',
+      detail: 'Dr Hiro Khoshnaw, MD, MA, FRCP, FAcadMEd, is a Consultant Physician and Geriatrician at the Royal Surrey NHS Foundation Trust (RSFT). She has special interest in medical education and she is currently the Director of Medical Education at RSFT.\n\nDr Khoshnaw is also a fellow and Council member of The Academy of Medical Educators (AoME).\n\nDr Khoshnaw has been an active member of the KMSF leadership for many years and is currently the chair of KMSF Executive Board.'
+    },
+    {
+      id: 2,
+      name: 'Tara Tofec',
+      position: 'KMSF Secretary, Company Secretary',
+      image: '/Team/DrTara.jpg',
+      bio: 'Active KMSF-UK member since 2018, organising medical conferences and charitable fundraising initiatives for Kurdish healthcare.',
+      detail: 'Tara Tofec is a Kurdish British professional with a BSc in Chemistry from the University of Salahaddin, Iraq. She has extensive experience in administration, management, and customer service, having held leadership roles including supervisor at Bally Heathrow, Company Secretary at Metropolitan International Service, and Managing Director of Café Sorrento.\n\nSince 2018, she has been an active member of the Kurdistan Medical Scientific Federation (KMSF-UK), contributing to the organization of medical and scientific conferences and seminars. She also organises charitable initiatives, including fundraising events for cancer hospitals in the Kurdistan Region, particularly in Erbil and Sulaymaniyah, demonstrating her strong commitment to community and healthcare support.'
+    }
+  ];
+
   const ksaMembers = [
     {
       id: 1,
@@ -75,22 +94,6 @@ const Members = () => {
     },
     {
       id: 8,
-      name: 'Dr Hero Xoshnaw',
-      position: 'Consultant Physician & Chair of KMSF Executive Board',
-      image: '/Team/DrHeroXoshnaw.jpg',
-      bio: 'Consultant Physician and Geriatrician at Royal Surrey NHS Foundation Trust and Chair of the KMSF Executive Board.',
-      detail: 'Dr Hiro Khoshnaw, MD, MA, FRCP, FAcadMEd, is a Consultant Physician and Geriatrician at the Royal Surrey NHS Foundation Trust (RSFT). She has special interest in medical education and she is currently the Director of Medical Education at RSFT.\n\nDr Khoshnaw is also a fellow and Council member of The Academy of Medical Educators (AoME).\n\nDr Khoshnaw has been an active member of the KMSF leadership for many years and is currently the chair of KMSF Executive Board.'
-    },
-    {
-      id: 9,
-      name: 'Tara Tofec',
-      position: 'KMSF Secretary, Company Secretary',
-      image: '/Team/DrTara.jpg',
-      bio: 'Active KMSF-UK member since 2018, organising medical conferences and charitable fundraising initiatives for Kurdish healthcare.',
-      detail: 'Tara Tofec is a Kurdish British professional with a BSc in Chemistry from the University of Salahaddin, Iraq. She has extensive experience in administration, management, and customer service, having held leadership roles including supervisor at Bally Heathrow, Company Secretary at Metropolitan International Service, and Managing Director of Café Sorrento.\n\nSince 2018, she has been an active member of the Kurdistan Medical Scientific Federation (KMSF-UK), contributing to the organization of medical and scientific conferences and seminars. She also organises charitable initiatives, including fundraising events for cancer hospitals in the Kurdistan Region, particularly in Erbil and Sulaymaniyah, demonstrating her strong commitment to community and healthcare support.'
-    },
-    {
-      id: 10,
       name: 'Dr Tahir Hassan',
       position: 'Research Fellow in Machine Learning',
       image: '/Team/Dr-Tahir.jpeg',
@@ -98,7 +101,7 @@ const Members = () => {
       detail: 'Dr Tahir Hassan is a Senior Lecturer in Artificial Intelligence and Data Science at Solent University and an Executive Committee member of the Kurdistan Scientific Association (KSA). With a PhD in Computing, his expertise lies at the intersection of deep learning and healthcare, specifically focusing on fairness-aware AI and medical image analysis.\n\nFormerly a Research Fellow at the University of Surrey, Tahir led critical work on the OPTIMAM mammography dataset to improve diagnostic equity. He is a passionate advocate for explainable, mathematically grounded AI systems and dedicated to leveraging his UK-based expertise to support Kurdistan’s healthcare and academic advancement.'
     },
     {
-      id: 11,
+      id: 9,
       name: 'Dr Zana Hussain',
       position: 'Business Management',
       image: '/Team/Mr-Zana-Hussain.jpeg',
@@ -201,9 +204,58 @@ const Members = () => {
             Meet Our <span className="bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">Members</span>
           </h2>
           <p className="text-xl dark:text-gray-300 text-gray-600 max-w-3xl mx-auto">
-            Our dedicated team of professionals from KSA and KuMA working together to advance Kurdish healthcare and scientific excellence.
+            Our dedicated team of professionals from KMSF, KSA and KuMA working together to advance Kurdish healthcare and scientific excellence.
           </p>
         </motion.div>
+
+        {/* KMSF Members */}
+        <div className="mb-16">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-12"
+          >
+            <h3 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">Kurdistan Medical Scientific Federation (KMSF)</h3>
+            <p className="dark:text-gray-400 text-gray-500 max-w-2xl mx-auto">
+              The umbrella organization coordinating medical and scientific excellence
+            </p>
+          </motion.div>
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
+          >
+            {kmsfMembers.map((member) => (
+              <motion.div
+                key={member.id}
+                variants={cardVariants}
+                className="group relative dark:bg-gray-800 bg-white dark:bg-opacity-50 bg-opacity-100 overflow-hidden shadow-xl hover:shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 transition-all duration-500 flex flex-col border dark:border-gray-700/50 border-gray-200"
+                whileHover={{ y: -10 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                <div className="relative w-full h-48 overflow-hidden flex-shrink-0">
+                  <img src={member.image || '/Team/user.png'} alt={member.name} className="w-full h-full object-cover object-[center_20%] filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
+                </div>
+                <div className="relative p-6 flex flex-col flex-grow">
+                  <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
+                  <p className="text-[#C8A441] font-medium mb-3 text-sm">{member.position}</p>
+                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100 mb-4 flex-grow">{member.bio}</p>
+                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
+                  <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                    <div className="w-3 h-3 bg-[#C8A441]"></div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#C8A441]/50 transition-all duration-300 pointer-events-none"></div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
 
         {/* KSA Members */}
         <div className="mb-16">
