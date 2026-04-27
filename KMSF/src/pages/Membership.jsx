@@ -694,10 +694,9 @@ const Membership = () => {
                     </div>
                   </div>
 
-                  {/* Speciality */}
                   <div>
-                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Speciality *</label>
-                    <input type="text" name="speciality" value={formData.speciality} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Your medical speciality e.g. Cardiology" />
+                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Speciality <span className="text-gray-400 font-normal text-xs">(Optional)</span></label>
+                    <input type="text" name="speciality" value={formData.speciality} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Your speciality" />
                   </div>
 
                   {/* Telephone */}

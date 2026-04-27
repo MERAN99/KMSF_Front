@@ -21,8 +21,8 @@ const Members = () => {
   const kmsfMembers = [
     {
       id: 1,
-      name: 'Dr Hero Xoshnaw',
-      position: 'Consultant Physician & Chair of KMSF Executive Board',
+      name: 'Dr Hiro Khoshnaw',
+      position: 'Consultant Physician and Geriatrician and Chair of KMSF',
       image: '/Team/DrHeroXoshnaw.jpg',
       bio: 'Consultant Physician and Geriatrician at Royal Surrey NHS Foundation Trust and Chair of the KMSF Executive Board.',
       detail: 'Dr Hiro Khoshnaw, MD, MA, FRCP, FAcadMEd, is a Consultant Physician and Geriatrician at the Royal Surrey NHS Foundation Trust (RSFT). She has special interest in medical education and she is currently the Director of Medical Education at RSFT.\n\nDr Khoshnaw is also a fellow and Council member of The Academy of Medical Educators (AoME).\n\nDr Khoshnaw has been an active member of the KMSF leadership for many years and is currently the chair of KMSF Executive Board.'
@@ -228,13 +228,13 @@ const Members = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
-            className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
+            className="flex flex-wrap justify-center gap-8"
           >
             {kmsfMembers.map((member) => (
               <motion.div
                 key={member.id}
                 variants={cardVariants}
-                className="group relative dark:bg-gray-800 bg-white dark:bg-opacity-50 bg-opacity-100 overflow-hidden shadow-xl hover:shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 transition-all duration-500 flex flex-col border dark:border-gray-700/50 border-gray-200"
+                className="group relative dark:bg-gray-800 bg-white dark:bg-opacity-50 bg-opacity-100 overflow-hidden shadow-xl hover:shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 transition-all duration-500 flex flex-col border dark:border-gray-700/50 border-gray-200 w-[280px]"
                 whileHover={{ y: -10 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
@@ -245,7 +245,7 @@ const Members = () => {
                 <div className="relative p-6 flex flex-col flex-grow">
                   <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
                   <p className="text-[#C8A441] font-medium mb-3 text-sm">{member.position}</p>
-                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100 mb-4 flex-grow">{member.bio}</p>
+                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed mb-4 flex-grow">{member.bio}</p>
                   <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
                   <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
                     <div className="w-3 h-3 bg-[#C8A441]"></div>
@@ -294,7 +294,7 @@ const Members = () => {
                 <div className="relative p-6 flex flex-col flex-grow">
                   <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
                   <p className="text-[#C8A441] font-medium mb-3 text-sm">{member.position}</p>
-                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100 mb-4 flex-grow">{member.bio}</p>
+                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed mb-4 flex-grow">{member.bio}</p>
                   <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
                   <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
                     <div className="w-3 h-3 bg-[#C8A441]"></div>
@@ -343,7 +343,7 @@ const Members = () => {
                 <div className="relative p-6 flex flex-col flex-grow">
                   <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
                   <p className="text-[#C8A441] font-medium mb-3 text-sm">{member.position}</p>
-                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 delay-100 mb-4 flex-grow">{member.bio}</p>
+                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed mb-4 flex-grow">{member.bio}</p>
                   <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
                   <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
                     <div className="w-3 h-3 bg-[#C8A441]"></div>

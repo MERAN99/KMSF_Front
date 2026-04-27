@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Users, Stethoscope, GraduationCap, CreditCard, DollarSign, Check } from 'lucide-react';
+import { Heart, Users, Stethoscope, GraduationCap, CreditCard, Check } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useCreateDonationSessionMutation, useConfirmDonationSessionMutation } from '../store/api/apiSlice';
 
@@ -44,7 +44,7 @@ const DonationPage = () => {
     {
       icon: <GraduationCap className="w-8 h-8" />,
       title: 'Education & Training',
-      description: 'Fund educational programs and training for medical professionals and students.',
+      description: 'Fund educational programmes, workshops, and training for medical professionals and students.',
       color: 'from-green-600 to-green-500'
     },
     {
@@ -56,17 +56,12 @@ const DonationPage = () => {
     {
       icon: <Heart className="w-8 h-8" />,
       title: 'Research & Innovation',
-      description: 'Advance medical research and innovative healthcare solutions in the region.',
+      description: 'Advancing medical research, scientific research and innovation.',
       color: 'from-red-600 to-red-500'
     }
   ];
 
-  const achievements = [
-    { number: '10,000+', label: 'Lives Impacted' },
-    { number: '50+', label: 'Healthcare Projects' },
-    { number: '25', label: 'Partner Institutions' },
-    { number: '$2M+', label: 'Funds Raised' }
-  ];
+
 
   const handleDonate = async () => {
     setErrorMsg('');
@@ -79,7 +74,7 @@ const DonationPage = () => {
     }
 
     try {
-      const response = await createDonationSession({ amount, currency: 'USD' }).unwrap();
+      const response = await createDonationSession({ amount, currency: 'GBP' }).unwrap();
       if (response.url) {
         window.location.href = response.url;
       }
@@ -207,7 +202,7 @@ const DonationPage = () => {
 
                 {/* Amount Selection */}
                 <div className="mb-8">
-                  <label className="block dark:text-gray-300 text-gray-700 font-semibold mb-4">Select Amount (USD)</label>
+                  <label className="block dark:text-gray-300 text-gray-700 font-semibold mb-4">Select Amount (GBP)</label>
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     {predefinedAmounts.map((amount) => (
                       <button
@@ -221,13 +216,13 @@ const DonationPage = () => {
                           : 'dark:bg-gray-700 bg-gray-100 dark:text-gray-300 text-gray-700 dark:hover:bg-gray-600 hover:bg-gray-200'
                           }`}
                       >
-                        ${amount}
+                        £{amount}
                       </button>
                     ))}
                   </div>
 
                   <div className="relative">
-                    <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">£</span>
                     <input
                       type="number"
                       placeholder="Custom amount"
@@ -249,7 +244,7 @@ const DonationPage = () => {
                   disabled={isLoading}
                   className="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white py-5 px-8 font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-yellow-500/50 disabled:opacity-75 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 'Preparing Checkout...' : `Donate $${customAmount || selectedAmount} ${selectedFrequency === 'monthly' ? '/ Month' : 'Now'}`}
+                  {isLoading ? 'Preparing Checkout...' : `Donate £${customAmount || selectedAmount} ${selectedFrequency === 'monthly' ? '/ Month' : 'Now'}`}
                 </motion.button>
 
                 <p className="dark:text-gray-400 text-gray-500 text-sm text-center mt-6">
@@ -319,22 +314,6 @@ const DonationPage = () => {
               </div>
             </div>
 
-            {/* Achievement Stats */}
-            <div className="dark:bg-gray-800 bg-white border dark:border-gray-700/50 border-gray-200 p-6 shadow-md">
-              <h4 className="text-xl font-bold dark:text-white text-gray-900 mb-6">Our Achievements</h4>
-              <div className="grid grid-cols-2 gap-4">
-                {achievements.map((achievement, index) => (
-                  <div key={index} className="text-center">
-                    <div className="text-2xl font-bold text-yellow-500 mb-1">
-                      {achievement.number}
-                    </div>
-                    <div className="text-xs dark:text-gray-400 text-gray-500">
-                      {achievement.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </motion.div>
         </div>
       </div>
