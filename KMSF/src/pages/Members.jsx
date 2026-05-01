@@ -43,14 +43,16 @@ const Members = () => {
       name: 'Dr Sayah Saied',
       position: 'Chair - Atomic Physicist',
       image: '/Team/Dr-Saya.jpeg',
-      bio: ''
+      bio: 'One of the UK\'s most experienced specialists in surface analysis, with over 65 published papers and a distinguished career at Aston University spanning nearly three decades.',
+      detail: 'Sayah Othman Saied\n\nOn coming from Kurdistan in 1976 with a B.Sc in Physics, she gained an M.Sc. and a Ph.D. Following the Ph.D. she was appointed to different roles and then employed at Aston in 1984 where she stayed until retirement in 2011.\n\nAt Aston she managed the University\'s surface analysis facilities in addition to her teaching. She ranked as one of the most experienced specialists in surface analysis in the UK and has published over 65 papers in quality journals.\n\nShe supervised research students and has held EPSRC grants. She has provided support to students and colleagues, being particularly active in the Kurdish community.\n\nFrom 2011 to 2024 she was a director of Midland Surface Analysis where she was responsible for solutions of industrial problems for UK and international companies.'
     },
     {
       id: 2,
       name: 'Taban Hawezy',
       position: 'Secretary - Data Analyst',
       image: '/Team/Taban.jpg',
-      bio: ''
+      bio: 'KSA Secretary and Data Consultant in financial services, passionate about empowering women in STEM and guiding the next generation of Kurdish talent.',
+      detail: 'Taban is currently serving as the KSA Secretary. As a Kurd based in the Midlands, she is particularly motivated to contribute to a nation-wide community that supports and connects Kurdish academics and professionals. In her role, she helps facilitate initiatives that promote collaboration, knowledge-sharing, and engagement both within the KSA and across the KMSF.\n\nTaban holds a BSc in Economics from SOAS, University of London, and an MSc in Data Analytics from Northumbria University. Professionally, she works as a Data Consultant within the financial services sector, applying data-driven approaches to solve a variety of digital transformation challenges. She is especially passionate about empowering women in the workplace, particularly within STEM fields, and supporting students and early-career professionals as they navigate their paths into industry. She is keen to contribute to initiatives that guide and inspire the next generation of Kurdish talent as part of KMSF. Outside of her professional work, she enjoys watercolour painting, surfing, and travelling.'
     },
     {
       id: 3,
@@ -114,7 +116,7 @@ const Members = () => {
       id: 1,
       name: 'Zhyar Said',
       position: 'Chair - Pharmacist, Lecturer & Director',
-      image: '/Team/Zhyar.jpg',
+      image: '/Team/Zhyar.jpeg',
       bio: 'Chair of KuMA and founder of RevisePharma, the UK\'s largest private training company for foundation year pharmacists.',
       detail: 'Zhyar Said is the chair of KuMA but also runs the largest private training company in the UK for foundation year pharmacists, RevisePharma. After completing his MPharm at UEA, Zhyar pivoted into becoming a senior healthcare analyst, followed by becoming a senior lecturer all while building his own companies.\n\nAs well as RevisePharma, Zhyar runs a clinical services company, CliniTools, and also founded the charity, The PharmAssists\' Project where money is invested back into the local community to help those in need.\n\nZhyar is from Slemani, Kurdistan, and came to the UK at 10 months old. He is extremely proud of his Kurdish roots and you can always count on him to start the halperke line.'
     },
@@ -130,8 +132,9 @@ const Members = () => {
       id: 3,
       name: 'Yar Ameen',
       position: 'Treasurer - Senior Paralegal',
-      image: '',
-      bio: ''
+      image: '/Team/YarAmeen.jpeg',
+      bio: 'Manager at Admiral Law in Cardiff, leading a team of trainee paralegals specialising in personal injury and negligence, with international legal operations experience in Delhi.',
+      detail: 'Yar Ameen is a Manager at Admiral Law in Cardiff, leading a team of trainee paralegals specialising in personal injury and negligence. She drives high standards in case handling, combining technical expertise with a strong focus on performance, client outcomes, and team development, working closely with medico-legal experts on complex reports.\n\nIn addition to her core role, Yar leads a strategic outsourcing project in Delhi, with extensive experience in establishing and scaling legal operations in an international market.\n\nBorn in Iraq and raised between Germany and the UK, Yar holds a BSc in Pharmaceutical Sciences from the University of Greenwich. She is currently studying with CILEX and has prior experience at Lloyds Banking Group and within Dubai\'s real estate sector, strengthening her commercial awareness and leadership capability.\n\nOutside of work, Yar is a keen long-distance runner and actively engages in community initiatives, alongside training in Muay Thai and boxing.'
     },
     {
       id: 4,
@@ -154,14 +157,16 @@ const Members = () => {
       name: 'Dr Firiad Hiwaizi',
       position: 'Consultant Haematologist',
       image: '',
-      bio: ''
+      bio: 'Consultant Haematologist with a long career spanning the UK and Iraq, now focused on charity work and postgraduate teaching in Kurdistan.',
+      detail: 'Dr Firiad Hiwaizi started his career as a doctor in 1966 after graduating from Baghdad Medical College. He worked his way to up to a senior position serving a small town for a year, as well as serving in the army for a year and a half, staying in Iraq until 1972.\n\nAt the time of peace between Kurdish liberation movement and Iraqi government, Dr Hiwaizi got a scholarship from the government to get a higher degree and specialise in haematology and attained his MRCP in 1976. He then started working in haematology mainly at St George’s, St Helier’s and the Royal Marsden hospitals.\n\nLater on in his career, he had his own private lab in London until retiring in 2020. Dr Hiwaizi’s main target now is charity work and taking part in haematology teaching in Kurdistan for postgraduate doctors and as examiner.\n\nDr Hiwaizi was born in the village of Tobzawa, completing primary and middle schools in Koya, and secondary school in Baghdad before starting his medical training in 1960 in Baghdad. Dr Hiwaizi is still taking part in Kurdish medical activities from a scientific and academic stance across Kurdistan and Europe; especially the UK.'
     },
     {
       id: 7,
       name: 'Dr Hama Attar',
       position: 'Consultant Urological Surgeon',
-      image: '',
-      bio: ''
+      image: '/Team/Dr-HamaAttar.jpeg',
+      bio: 'Consultant Urological Surgeon and Honorary Senior Clinical Lecturer at Imperial College, Head of Urology at Chelsea and Westminster Hospital, and award-winning clinician recognised for outstanding patient care since 2018.',
+      detail: 'Mr Attar is a Consultant Urological Surgeon and an Honorary Senior Clinical Lecturer at Imperial College School of Medicine. He is the Head of the Urology Department at Chelsea and Westminster Hospital in Central London, a position he has held for the last 8 years. He has regularly been recognised for the provision of an outstandingly high level of patient care and has been awarded the Certificate of Excellence in Patient Care on a yearly basis since 2018.\n\nMr Attar is one of the lead urologists in London and runs a busy practice both in the NHS and the private sectors. He has a high reputation as a clinician, a manager and as a trainer of students and trainees.\n\nMr Attar specialises in general and diagnostic urology, with a primary focus on prostate cancer and bladder cancer diagnostics. He has a subspecialist interest in the endourological management of complex kidney stones, utilising minimally invasive techniques and advanced laser technology.\n\nMr Attar completed his higher surgical training in London, culminating in a final year at the prestigious University College London Hospital. He also undertook a research post in Neuro-Urology at the Spinal Injury Unit of the Royal National Orthopaedic Hospital in Stanmore, where he gained significant experience in managing conditions such as kidney and bladder stones, bladder overactivity, urinary incontinence, recurrent infections, and erectile dysfunction.\n\nBeing academically active, Mr Attar has published over 30 scientific articles in various urological journals and has presented his research at numerous international and national conferences. He is the Urology Firm Lead for Imperial Medical students. His dedication to both clinical excellence and academic contribution underscores his commitment to advancing the field of urology.'
     },
     {
       id: 8,
@@ -175,7 +180,7 @@ const Members = () => {
       id: 9,
       name: 'Shilan Ghafoor',
       position: 'Pharmacist, Healthcare Policy Advisor',
-      image: '',
+      image: '/Team/Shilan.jpeg',
       bio: ''
     },
     {
