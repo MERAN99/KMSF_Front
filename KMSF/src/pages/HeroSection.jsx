@@ -62,25 +62,53 @@ export default function HeroSection() {
 
       </div>
 
-      {/* Scroll Down Triangle */}
+      {/* Scroll Down - Centered Bottom */}
       <motion.div
-        className="absolute bottom-0 right-0 w-46 h-46 md:w-60 md:h-60 flex items-center justify-center text-white text-lg md:text-xl font-bold"
-        style={{ opacity, scale }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 cursor-pointer select-none"
+        style={{ opacity }}
+        onClick={() => window.scrollBy({ top: window.innerHeight, behavior: 'smooth' })}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441] to-[#F2AE02]" style={{ clipPath: 'polygon(100% 100%, 100% 0%, 0% 100%)' }}></div>
+        {/* Label */}
         <motion.span
-          className="absolute flex-col items-center justify-center left-28 top-20 md:left-32 md:top-30 z-10"
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          className="text-xs font-semibold tracking-[0.25em] uppercase text-[#F2AE02]"
+          animate={{ opacity: [0.6, 1, 0.6] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         >
-          <div>
-            Scroll Down
-          </div>
-
-          <h1>
-            <svg className="w-6 h-6 mx-auto mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-          </h1>
+          Scroll Down
         </motion.span>
+
+        {/* Glowing ring + chevrons */}
+        <div className="relative flex items-center justify-center">
+          {/* Outer pulsing ring */}
+          <motion.div
+            className="absolute w-14 h-14 rounded-full border border-[#C8A441]/40"
+            animate={{ scale: [1, 1.5, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
+          />
+          {/* Inner ring */}
+          <div className="w-10 h-10 rounded-full border border-[#C8A441]/60 flex items-center justify-center">
+            {/* Stacked animated chevrons */}
+            <div className="flex flex-col items-center -space-y-2">
+              {[0, 0.2, 0.4].map((delay, i) => (
+                <motion.svg
+                  key={i}
+                  className="w-4 h-4"
+                  style={{ opacity: 1 - i * 0.25 }}
+                  fill="none"
+                  stroke="#F2AE02"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  viewBox="0 0 24 24"
+                  animate={{ y: [0, 5, 0], opacity: [0.4 + (2 - i) * 0.2, 1, 0.4 + (2 - i) * 0.2] }}
+                  transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay }}
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </motion.svg>
+              ))}
+            </div>
+          </div>
+        </div>
       </motion.div>
 
       {/* Decorative Elements */}
