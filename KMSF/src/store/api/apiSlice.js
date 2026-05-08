@@ -160,6 +160,13 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['Donation'],
         }),
+        submitContactForm: builder.mutation({
+            query: (formData) => ({
+                url: '/contact',
+                method: 'POST',
+                body: formData,
+            }),
+        }),
         changePassword: builder.mutation({
             query: (passwords) => ({
                 url: '/change-password',
@@ -246,6 +253,7 @@ export const {
     useGetAdminDonationsQuery,
     useGetDonationMessagesQuery,
     useToggleDonationMessageMutation,
+    useSubmitContactFormMutation,
     useGetProfileQuery,
     useUpdateProfileMutation,
     useRequestEmailChangeMutation,

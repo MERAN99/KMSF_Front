@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linkedin, Instagram } from 'lucide-react';
+import { Linkedin, Instagram, Facebook } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -44,6 +44,10 @@ const Footer = () => {
                 <a href="https://www.instagram.com/thekmsf?igsh=MXBhMGFwbTk5YndmdQ%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-amber-500 transition-colors">
                   <Instagram size={18} />
                   <span>Instagram</span>
+                </a>
+                <a href="https://www.facebook.com/share/18NKBW5dzY/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-amber-500 transition-colors">
+                  <Facebook size={18} />
+                  <span>Facebook</span>
                 </a>
               </div>
               <p className="pt-2">📍 London, United Kingdom</p>

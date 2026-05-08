@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Mail, MapPin, Send, Clock, Users, Linkedin, Instagram } from 'lucide-react';
+import { Mail, MapPin, Send, Clock, Users, Linkedin, Instagram, Facebook, Loader2 } from 'lucide-react';
+import { useSubmitContactFormMutation } from '../store/api/apiSlice';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,9 @@ const Contact = () => {
     message: ''
   });
 
+  const [submitContactForm, { isLoading }] = useSubmitContactFormMutation();
+  const [status, setStatus] = useState({ type: '', message: '' });
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -16,10 +20,17 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    setStatus({ type: '', message: '' });
+    
+    try {
+      await submitContactForm(formData).unwrap();
+      setStatus({ type: 'success', message: 'Your message has been sent successfully! We will get back to you soon.' });
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      setStatus({ type: 'error', message: err.data?.message || 'Failed to send message. Please try again.' });
+    }
   };
 
   return (
@@ -86,6 +97,10 @@ const Contact = () => {
                     <Instagram size={22} className="text-[#C8A441]" />
                     <span>Instagram</span>
                   </a>
+                  <a href="https://www.facebook.com/share/18NKBW5dzY/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 dark:text-gray-300 text-gray-600 hover:text-amber-500 dark:hover:text-amber-500 transition-colors">
+                    <Facebook size={22} className="text-[#C8A441]" />
+                    <span>Facebook</span>
+                  </a>
                 </div>
               </div>
 
@@ -116,6 +131,13 @@ const Contact = () => {
           {/* Contact Form */}
           <div className="dark:bg-gray-800 bg-white dark:bg-opacity-50 p-8 shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 border dark:border-gray-700/50 border-gray-200">
             <h3 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">Send us a Message</h3>
+            
+            {status.message && (
+              <div className={`mb-6 p-4 text-sm ${status.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
+                {status.message}
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
@@ -189,10 +211,14 @@ const Contact = () => {
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-white py-4 px-6 font-semibold hover:from-[#C8A441] hover:to-[#F2AE02] transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-white py-4 px-6 font-semibold hover:from-[#C8A441] hover:to-[#F2AE02] transition-all duration-300 flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Send Message
-                <Send className="w-5 h-5" />
+                {isLoading ? (
+                  <>Sending... <Loader2 className="w-5 h-5 animate-spin" /></>
+                ) : (
+                  <>Send Message <Send className="w-5 h-5" /></>
+                )}
               </button>
             </form>
           </div>
