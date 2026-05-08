@@ -1,4 +1,5 @@
 import React from 'react';
+import { Linkedin, Instagram } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -32,11 +33,20 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">Contact Us</h4>
-            <div className="space-y-2 dark:text-gray-400 text-gray-500 text-sm">
+            <h4 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">Connect With Us</h4>
+            <div className="space-y-3 dark:text-gray-400 text-gray-500 text-sm">
               <p>📧 info@kmsf.org</p>
-              <p>📞 +44 20 1234 5678</p>
-              <p>📍 London, United Kingdom</p>
+              <div className="flex flex-col space-y-3 pt-2">
+                <a href="https://uk.linkedin.com/company/kurdistan-medical-and-scientific-federation-kmsf-uk" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-amber-500 transition-colors">
+                  <Linkedin size={18} />
+                  <span>LinkedIn</span>
+                </a>
+                <a href="https://www.instagram.com/thekmsf?igsh=MXBhMGFwbTk5YndmdQ%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-amber-500 transition-colors">
+                  <Instagram size={18} />
+                  <span>Instagram</span>
+                </a>
+              </div>
+              <p className="pt-2">📍 London, United Kingdom</p>
             </div>
           </div>
         </div>

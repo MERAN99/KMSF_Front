@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { selectCurrentUser } from '../store/slices/authSlice';
@@ -13,11 +13,12 @@ import {
     useDeleteMemberMutation,
     useNotifyEventMutation,
     useGetAdminStatsQuery,
-    useGetAdminDonationsQuery
+    useGetAdminDonationsQuery,
+    useToggleDonationMessageMutation
 } from '../store/api/apiSlice';
 import {
     Users, Calendar, Plus, Edit, Trash2, X, CheckCircle,
-    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign
+    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign, Tag, Eye, EyeOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -30,6 +31,23 @@ const AdminDashboard = () => {
     const [activeTab, setActiveTab] = useState('dashboard');
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
+
+    // Multi-image state for the event form
+    const [existingImages, setExistingImages] = useState([]); // URLs already saved (edit mode)
+    const [newImageFiles, setNewImageFiles] = useState([]);   // File objects to upload
+    const [newImagePreviews, setNewImagePreviews] = useState([]); // Data URLs for preview
+    const imageInputRef = useRef(null);
+
+    // When editing opens, seed existing images
+    useEffect(() => {
+        if (editingEvent) {
+            setExistingImages(editingEvent.images || (editingEvent.image ? [editingEvent.image] : []));
+        } else {
+            setExistingImages([]);
+        }
+        setNewImageFiles([]);
+        setNewImagePreviews([]);
+    }, [editingEvent, isEventModalOpen]);
 
     // Pagination & Search specific to Users tab
     const [page, setPage] = useState(1);
@@ -50,6 +68,7 @@ const AdminDashboard = () => {
     const { data: usersData, isLoading: usersLoading } = useGetAllUsersQuery({ page, limit, search: debouncedSearch });
     const { data: eventsData, isLoading: eventsLoading } = useAdminGetEventsQuery();
     const { data: donationsData, isLoading: donationsLoading } = useGetAdminDonationsQuery();
+    const [toggleDonationMsg] = useToggleDonationMessageMutation();
 
     const [createEvent] = useAdminCreateEventMutation();
     const [updateEvent] = useAdminUpdateEventMutation();
@@ -67,18 +86,29 @@ const AdminDashboard = () => {
     const handleCreateEvent = async (e) => {
         e.preventDefault();
         const form = e.target;
-        const formData = new FormData(form);
+        const formData = new FormData();
 
+        // Basic fields
+        formData.set('title', form.title.value);
+        formData.set('description', form.description.value);
+        formData.set('date', form.date.value);
+        formData.set('time', form.time.value);
+        formData.set('location', form.location.value);
+        formData.set('category', form.category.value);
+
+        // Prices
         const prices = [
-            { type: 'Student', amount: formData.get('priceStudent') },
-            { type: 'Member', amount: formData.get('priceMember') },
-            { type: 'Non-member', amount: formData.get('priceNonMember') }
+            { type: 'Student', amount: form.priceStudent.value },
+            { type: 'Member', amount: form.priceMember.value },
+            { type: 'Non-member', amount: form.priceNonMember.value },
         ];
         formData.set('prices', JSON.stringify(prices));
 
-        formData.delete('priceStudent');
-        formData.delete('priceMember');
-        formData.delete('priceNonMember');
+        // Existing images to keep (edit mode)
+        formData.set('existingImages', JSON.stringify(existingImages));
+
+        // New image files to upload
+        newImageFiles.forEach(file => formData.append('images', file));
 
         try {
             if (editingEvent) {
@@ -91,6 +121,25 @@ const AdminDashboard = () => {
         } catch (err) {
             console.error('Failed to save event:', err);
         }
+    };
+
+    const handleImageFilesSelected = (e) => {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+        const previews = files.map(f => URL.createObjectURL(f));
+        setNewImageFiles(prev => [...prev, ...files]);
+        setNewImagePreviews(prev => [...prev, ...previews]);
+        // Reset input so same file can be added again if needed
+        if (imageInputRef.current) imageInputRef.current.value = '';
+    };
+
+    const removeExistingImage = (idx) => {
+        setExistingImages(prev => prev.filter((_, i) => i !== idx));
+    };
+
+    const removeNewImage = (idx) => {
+        setNewImageFiles(prev => prev.filter((_, i) => i !== idx));
+        setNewImagePreviews(prev => prev.filter((_, i) => i !== idx));
     };
 
     const handleDeleteEvent = async (id) => {
@@ -555,6 +604,7 @@ const AdminDashboard = () => {
                                                 <th className="px-6 py-4 font-semibold">Date</th>
                                                 <th className="px-6 py-4 font-semibold">Donor</th>
                                                 <th className="px-6 py-4 font-semibold">Amount</th>
+                                                <th className="px-6 py-4 font-semibold">Message</th>
                                                 <th className="px-6 py-4 font-semibold">Status</th>
                                             </tr>
                                         </thead>
@@ -581,6 +631,31 @@ const AdminDashboard = () => {
                                                     </td>
                                                     <td className="px-6 py-4 font-bold text-green-500">
                                                         {d.currency === 'USD' ? '$' : d.currency === 'GBP' ? '£' : ''}{d.amount.toFixed(2)}
+                                                    </td>
+                                                    <td className="px-6 py-4 max-w-xs">
+                                                        {d.message ? (
+                                                            <div className="space-y-2">
+                                                                <p className="text-sm dark:text-gray-300 text-gray-600 italic line-clamp-2 leading-relaxed">
+                                                                    "{d.message}"
+                                                                </p>
+                                                                <button
+                                                                    onClick={() => toggleDonationMsg(d._id)}
+                                                                    title={d.showPublicly ? 'Click to hide from public page' : 'Click to feature on public page'}
+                                                                    className={`flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full border transition-all duration-200 ${
+                                                                        d.showPublicly
+                                                                            ? 'bg-green-500/15 text-green-400 border-green-500/30 hover:bg-red-500/15 hover:text-red-400 hover:border-red-500/30'
+                                                                            : 'bg-gray-700/50 text-gray-400 border-gray-600/50 hover:bg-green-500/15 hover:text-green-400 hover:border-green-500/30'
+                                                                    }`}
+                                                                >
+                                                                    {d.showPublicly
+                                                                        ? <><Eye size={12} /> Featured</>
+                                                                        : <><EyeOff size={12} /> Hidden</>
+                                                                    }
+                                                                </button>
+                                                            </div>
+                                                        ) : (
+                                                            <span className="text-xs dark:text-gray-600 text-gray-400">—</span>
+                                                        )}
                                                     </td>
                                                     <td className="px-6 py-4">
                                                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${d.paymentStatus === 'completed' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
@@ -631,13 +706,67 @@ const AdminDashboard = () => {
                                         <input name="title" defaultValue={editingEvent?.title} required className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
                                     </div>
                                     <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-400 mb-2">Event Image</label>
-                                        <div className="relative border-2 border-dashed border-gray-700 hover:border-amber-500/50 rounded-lg p-4 bg-gray-800/50 text-center transition-colors">
-                                            <input type="file" name="image" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                                            <div className="text-amber-500 mb-2"><Plus size={24} className="mx-auto" /></div>
-                                            <span className="text-sm text-gray-400">Click to upload or drag and drop</span>
+                                        <label className="block text-sm font-medium text-gray-400 mb-2">Event Images <span className="text-gray-500 text-xs">(up to 10)</span></label>
+
+                                        {/* Existing saved images (edit mode) */}
+                                        {existingImages.length > 0 && (
+                                            <div className="mb-3">
+                                                <p className="text-xs text-gray-500 mb-2">Saved images — click ✕ to remove:</p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {existingImages.map((url, idx) => (
+                                                        <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden group">
+                                                            <img src={url} alt="" className="w-full h-full object-cover" />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeExistingImage(idx)}
+                                                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                                                            >
+                                                                <X size={16} className="text-red-400" />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* New image previews */}
+                                        {newImagePreviews.length > 0 && (
+                                            <div className="mb-3">
+                                                <p className="text-xs text-gray-500 mb-2">New images to upload:</p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {newImagePreviews.map((url, idx) => (
+                                                        <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden group">
+                                                            <img src={url} alt="" className="w-full h-full object-cover" />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeNewImage(idx)}
+                                                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                                                            >
+                                                                <X size={16} className="text-red-400" />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Upload button */}
+                                        <div
+                                            className="relative border-2 border-dashed border-gray-700 hover:border-amber-500/50 rounded-lg p-4 bg-gray-800/50 text-center transition-colors cursor-pointer"
+                                            onClick={() => imageInputRef.current?.click()}
+                                        >
+                                            <input
+                                                ref={imageInputRef}
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                                className="hidden"
+                                                onChange={handleImageFilesSelected}
+                                            />
+                                            <div className="text-amber-500 mb-1"><Plus size={22} className="mx-auto" /></div>
+                                            <span className="text-sm text-gray-400">Click to add images (multiple allowed)</span>
+                                            <p className="text-xs text-gray-600 mt-0.5">{existingImages.length + newImagePreviews.length} / 10 selected</p>
                                         </div>
-                                        {editingEvent?.image && <p className="mt-2 text-xs text-amber-500/70 overflow-hidden text-ellipsis whitespace-nowrap">Current: {editingEvent.image}</p>}
                                     </div>
                                     <div className="md:col-span-2">
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Description</label>

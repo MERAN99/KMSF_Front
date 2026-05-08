@@ -107,7 +107,8 @@ const Members = () => {
       name: 'Dr Zana Hussain',
       position: 'Business Management',
       image: '/Team/Mr-Zana-Hussain.jpeg',
-      bio: ''
+      bio: 'Education leader in the UK with a distinguished career spanning government colleges and private institutions across London and Essex, committed to advancing learning and community empowerment for Kurds.',
+      detail: 'Zana Hussain is an education leader in the UK who worked as Director at Croydon College, a government college, from 2003 to 2010, then moved to go solo serving as Director and Principal of Excel College and Fairfield Academy since 2012.\n\nWith a strong commitment to advancing learning, professional development, and community empowerment — especially for Kurds — he has played a key role in shaping high‑quality educational pathways for diverse learners across London and Essex.'
     }
   ];
 
@@ -156,7 +157,7 @@ const Members = () => {
       id: 6,
       name: 'Dr Firiad Hiwaizi',
       position: 'Consultant Haematologist',
-      image: '',
+      image: '/Team/Dr-Fryad.jpeg',
       bio: 'Consultant Haematologist with a long career spanning the UK and Iraq, now focused on charity work and postgraduate teaching in Kurdistan.',
       detail: 'Dr Firiad Hiwaizi started his career as a doctor in 1966 after graduating from Baghdad Medical College. He worked his way to up to a senior position serving a small town for a year, as well as serving in the army for a year and a half, staying in Iraq until 1972.\n\nAt the time of peace between Kurdish liberation movement and Iraqi government, Dr Hiwaizi got a scholarship from the government to get a higher degree and specialise in haematology and attained his MRCP in 1976. He then started working in haematology mainly at St George’s, St Helier’s and the Royal Marsden hospitals.\n\nLater on in his career, he had his own private lab in London until retiring in 2020. Dr Hiwaizi’s main target now is charity work and taking part in haematology teaching in Kurdistan for postgraduate doctors and as examiner.\n\nDr Hiwaizi was born in the village of Tobzawa, completing primary and middle schools in Koya, and secondary school in Baghdad before starting his medical training in 1960 in Baghdad. Dr Hiwaizi is still taking part in Kurdish medical activities from a scientific and academic stance across Kurdistan and Europe; especially the UK.'
     },
@@ -181,7 +182,8 @@ const Members = () => {
       name: 'Shilan Ghafoor',
       position: 'Pharmacist, Healthcare Policy Advisor',
       image: '/Team/Shilan.jpeg',
-      bio: ''
+      bio: 'National medicines policy advisor with a career spanning primary and secondary care, focused on radiopharmaceuticals, supply chain resilience, and addressing health inequalities.',
+      detail: 'Experienced clinical pharmacist with a varied career spanning both primary and secondary care. Currently working in a national role advising on medicines related policies (with a particular focus on radiopharmaceuticals and supply chain resilience), overseeing national mitigation and management of medicine supply issues and its communications into the system (including the launch and management of the Medicine Supply Tool on SPS).\n\nComfortable working across sectors and with a range of senior stakeholders in government, NHS and the private industry.\n\nPassionate about addressing health inequalities, genomic medicine and increasing diversity at all levels. A keen and enthusiastic aspiring future healthcare leader.'
     },
     {
       id: 10,
@@ -233,13 +235,13 @@ const Members = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
-            className="flex flex-wrap justify-center gap-8"
+            className="flex flex-wrap justify-center gap-4 sm:gap-8"
           >
             {kmsfMembers.map((member) => (
               <motion.div
                 key={member.id}
                 variants={cardVariants}
-                className="group relative dark:bg-gray-800 bg-white dark:bg-opacity-50 bg-opacity-100 overflow-hidden shadow-xl hover:shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 transition-all duration-500 flex flex-col border dark:border-gray-700/50 border-gray-200 w-[280px]"
+                className="group relative dark:bg-gray-800 bg-white dark:bg-opacity-50 bg-opacity-100 overflow-hidden shadow-xl hover:shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 transition-all duration-500 flex flex-col border dark:border-gray-700/50 border-gray-200 w-[calc(50%-8px)] sm:w-[280px]"
                 whileHover={{ y: -10 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
@@ -281,8 +283,8 @@ const Members = () => {
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
+            viewport={{ once: true }}
+            className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 md:gap-8"
           >
             {ksaMembers.map((member) => (
               <motion.div
@@ -296,11 +298,11 @@ const Members = () => {
                   <img src={member.image || '/Team/user.png'} alt={member.name} className="w-full h-full object-cover object-[center_20%] filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none" />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
                 </div>
-                <div className="relative p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
-                  <p className="text-[#C8A441] font-medium mb-3 text-sm">{member.position}</p>
-                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed mb-4 flex-grow">{member.bio}</p>
-                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
+                <div className="relative p-3 sm:p-6 flex flex-col flex-grow">
+                  <h3 className="text-sm sm:text-xl font-bold dark:text-white text-gray-900 mb-1 sm:mb-2 group-hover:text-[#C8A441] transition-colors duration-300 leading-tight">{member.name}</h3>
+                  <p className="text-[#C8A441] font-medium mb-2 sm:mb-3 text-xs leading-tight">{member.position}</p>
+                  <p className="dark:text-gray-300 text-gray-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 flex-grow line-clamp-3 sm:line-clamp-none">{member.bio}</p>
+                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-xs sm:text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-2 sm:px-4 py-1.5 sm:py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
                   <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
                     <div className="w-3 h-3 bg-[#C8A441]"></div>
                   </div>
@@ -330,8 +332,8 @@ const Members = () => {
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8"
+            viewport={{ once: true }}
+            className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 md:gap-8"
           >
             {kumaMembers.map((member) => (
               <motion.div
@@ -345,11 +347,11 @@ const Members = () => {
                   <img src={member.image || '/Team/user.png'} alt={member.name} className="w-full h-full object-cover object-[center_20%] filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none" />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
                 </div>
-                <div className="relative p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-2 group-hover:text-[#C8A441] transition-colors duration-300">{member.name}</h3>
-                  <p className="text-[#C8A441] font-medium mb-3 text-sm">{member.position}</p>
-                  <p className="dark:text-gray-300 text-gray-600 text-sm leading-relaxed mb-4 flex-grow">{member.bio}</p>
-                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-4 py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
+                <div className="relative p-3 sm:p-6 flex flex-col flex-grow">
+                  <h3 className="text-sm sm:text-xl font-bold dark:text-white text-gray-900 mb-1 sm:mb-2 group-hover:text-[#C8A441] transition-colors duration-300 leading-tight">{member.name}</h3>
+                  <p className="text-[#C8A441] font-medium mb-2 sm:mb-3 text-xs leading-tight">{member.position}</p>
+                  <p className="dark:text-gray-300 text-gray-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 flex-grow line-clamp-3 sm:line-clamp-none">{member.bio}</p>
+                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-xs sm:text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-2 sm:px-4 py-1.5 sm:py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
                   <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
                     <div className="w-3 h-3 bg-[#C8A441]"></div>
                   </div>

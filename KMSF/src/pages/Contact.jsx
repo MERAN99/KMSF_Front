@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, Clock, Users } from 'lucide-react';
+import { Mail, MapPin, Send, Clock, Users, Linkedin, Instagram } from 'lucide-react';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -75,11 +75,18 @@ const Contact = () => {
 
               <div className="dark:bg-gray-800 bg-white dark:bg-opacity-50 p-6 shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 border dark:border-gray-700/50 border-gray-200">
                 <div className="flex items-center mb-4">
-                  <Phone className="w-8 h-8 text-[#C8A441] mr-4" />
-                  <h3 className="text-xl font-semibold dark:text-white text-gray-900">Call Us</h3>
+                  <h3 className="text-xl font-semibold dark:text-white text-gray-900">Follow Us</h3>
                 </div>
-                <p className="dark:text-gray-300 text-gray-600 mb-2">+44 20 1234 5678</p>
-                <p className="text-sm dark:text-gray-400 text-gray-500">Mon-Fri, 9 AM - 6 PM GMT</p>
+                <div className="flex flex-col space-y-3 pt-1">
+                  <a href="https://uk.linkedin.com/company/kurdistan-medical-and-scientific-federation-kmsf-uk" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 dark:text-gray-300 text-gray-600 hover:text-amber-500 dark:hover:text-amber-500 transition-colors">
+                    <Linkedin size={22} className="text-[#C8A441]" />
+                    <span>LinkedIn</span>
+                  </a>
+                  <a href="https://www.instagram.com/thekmsf?igsh=MXBhMGFwbTk5YndmdQ%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 dark:text-gray-300 text-gray-600 hover:text-amber-500 dark:hover:text-amber-500 transition-colors">
+                    <Instagram size={22} className="text-[#C8A441]" />
+                    <span>Instagram</span>
+                  </a>
+                </div>
               </div>
 
               <div className="dark:bg-gray-800 bg-white dark:bg-opacity-50 p-6 shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 border dark:border-gray-700/50 border-gray-200">

@@ -149,6 +149,17 @@ export const apiSlice = createApi({
             query: () => '/donations/admin',
             providesTags: ['Donation'],
         }),
+        getDonationMessages: builder.query({
+            query: () => '/donations/messages',
+            providesTags: ['Donation'],
+        }),
+        toggleDonationMessage: builder.mutation({
+            query: (id) => ({
+                url: `/donations/${id}/toggle-message`,
+                method: 'PATCH',
+            }),
+            invalidatesTags: ['Donation'],
+        }),
         changePassword: builder.mutation({
             query: (passwords) => ({
                 url: '/change-password',
@@ -233,6 +244,8 @@ export const {
     useCreateDonationSessionMutation,
     useConfirmDonationSessionMutation,
     useGetAdminDonationsQuery,
+    useGetDonationMessagesQuery,
+    useToggleDonationMessageMutation,
     useGetProfileQuery,
     useUpdateProfileMutation,
     useRequestEmailChangeMutation,

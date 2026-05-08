@@ -111,6 +111,7 @@ const Membership = () => {
     email: '', password: '', confirmPassword: '',
     speciality: '', telephone: '',
     addressLine1: '', addressLine2: '', city: '', country: '', postCode: '',
+    acceptedTerms: false,
   };
   const [formData, setFormData] = useState(emptyForm);
 
@@ -181,6 +182,11 @@ const Membership = () => {
     }
     if (formData.password !== formData.confirmPassword) {
       setErrorMsg('Passwords do not match. Please ensure both password fields are identical.');
+      return;
+    }
+    
+    if (!formData.acceptedTerms) {
+      setErrorMsg('You must accept the Terms and Conditions and Privacy Policy to register.');
       return;
     }
 
@@ -552,8 +558,6 @@ const Membership = () => {
             ) : (
               /* ── Register Free ── */
               <motion.div key="register" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="p-8 md:p-10 space-y-5">
-                {errorMsg && <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3  text-sm">{errorMsg}</div>}
-                {successMsg && <div className="bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3  text-sm">{successMsg}</div>}
 
                 {/* ── OTP Step ── */}
                 {registerStep === 'OTP' ? (
@@ -585,6 +589,11 @@ const Membership = () => {
                     >
                       {isConfirmingOTP || isRegistering ? 'Verifying & Creating Account…' : 'Confirm & Create Account'}
                     </button>
+
+                    {/* Messages for OTP Step */}
+                    {errorMsg && <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 text-sm text-left">{errorMsg}</div>}
+                    {successMsg && <div className="bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3 text-sm text-left">{successMsg}</div>}
+
                     <button
                       onClick={() => { setRegisterStep('INFO'); setOtpCode(''); setErrorMsg(''); setSuccessMsg(''); }}
                       className="text-gray-500 hover:text-gray-300 text-sm transition-colors"
@@ -845,9 +854,19 @@ const Membership = () => {
 
                   {/* Terms */}
                   <div className="flex items-start gap-3">
-                    <input type="checkbox" id="terms" className="mt-1 w-4 h-4 accent-yellow-500" required />
-                    <label htmlFor="terms" className="dark:text-gray-400 text-gray-500 text-sm">
-                      I agree to the <span className="text-yellow-500 underline cursor-pointer">Terms and Conditions</span> and <span className="text-yellow-500 underline cursor-pointer">Privacy Policy</span>
+                    <input 
+                      type="checkbox" 
+                      id="terms" 
+                      name="acceptedTerms"
+                      checked={formData.acceptedTerms}
+                      onChange={(e) => setFormData(prev => ({ ...prev, acceptedTerms: e.target.checked }))}
+                      className="mt-1 w-4 h-4 accent-yellow-500 cursor-pointer" 
+                    />
+                    <label htmlFor="terms" className="dark:text-gray-400 text-gray-500 text-sm cursor-pointer select-none">
+                      I agree to the{' '}
+                      <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-yellow-500 hover:text-yellow-400 underline transition-colors" onClick={(e) => e.stopPropagation()}>Terms and Conditions</a>
+                      {' '}and{' '}
+                      <a href="/privacy" target="_blank" rel="noopener noreferrer" className="text-yellow-500 hover:text-yellow-400 underline transition-colors" onClick={(e) => e.stopPropagation()}>Privacy Policy</a>
                     </label>
                   </div>
 
@@ -858,6 +877,10 @@ const Membership = () => {
                   >
                     {isSendingOTP ? 'Sending verification code…' : 'Continue → Verify Email'}
                   </button>
+
+                  {/* Messages for INFO Step */}
+                  {errorMsg && <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 text-sm">{errorMsg}</div>}
+                  {successMsg && <div className="bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3 text-sm">{successMsg}</div>}
 
                   <div className="flex items-center gap-3 mt-2">
                     <div className="flex-1 h-px dark:bg-gray-700 bg-gray-200" />

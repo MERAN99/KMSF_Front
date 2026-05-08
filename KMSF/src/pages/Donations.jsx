@@ -1,15 +1,139 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Users, Stethoscope, GraduationCap, CreditCard, Check } from 'lucide-react';
+import { Heart, Users, Stethoscope, GraduationCap, Check, Quote, ChevronDown, ChevronUp } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { useCreateDonationSessionMutation, useConfirmDonationSessionMutation } from '../store/api/apiSlice';
+import { useCreateDonationSessionMutation, useConfirmDonationSessionMutation, useGetDonationMessagesQuery } from '../store/api/apiSlice';
 
+// ─── Colour palette for the stacked cards ──────────────────────────────────
+const CARD_STYLES = [
+  { bg: 'dark:bg-amber-900/30 bg-amber-50', border: 'dark:border-amber-700/40 border-amber-200', quote: 'text-amber-500' },
+  { bg: 'dark:bg-yellow-900/30 bg-yellow-50', border: 'dark:border-yellow-700/40 border-yellow-200', quote: 'text-yellow-500' },
+  { bg: 'dark:bg-orange-900/30 bg-orange-50', border: 'dark:border-orange-700/40 border-orange-200', quote: 'text-orange-500' },
+  { bg: 'dark:bg-rose-900/30 bg-rose-50', border: 'dark:border-rose-700/40 border-rose-200', quote: 'text-rose-400' },
+  { bg: 'dark:bg-sky-900/30 bg-sky-50', border: 'dark:border-sky-700/40 border-sky-200', quote: 'text-sky-400' },
+  { bg: 'dark:bg-purple-900/30 bg-purple-50', border: 'dark:border-purple-700/40 border-purple-200', quote: 'text-purple-400' },
+];
+
+const INITIAL_SHOW = 6;
+
+// ─── Individual Message Card ────────────────────────────────────────────────
+const MessageCard = ({ item, index }) => {
+  const style = CARD_STYLES[index % CARD_STYLES.length];
+  const initials = item.donorName === 'Anonymous'
+    ? '♡'
+    : item.donorName.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30, scale: 0.96 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ duration: 0.5, delay: (index % INITIAL_SHOW) * 0.07 }}
+      whileHover={{ y: -4, boxShadow: '0 20px 40px -12px rgba(0,0,0,0.25)' }}
+      className={`relative rounded-2xl border p-6 shadow-md transition-shadow duration-300 ${style.bg} ${style.border}`}
+    >
+      {/* Stacked paper effect */}
+      <div className={`absolute -bottom-2 left-3 right-3 h-full rounded-2xl border opacity-40 ${style.border} ${style.bg}`} style={{ zIndex: -1 }} />
+      <div className={`absolute -bottom-4 left-6 right-6 h-full rounded-2xl border opacity-20 ${style.border} ${style.bg}`} style={{ zIndex: -2 }} />
+
+      {/* Quote icon */}
+      <Quote size={28} className={`mb-3 ${style.quote}`} />
+
+      {/* Message text */}
+      <p className="dark:text-gray-200 text-gray-700 text-sm leading-relaxed mb-5 line-clamp-5">
+        {item.message}
+      </p>
+
+      {/* Donor footer */}
+      <div className="flex items-center gap-3 pt-4 border-t dark:border-white/10 border-black/10">
+        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold bg-gradient-to-br from-yellow-500 to-amber-600 text-gray-900 flex-shrink-0`}>
+          {initials}
+        </div>
+        <div>
+          <p className="dark:text-white text-gray-900 font-semibold text-sm">
+            {item.donorName === 'Anonymous' ? 'Anonymous Supporter' : item.donorName}
+          </p>
+          <p className="dark:text-gray-400 text-gray-500 text-xs">
+            {new Date(item.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+// ─── Messages Wall Section ──────────────────────────────────────────────────
+const DonationMessagesWall = () => {
+  const { data, isLoading } = useGetDonationMessagesQuery();
+  const [showAll, setShowAll] = useState(false);
+
+  const messages = data?.data || [];
+  const visible = showAll ? messages : messages.slice(0, INITIAL_SHOW);
+
+  if (isLoading || messages.length === 0) return null;
+
+  return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+      {/* Section header */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+        className="text-center mb-14"
+      >
+        <span className="inline-block text-yellow-500 font-semibold text-sm uppercase tracking-widest mb-3">
+          From Our Community
+        </span>
+        <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-gray-900 mb-4">
+          Messages of <span className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 bg-clip-text text-transparent">Support</span>
+        </h2>
+        <p className="text-lg dark:text-gray-400 text-gray-500 max-w-xl mx-auto">
+          Kind words from the generous hearts who believe in our mission.
+        </p>
+      </motion.div>
+
+      {/* Card grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <AnimatePresence>
+          {visible.map((item, index) => (
+            <MessageCard key={item._id} item={item} index={index} />
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Show more / less toggle */}
+      {messages.length > INITIAL_SHOW && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="flex justify-center mt-10"
+        >
+          <button
+            onClick={() => setShowAll(v => !v)}
+            className="flex items-center gap-2 px-8 py-3 rounded-full border-2 border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-gray-900 font-bold transition-all duration-300 shadow-md hover:shadow-yellow-500/30"
+          >
+            {showAll ? (
+              <><ChevronUp size={18} /> Show Less</>
+            ) : (
+              <><ChevronDown size={18} /> See All {messages.length} Messages</>
+            )}
+          </button>
+        </motion.div>
+      )}
+    </section>
+  );
+};
+
+// ─── Main Donation Page ─────────────────────────────────────────────────────
 const DonationPage = () => {
   const [selectedAmount, setSelectedAmount] = useState(50);
   const [customAmount, setCustomAmount] = useState('');
   const [selectedFrequency, setSelectedFrequency] = useState('one-time');
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [donationMessage, setDonationMessage] = useState('');
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -37,8 +161,8 @@ const DonationPage = () => {
   const impactAreas = [
     {
       icon: <Stethoscope className="w-8 h-8" />,
-      title: 'Medical Equipment',
-      description: 'Support the purchase of essential medical equipment for Kurdish healthcare facilities.',
+      title: 'Equipment Support',
+      description: 'Support the purchase of essential equipment for Kurdish healthcare facilities.',
       color: 'from-blue-600 to-blue-500'
     },
     {
@@ -74,7 +198,12 @@ const DonationPage = () => {
     }
 
     try {
-      const response = await createDonationSession({ amount, currency: 'GBP' }).unwrap();
+      const response = await createDonationSession({
+        amount,
+        currency: 'GBP',
+        isAnonymous,
+        message: donationMessage.trim() || undefined,
+      }).unwrap();
       if (response.url) {
         window.location.href = response.url;
       }
@@ -236,6 +365,40 @@ const DonationPage = () => {
                   </div>
                 </div>
 
+                {/* Anonymous + Message */}
+                <div className="mb-6 space-y-4">
+                  <label className="flex items-center gap-3 cursor-pointer select-none group">
+                    <div
+                      onClick={() => setIsAnonymous(v => !v)}
+                      className={`w-5 h-5 flex-shrink-0 border-2 flex items-center justify-center transition-all duration-200 cursor-pointer ${
+                        isAnonymous
+                          ? 'bg-yellow-500 border-yellow-500'
+                          : 'dark:border-gray-500 border-gray-400 dark:bg-gray-700 bg-gray-100'
+                      }`}
+                    >
+                      {isAnonymous && <Check className="w-3 h-3 text-gray-900" />}
+                    </div>
+                    <span className="dark:text-gray-300 text-gray-700 text-sm font-medium">
+                      Donate anonymously
+                    </span>
+                  </label>
+
+                  <div>
+                    <label className="block dark:text-gray-300 text-gray-700 text-sm font-semibold mb-2">
+                      Leave a message <span className="font-normal dark:text-gray-500 text-gray-400">(optional)</span>
+                    </label>
+                    <textarea
+                      value={donationMessage}
+                      onChange={(e) => setDonationMessage(e.target.value)}
+                      maxLength={300}
+                      rows={3}
+                      placeholder="Share why you're donating or leave a message of support…"
+                      className="w-full dark:bg-gray-700 bg-gray-100 dark:text-white text-gray-900 py-3 px-4 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all border dark:border-gray-600 border-gray-300 resize-none text-sm"
+                    />
+                    <p className="text-xs dark:text-gray-500 text-gray-400 text-right mt-1">{donationMessage.length}/300</p>
+                  </div>
+                </div>
+
                 {/* Donate Button */}
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -318,34 +481,9 @@ const DonationPage = () => {
         </div>
       </div>
 
-      {/* Testimonial Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20"
-      >
-        <div className="dark:bg-gray-800 bg-white border dark:border-gray-700/50 border-gray-200 p-8 md:p-12 relative overflow-hidden shadow-lg">
-          <div className="absolute top-0 left-0 w-32 h-32 bg-yellow-500 opacity-10 blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-32 h-32 bg-yellow-500 opacity-10 blur-3xl"></div>
-          <div className="relative z-10">
-            <div className="text-yellow-500 text-6xl font-serif mb-4">"</div>
-            <blockquote className="text-xl md:text-2xl dark:text-white text-gray-900 font-medium mb-6 leading-relaxed">
-              Thanks to the generous support of our donors, we've been able to establish state-of-the-art medical facilities that serve thousands of Kurdish families every year.
-            </blockquote>
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-yellow-600 to-yellow-500 flex items-center justify-center">
-                <span className="text-white font-bold text-xl">DR</span>
-              </div>
-              <div>
-                <p className="dark:text-white text-gray-900 font-bold">Dr. Ahmed Hassan</p>
-                <p className="dark:text-gray-400 text-gray-500 text-sm">Director of Medical Programs</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+
+      {/* ── Messages of Support Wall ──────────────────────────────── */}
+      <DonationMessagesWall />
 
       {/* Other Ways to Help */}
       <motion.div

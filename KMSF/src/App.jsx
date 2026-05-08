@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './layout/Navbar';
 import Footer from './layout/Footer';
 import RouteScrollToTop from './components/RouteScrollToTop';
+import MemberRoute from './components/MemberRoute';
 
 // Lazy load components for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -16,6 +17,8 @@ const Membership = lazy(() => import('./pages/Membership'));
 const Donations = lazy(() => import('./pages/Donations'));
 const Contact = lazy(() => import('./pages/Contact'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Privacy = lazy(() => import('./pages/Privacy'));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -35,12 +38,14 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/events" element={<Events />} />
-            <Route path="/gallery" element={<Gallery />} />
-            <Route path="/archive" element={<Archive />} />
+            <Route path="/gallery" element={<MemberRoute requiredLevel="registered"><Gallery /></MemberRoute>} />
+            <Route path="/archive" element={<MemberRoute requiredLevel="registered"><Archive /></MemberRoute>} />
             <Route path="/membership" element={<Membership />} />
             <Route path="/donations" element={<Donations />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
           </Routes>
         </Suspense>
       </div>
