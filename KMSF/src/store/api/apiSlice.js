@@ -60,6 +60,13 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['Subscription'],
         }),
+        cancelSubscription: builder.mutation({
+            query: () => ({
+                url: '/cancel-subscription',
+                method: 'POST',
+            }),
+            invalidatesTags: ['Subscription', 'User'],
+        }),
         verifySession: builder.mutation({
             query: (sessionId) => ({
                 url: '/verify-session',
@@ -233,6 +240,7 @@ export const {
     useStartSubscriptionMutation,
     useGetSubscriptionStatusQuery,
     useRenewSubscriptionMutation,
+    useCancelSubscriptionMutation,
     useVerifySessionMutation,
     useGetAdminStatsQuery,
     useGetAllUsersQuery,

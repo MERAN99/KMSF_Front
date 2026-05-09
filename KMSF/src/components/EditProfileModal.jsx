@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, User, MapPin, Shield, Loader2, CheckCircle, AlertCircle, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { X, User, MapPin, Shield, Loader2, CheckCircle, AlertCircle, Mail, Lock, Eye, EyeOff, Zap, Calendar, AlertTriangle } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import {
     useGetProfileQuery,
@@ -8,6 +8,8 @@ import {
     useRequestEmailChangeMutation,
     useConfirmEmailChangeMutation,
     useChangePasswordMutation,
+    useGetSubscriptionStatusQuery,
+    useCancelSubscriptionMutation,
 } from '../store/api/apiSlice';
 import { updateUser } from '../store/slices/authSlice';
 
@@ -15,6 +17,7 @@ const TABS = [
     { id: 'personal', label: 'Personal Info', icon: User },
     { id: 'address', label: 'Address', icon: MapPin },
     { id: 'security', label: 'Security', icon: Shield },
+    { id: 'subscription', label: 'Subscription', icon: Zap },
 ];
 
 const InputField = ({ label, name, value, onChange, type = 'text', required = false, disabled = false, children }) => (
@@ -72,6 +75,10 @@ const EditProfileModal = ({ isOpen, onClose }) => {
     const [requestEmailChange, { isLoading: sendingOtp }] = useRequestEmailChangeMutation();
     const [confirmEmailChange, { isLoading: verifyingOtp }] = useConfirmEmailChangeMutation();
     const [changePassword, { isLoading: changingPw }] = useChangePasswordMutation();
+
+    const { data: subData, isLoading: subLoading, refetch: refetchSub } = useGetSubscriptionStatusQuery(undefined, { skip: !isOpen });
+    const [cancelSubscription, { isLoading: cancelingSub }] = useCancelSubscriptionMutation();
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
     useEffect(() => {
         if (profileData?.user) {
@@ -152,6 +159,17 @@ const EditProfileModal = ({ isOpen, onClose }) => {
             setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (err) {
             showToast('error', err?.data?.message || 'Failed to change password.');
+        }
+    };
+
+    const handleCancelSubscription = async () => {
+        try {
+            await cancelSubscription().unwrap();
+            showToast('success', 'Subscription has been set to cancel.');
+            setShowCancelConfirm(false);
+            refetchSub(); // Refresh subscription status
+        } catch (err) {
+            showToast('error', err?.data?.message || 'Failed to cancel subscription.');
         }
     };
 
@@ -400,6 +418,98 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                                                 </div>
                                             </div>
 
+                                        </div>
+                                    )}
+
+                                    {/* ── Subscription Tab ──────────────────────────── */}
+                                    {activeTab === 'subscription' && (
+                                        <div className="space-y-6">
+                                            {subLoading ? (
+                                                <div className="flex items-center justify-center py-10">
+                                                    <Loader2 size={24} className="animate-spin text-[#C8A441]" />
+                                                </div>
+                                            ) : (
+                                                <div className="bg-gray-700/30 rounded-lg p-5 border border-gray-700 relative overflow-hidden">
+                                                    <div className="flex items-center justify-between mb-6">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="p-2.5 bg-gray-800 rounded-lg shadow-inner">
+                                                                <Zap size={20} className={subData?.data?.membershipStatus === 'active' ? 'text-amber-400' : 'text-gray-400'} />
+                                                            </div>
+                                                            <div>
+                                                                <h3 className="text-base font-bold text-white">Membership Plan</h3>
+                                                                <p className={`text-sm font-medium ${subData?.data?.membershipStatus === 'active' ? 'text-amber-400' : 'text-gray-400'}`}>
+                                                                    {subData?.data?.membershipStatus === 'active' ? 'Full Member (£4.50/month)' : 'Free Member'}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        {subData?.data?.membershipStatus === 'active' && (
+                                                            <span className="px-3 py-1 bg-green-500/10 border border-green-500/20 text-green-400 text-xs font-bold rounded-full uppercase tracking-wider">
+                                                                Active
+                                                            </span>
+                                                        )}
+                                                    </div>
+
+                                                    {subData?.data?.membershipStatus === 'active' && (
+                                                        <div className="space-y-4">
+                                                            <div className="bg-gray-800/50 rounded p-4 flex items-center justify-between border border-gray-700/50">
+                                                                <div className="flex items-center gap-2 text-gray-300 text-sm">
+                                                                    <Calendar size={16} className="text-gray-400" />
+                                                                    <span>Current Billing Period Ends</span>
+                                                                </div>
+                                                                <span className="text-white font-semibold">
+                                                                    {subData.data.subscriptionEndDate ? new Date(subData.data.subscriptionEndDate).toLocaleDateString() : 'N/A'}
+                                                                </span>
+                                                            </div>
+
+                                                            {subData?.data?.cancelAtPeriodEnd ? (
+                                                                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded p-4 flex gap-3">
+                                                                    <AlertTriangle size={18} className="text-yellow-500 flex-shrink-0 mt-0.5" />
+                                                                    <div>
+                                                                        <p className="text-yellow-500 text-sm font-bold">Cancellation Scheduled</p>
+                                                                        <p className="text-yellow-500/80 text-xs mt-1">
+                                                                            Your subscription will remain active until the end of your billing cycle on {new Date(subData.data.subscriptionEndDate).toLocaleDateString()}, after which it will not renew.
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="pt-4 border-t border-gray-700/50">
+                                                                    {!showCancelConfirm ? (
+                                                                        <button
+                                                                            onClick={() => setShowCancelConfirm(true)}
+                                                                            className="w-full sm:w-auto px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-semibold text-sm rounded border border-red-500/20 hover:border-red-500/40 transition-colors"
+                                                                        >
+                                                                            Cancel Plan
+                                                                        </button>
+                                                                    ) : (
+                                                                        <div className="bg-red-500/10 border border-red-500/30 rounded p-4">
+                                                                            <p className="text-red-400 text-sm font-bold mb-2">Are you sure you want to cancel?</p>
+                                                                            <p className="text-red-400/80 text-xs mb-4">
+                                                                                Your membership will remain active until the end of the current billing cycle. No further payments will be charged.
+                                                                            </p>
+                                                                            <div className="flex gap-3">
+                                                                                <button
+                                                                                    onClick={handleCancelSubscription}
+                                                                                    disabled={cancelingSub}
+                                                                                    className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold text-sm rounded transition-colors disabled:opacity-60 flex items-center gap-2"
+                                                                                >
+                                                                                    {cancelingSub && <Loader2 size={14} className="animate-spin" />}
+                                                                                    Confirm Cancellation
+                                                                                </button>
+                                                                                <button
+                                                                                    onClick={() => setShowCancelConfirm(false)}
+                                                                                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold text-sm rounded transition-colors"
+                                                                                >
+                                                                                    Keep Plan
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </>
