@@ -80,7 +80,7 @@ const Contact = () => {
                   <Mail className="w-8 h-8 text-[#C8A441] mr-4" />
                   <h3 className="text-xl font-semibold dark:text-white text-gray-900">Email Us</h3>
                 </div>
-                <p className="dark:text-gray-300 text-gray-600 mb-2">info@kmsf.org</p>
+                <p className="dark:text-gray-300 text-gray-600 mb-2">Info@kmsf.org.uk</p>
                 <p className="text-sm dark:text-gray-400 text-gray-500">We respond within 24 hours</p>
               </div>
 

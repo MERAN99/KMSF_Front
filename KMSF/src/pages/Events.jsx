@@ -1,12 +1,22 @@
-import React from 'react';
-import { motion } from "framer-motion";
-import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from "framer-motion";
+import { Calendar, MapPin, Clock, ArrowRight, X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import LazyImage from '../components/LazyImage';
 import { API_BASE_URL } from '../config';
 
 import { useGetEventsQuery } from '../store/api/apiSlice';
 
+// Helper: is this event upcoming, or did it end less than 3 days ago?
+const isUpcomingEvent = (dateStr) => {
+    const eventDate = new Date(dateStr);
+    const threeDaysAfter = new Date(eventDate.getTime() + 3 * 24 * 60 * 60 * 1000);
+    return new Date() <= threeDaysAfter;
+};
+
 export default function EventsSection() {
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const { data: eventsData, isLoading } = useGetEventsQuery();
   const baseUrl = API_BASE_URL;
 
@@ -19,7 +29,8 @@ export default function EventsSection() {
       kmsfMember: ev.prices?.find(p => p.type === 'Member')?.amount || 'N/A',
       nonMember: ev.prices?.find(p => p.type === 'Non-member')?.amount || 'N/A'
     }
-  })) || [];
+  }))
+  .filter(ev => isUpcomingEvent(ev.date)) || [];
 
   if (isLoading) {
     return <div className="min-h-screen dark:bg-gray-900 bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#C8A441]"></div></div>;
@@ -129,7 +140,7 @@ export default function EventsSection() {
 
                 {/* Learn More Button */}
                 <button
-                  onClick={() => event.link && window.open(event.link, '_blank')}
+                  onClick={() => { setSelectedEvent(event); setCurrentImageIndex(0); }}
                   className="w-full bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-white py-2 font-semibold flex items-center justify-center gap-2 hover:from-[#C8A441] hover:to-[#F2AE02] transition-all duration-300 group-hover:gap-3 text-sm mt-auto"
                 >
                   Learn More
@@ -160,6 +171,150 @@ export default function EventsSection() {
 
       {/* Decorative Bottom Gradient */}
       <div className="absolute bottom-0 left-0 w-full h-32 dark:bg-gradient-to-t dark:from-gray-900 from-white to-transparent pointer-events-none"></div>
+
+      {/* Event Details Modal */}
+      <AnimatePresence>
+        {selectedEvent && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-4xl max-h-[90vh] bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-2xl border border-gray-200 dark:border-gray-800 flex flex-col md:flex-row"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="absolute top-4 right-4 z-20 bg-black/50 hover:bg-black/80 text-white rounded-full p-2 transition-colors backdrop-blur-md"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Image Carousel Area */}
+              <div className="w-full md:w-1/2 relative bg-black flex-shrink-0 h-64 md:h-auto flex items-center justify-center">
+                {selectedEvent.images && selectedEvent.images.length > 0 ? (
+                  <>
+                    <LazyImage
+                      src={selectedEvent.images[currentImageIndex].startsWith('/uploads') ? `${baseUrl}${selectedEvent.images[currentImageIndex]}` : selectedEvent.images[currentImageIndex]}
+                      alt={selectedEvent.title}
+                      className="w-full h-full object-contain"
+                    />
+                    
+                    {/* Carousel Controls */}
+                    {selectedEvent.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentImageIndex((prev) => (prev === 0 ? selectedEvent.images.length - 1 : prev - 1));
+                          }}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full backdrop-blur-md transition-colors"
+                        >
+                          <ChevronLeft size={20} />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentImageIndex((prev) => (prev === selectedEvent.images.length - 1 ? 0 : prev + 1));
+                          }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-2 rounded-full backdrop-blur-md transition-colors"
+                        >
+                          <ChevronRight size={20} />
+                        </button>
+
+                        {/* Pagination Dots */}
+                        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+                          {selectedEvent.images.map((_, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => setCurrentImageIndex(idx)}
+                              className={`w-2 h-2 rounded-full transition-all ${currentImageIndex === idx ? 'bg-[#C8A441] w-4' : 'bg-white/50'}`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <LazyImage
+                    src={selectedEvent.image}
+                    alt={selectedEvent.title}
+                    className="w-full h-full object-contain"
+                  />
+                )}
+              </div>
+
+              {/* Details Area */}
+              <div className="w-full md:w-1/2 p-6 md:p-8 overflow-y-auto max-h-[50vh] md:max-h-[90vh]">
+                <div className="flex flex-col h-full">
+                  <div className="mb-2">
+                    <span className="bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-white px-3 py-1 rounded-full text-xs font-semibold inline-block">
+                      {selectedEvent.category}
+                    </span>
+                  </div>
+                  <h3 className="text-2xl md:text-3xl font-bold dark:text-white text-gray-900 mb-4">
+                    {selectedEvent.title}
+                  </h3>
+
+                  <div className="space-y-3 mb-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-800">
+                    <div className="flex items-center dark:text-gray-300 text-gray-700">
+                      <Calendar className="w-5 h-5 mr-3 text-[#C8A441] flex-shrink-0" />
+                      <span className="font-medium">{new Date(selectedEvent.date).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                    </div>
+                    <div className="flex items-center dark:text-gray-300 text-gray-700">
+                      <Clock className="w-5 h-5 mr-3 text-[#C8A441] flex-shrink-0" />
+                      <span className="font-medium">{selectedEvent.time}</span>
+                    </div>
+                    <div className="flex items-start dark:text-gray-300 text-gray-700">
+                      <MapPin className="w-5 h-5 mr-3 text-[#C8A441] flex-shrink-0 mt-0.5" />
+                      <span className="font-medium leading-tight">{selectedEvent.location}</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h4 className="text-lg font-bold dark:text-white text-gray-900 mb-2">Registration</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Student</p>
+                        <p className="font-bold text-[#C8A441] text-lg">{selectedEvent.registration.student}</p>
+                      </div>
+                      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Member</p>
+                        <p className="font-bold text-[#C8A441] text-lg">{selectedEvent.registration.kmsfMember}</p>
+                      </div>
+                      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Non-member</p>
+                        <p className="font-bold text-[#C8A441] text-lg">{selectedEvent.registration.nonMember}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-8">
+                    <h4 className="text-lg font-bold dark:text-white text-gray-900 mb-2">About This Event</h4>
+                    <p className="dark:text-gray-300 text-gray-600 whitespace-pre-wrap text-sm leading-relaxed">
+                      {selectedEvent.description}
+                    </p>
+                  </div>
+
+                  {selectedEvent.link && (
+                    <div className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-800">
+                      <a
+                        href={selectedEvent.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-white py-3.5 px-6 font-bold rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-[#C8A441]/30"
+                      >
+                        Register / External Link
+                        <ExternalLink className="w-5 h-5" />
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

@@ -35,7 +35,7 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold dark:text-white text-gray-900 mb-4">Connect With Us</h4>
             <div className="space-y-3 dark:text-gray-400 text-gray-500 text-sm">
-              <p>📧 info@kmsf.org</p>
+              <p>📧 Info@kmsf.org.uk</p>
               <div className="flex flex-col space-y-3 pt-2">
                 <a href="https://uk.linkedin.com/company/kurdistan-medical-and-scientific-federation-kmsf-uk" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-amber-500 transition-colors">
                   <Linkedin size={18} />

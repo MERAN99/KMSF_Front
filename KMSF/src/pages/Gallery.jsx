@@ -8,7 +8,11 @@ import { useGetEventsQuery } from '../store/api/apiSlice';
 import LazyImage from '../components/LazyImage';
 
 // Helper: has this event's date already passed?
-const isPastEvent = (dateStr) => new Date(dateStr) < new Date();
+const isPastEvent = (dateStr) => {
+    const eventDate = new Date(dateStr);
+    const threeDaysAfter = new Date(eventDate.getTime() + 3 * 24 * 60 * 60 * 1000);
+    return new Date() > threeDaysAfter;
+};
 
 // ─── Album Card ───────────────────────────────────────────────────────────────
 const AlbumCard = ({ album, index, onClick }) => {

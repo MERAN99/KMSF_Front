@@ -4,7 +4,11 @@ import { Calendar, MapPin, Users, Clock, X, Loader2, AlertCircle, Archive } from
 import { useGetEventsQuery } from '../store/api/apiSlice';
 
 // Helper: has this event's date already passed?
-const isPastEvent = (dateStr) => new Date(dateStr) < new Date();
+const isPastEvent = (dateStr) => {
+    const eventDate = new Date(dateStr);
+    const threeDaysAfter = new Date(eventDate.getTime() + 3 * 24 * 60 * 60 * 1000);
+    return new Date() > threeDaysAfter;
+};
 
 const Archives = () => {
     const [selectedEvent, setSelectedEvent] = useState(null);

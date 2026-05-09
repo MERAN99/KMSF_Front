@@ -14,7 +14,8 @@ import {
     useNotifyEventMutation,
     useGetAdminStatsQuery,
     useGetAdminDonationsQuery,
-    useToggleDonationMessageMutation
+    useToggleDonationMessageMutation,
+    useSendBulkReminderEmailMutation
 } from '../store/api/apiSlice';
 import {
     Users, Calendar, Plus, Edit, Trash2, X, CheckCircle,
@@ -54,6 +55,9 @@ const AdminDashboard = () => {
     const limit = 20;
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState('');
+    const [orgFilter, setOrgFilter] = useState('');
+    const [selectedUserIds, setSelectedUserIds] = useState([]);
 
     // Debounce search
     React.useEffect(() => {
@@ -64,8 +68,14 @@ const AdminDashboard = () => {
         return () => clearTimeout(handler);
     }, [searchTerm]);
 
+    // Reset selected users when filters change
+    useEffect(() => {
+        setSelectedUserIds([]);
+        setPage(1);
+    }, [statusFilter, orgFilter]);
+
     const { data: statsData, isLoading: statsLoading } = useGetAdminStatsQuery();
-    const { data: usersData, isLoading: usersLoading } = useGetAllUsersQuery({ page, limit, search: debouncedSearch });
+    const { data: usersData, isLoading: usersLoading } = useGetAllUsersQuery({ page, limit, search: debouncedSearch, status: statusFilter, organization: orgFilter });
     const { data: eventsData, isLoading: eventsLoading } = useAdminGetEventsQuery();
     const { data: donationsData, isLoading: donationsLoading } = useGetAdminDonationsQuery();
     const [toggleDonationMsg] = useToggleDonationMessageMutation();
@@ -76,7 +86,9 @@ const AdminDashboard = () => {
     const [toggleBlockUser] = useToggleBlockUserMutation();
     const [deleteMember] = useDeleteMemberMutation();
     const [notifyEvent, { isLoading: isNotifying }] = useNotifyEventMutation();
+    const [sendBulkReminderEmail] = useSendBulkReminderEmailMutation();
     const [notifyingId, setNotifyingId] = useState(null);
+    const [isSendingBulk, setIsSendingBulk] = useState(false);
 
     // Redirect if not admin
     if (!user || user.role !== 'admin') {
@@ -184,6 +196,38 @@ const AdminDashboard = () => {
             } finally {
                 setNotifyingId(null);
             }
+        }
+    };
+
+    const handleSelectAllUsers = (e) => {
+        if (e.target.checked) {
+            const allIds = usersData?.data?.map(u => u._id) || [];
+            setSelectedUserIds(allIds);
+        } else {
+            setSelectedUserIds([]);
+        }
+    };
+
+    const handleSelectUser = (id) => {
+        setSelectedUserIds(prev =>
+            prev.includes(id) ? prev.filter(userId => userId !== id) : [...prev, id]
+        );
+    };
+
+    const handleSendBulkReminder = async () => {
+        if (selectedUserIds.length === 0) return;
+        if (!window.confirm(`Are you sure you want to send a registration reminder to ${selectedUserIds.length} users?`)) return;
+
+        try {
+            setIsSendingBulk(true);
+            await sendBulkReminderEmail(selectedUserIds).unwrap();
+            alert('Registration reminders are being sent in the background!');
+            setSelectedUserIds([]);
+        } catch (error) {
+            console.error('Failed to send bulk reminder:', error);
+            alert('Failed to send bulk reminders. Please try again later.');
+        } finally {
+            setIsSendingBulk(false);
         }
     };
 
@@ -392,10 +436,45 @@ const AdminDashboard = () => {
                                         </button>
                                     )}
                                 </div>
-                                <div className="text-sm text-gray-400 font-medium">
+                                <div className="flex items-center gap-3 w-full sm:w-auto">
+                                    <select
+                                        value={orgFilter}
+                                        onChange={(e) => setOrgFilter(e.target.value)}
+                                        className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-3 py-2 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors"
+                                    >
+                                        <option value="">All Organizations</option>
+                                        <option value="KSA">KSA</option>
+                                        <option value="KuMA">KuMA</option>
+                                    </select>
+                                    <select
+                                        value={statusFilter}
+                                        onChange={(e) => setStatusFilter(e.target.value)}
+                                        className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-3 py-2 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors"
+                                    >
+                                        <option value="">All Statuses</option>
+                                        <option value="active">Active</option>
+                                        <option value="registered">Registered</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                                <div className="text-sm text-gray-400 font-medium whitespace-nowrap">
                                     {usersData?.pagination?.total || 0} Total Members
                                 </div>
                             </div>
+
+                            {selectedUserIds.length > 0 && (
+                                <div className="p-3 bg-amber-500/10 border-b border-amber-500/20 flex justify-between items-center px-4">
+                                    <span className="text-amber-500 font-medium text-sm">{selectedUserIds.length} user(s) selected</span>
+                                    <button
+                                        onClick={handleSendBulkReminder}
+                                        disabled={isSendingBulk}
+                                        className="bg-amber-500 hover:bg-amber-400 text-gray-900 px-4 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors disabled:opacity-50"
+                                    >
+                                        {isSendingBulk ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
+                                        Send Registration Reminder
+                                    </button>
+                                </div>
+                            )}
 
                             <div className="overflow-x-auto min-h-[400px]">
                                 {usersLoading ? (
@@ -409,6 +488,14 @@ const AdminDashboard = () => {
                                     <table className="w-full text-left">
                                         <thead className="bg-gray-900/80 text-gray-400 text-xs uppercase tracking-wider sticky top-0 backdrop-blur-md z-10">
                                             <tr>
+                                                <th className="px-6 py-4 font-semibold w-12">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="w-4 h-4 rounded border-gray-600 bg-gray-700 checked:bg-amber-500 text-amber-500 focus:ring-amber-500 focus:ring-offset-gray-900"
+                                                        checked={usersData?.data?.length > 0 && selectedUserIds.length === usersData?.data?.length}
+                                                        onChange={handleSelectAllUsers}
+                                                    />
+                                                </th>
                                                 <th className="px-6 py-4 font-semibold">Name</th>
                                                 <th className="px-6 py-4 font-semibold">Email</th>
                                                 <th className="px-6 py-4 font-semibold">Location</th>
@@ -418,7 +505,15 @@ const AdminDashboard = () => {
                                         </thead>
                                         <tbody className="divide-y divide-gray-700/50 relative">
                                             {usersData?.data?.map((u) => (
-                                                <tr key={u._id} className={`dark:hover:bg-gray-700/30 hover:bg-gray-50 transition-colors text-sm ${u.isBlocked ? 'dark:bg-red-900/10 bg-red-50/50' : ''}`}>
+                                                <tr key={u._id} className={`dark:hover:bg-gray-700/30 hover:bg-gray-50 transition-colors text-sm ${u.isBlocked ? 'dark:bg-red-900/10 bg-red-50/50' : ''} ${selectedUserIds.includes(u._id) ? 'bg-amber-500/5 dark:bg-amber-500/10' : ''}`}>
+                                                    <td className="px-6 py-4">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="w-4 h-4 rounded border-gray-600 bg-gray-700 checked:bg-amber-500 text-amber-500 focus:ring-amber-500 focus:ring-offset-gray-900"
+                                                            checked={selectedUserIds.includes(u._id)}
+                                                            onChange={() => handleSelectUser(u._id)}
+                                                        />
+                                                    </td>
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center space-x-3">
                                                             <div className="w-8 h-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold tracking-wider">

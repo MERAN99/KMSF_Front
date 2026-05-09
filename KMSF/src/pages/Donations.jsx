@@ -168,7 +168,7 @@ const DonationPage = () => {
     {
       icon: <GraduationCap className="w-8 h-8" />,
       title: 'Education & Training',
-      description: 'Fund educational programmes, workshops, and training for medical professionals and students.',
+      description: 'Fund educational programmes, workshops, and training for professionals and students.',
       color: 'from-green-600 to-green-500'
     },
     {
