@@ -21,7 +21,9 @@ const AdminEditUserModal = ({ isOpen, onClose, userId }) => {
         title: '', firstName: '', lastName: '', gender: '',
         organization: '', profession: '', speciality: '', telephone: '',
         addressLine1: '', addressLine2: '', city: '', country: '', postCode: '',
-        role: '', membershipStatus: '', newPassword: '',
+        role: '', membershipStatus: '',
+        customDuration: '', emailTitle: '', emailMessage: '',
+        newPassword: ''
     });
 
     const [toast, setToast] = useState(null);
@@ -45,7 +47,8 @@ const AdminEditUserModal = ({ isOpen, onClose, userId }) => {
                 postCode: u.postCode || '',
                 role: u.role || 'member',
                 membershipStatus: u.membershipStatus || 'registered',
-                newPassword: '',
+                customDuration: '', emailTitle: '', emailMessage: '',
+                newPassword: ''
             });
         }
     }, [data]);
@@ -155,6 +158,21 @@ const AdminEditUserModal = ({ isOpen, onClose, userId }) => {
                                             <option value="inactive">Inactive (Expired)</option>
                                         </select>
                                     </div>
+                                    <InputField label="Custom Duration (Days)" name="customDuration" type="number" value={form.customDuration} onChange={handleFormChange} placeholder="e.g. 365" />
+                                </div>
+                                <div className="mt-4">
+                                    <InputField label="Notification Email Title" name="emailTitle" value={form.emailTitle} onChange={handleFormChange} placeholder="e.g. Your membership has been updated" />
+                                </div>
+                                <div className="mt-4">
+                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1.5">Email Message</label>
+                                    <textarea name="emailMessage" value={form.emailMessage} onChange={handleFormChange} placeholder="Type your message here..." rows="3" className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors resize-none"></textarea>
+                                </div>
+                            </div>
+
+                            {/* Security Section */}
+                            <div className="bg-red-500/5 dark:bg-red-500/10 border border-red-500/20 rounded-xl p-5 mt-6">
+                                <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-4 flex items-center gap-2">Security</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <InputField label="Change Password (Optional)" name="newPassword" value={form.newPassword} onChange={handleFormChange} type="text" placeholder="Enter new password..." />
                                 </div>
                             </div>
