@@ -26,12 +26,17 @@ import {
     PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis,
     CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend
 } from 'recharts';
+import AdminEditUserModal from '../components/AdminEditUserModal';
 
 const AdminDashboard = () => {
     const user = useSelector(selectCurrentUser);
     const [activeTab, setActiveTab] = useState('dashboard');
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
+    const [editingUserId, setEditingUserId] = useState(null);
+
+    const [isBulkEmailModalOpen, setIsBulkEmailModalOpen] = useState(false);
+    const [bulkEmailForm, setBulkEmailForm] = useState({ title: '', message: '' });
 
     // Multi-image state for the event form
     const [existingImages, setExistingImages] = useState([]); // URLs already saved (edit mode)
@@ -214,18 +219,29 @@ const AdminDashboard = () => {
         );
     };
 
-    const handleSendBulkReminder = async () => {
+    const handleSendBulkReminder = () => {
         if (selectedUserIds.length === 0) return;
-        if (!window.confirm(`Are you sure you want to send a registration reminder to ${selectedUserIds.length} users?`)) return;
+        setIsBulkEmailModalOpen(true);
+    };
 
+    const handleConfirmBulkEmail = async (e) => {
+        e.preventDefault();
+        if (selectedUserIds.length === 0) return;
+        
         try {
             setIsSendingBulk(true);
-            await sendBulkReminderEmail(selectedUserIds).unwrap();
-            alert('Registration reminders are being sent in the background!');
+            await sendBulkReminderEmail({ 
+                userIds: selectedUserIds,
+                title: bulkEmailForm.title,
+                message: bulkEmailForm.message
+            }).unwrap();
+            alert('Emails are being sent in the background!');
             setSelectedUserIds([]);
+            setIsBulkEmailModalOpen(false);
+            setBulkEmailForm({ title: '', message: '' });
         } catch (error) {
-            console.error('Failed to send bulk reminder:', error);
-            alert('Failed to send bulk reminders. Please try again later.');
+            console.error('Failed to send bulk email:', error);
+            alert(error?.data?.message || 'Failed to send emails. Please try again later.');
         } finally {
             setIsSendingBulk(false);
         }
@@ -471,7 +487,7 @@ const AdminDashboard = () => {
                                         className="bg-amber-500 hover:bg-amber-400 text-gray-900 px-4 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors disabled:opacity-50"
                                     >
                                         {isSendingBulk ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
-                                        Send Registration Reminder
+                                        Send Reminder
                                     </button>
                                 </div>
                             )}
@@ -498,6 +514,9 @@ const AdminDashboard = () => {
                                                 </th>
                                                 <th className="px-6 py-4 font-semibold">Name</th>
                                                 <th className="px-6 py-4 font-semibold">Email</th>
+                                                <th className="px-6 py-4 font-semibold">Phone</th>
+                                                <th className="px-6 py-4 font-semibold">Profession</th>
+                                                <th className="px-6 py-4 font-semibold">Org</th>
                                                 <th className="px-6 py-4 font-semibold">Location</th>
                                                 <th className="px-6 py-4 font-semibold">Status</th>
                                                 <th className="px-6 py-4 font-semibold text-right">Actions</th>
@@ -505,13 +524,14 @@ const AdminDashboard = () => {
                                         </thead>
                                         <tbody className="divide-y divide-gray-700/50 relative">
                                             {usersData?.data?.map((u) => (
-                                                <tr key={u._id} className={`dark:hover:bg-gray-700/30 hover:bg-gray-50 transition-colors text-sm ${u.isBlocked ? 'dark:bg-red-900/10 bg-red-50/50' : ''} ${selectedUserIds.includes(u._id) ? 'bg-amber-500/5 dark:bg-amber-500/10' : ''}`}>
+                                                <tr key={u._id} onClick={() => setEditingUserId(u._id)} className={`dark:hover:bg-gray-700/30 hover:bg-gray-50 transition-colors text-sm cursor-pointer ${u.isBlocked ? 'dark:bg-red-900/10 bg-red-50/50' : ''} ${selectedUserIds.includes(u._id) ? 'bg-amber-500/5 dark:bg-amber-500/10' : ''}`}>
                                                     <td className="px-6 py-4">
                                                         <input
                                                             type="checkbox"
                                                             className="w-4 h-4 rounded border-gray-600 bg-gray-700 checked:bg-amber-500 text-amber-500 focus:ring-amber-500 focus:ring-offset-gray-900"
                                                             checked={selectedUserIds.includes(u._id)}
-                                                            onChange={() => handleSelectUser(u._id)}
+                                                            onChange={(e) => { e.stopPropagation(); handleSelectUser(u._id); }}
+                                                            onClick={(e) => e.stopPropagation()}
                                                         />
                                                     </td>
                                                     <td className="px-6 py-4">
@@ -529,6 +549,11 @@ const AdminDashboard = () => {
                                                         </div>
                                                     </td>
                                                     <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.email}</td>
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.telephone || '-'}</td>
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.profession || '-'}</td>
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">
+                                                        {u.organization ? <span className="bg-gray-500/10 text-gray-500 dark:text-gray-400 px-2 py-1 rounded text-xs font-medium border border-gray-500/20">{u.organization}</span> : '-'}
+                                                    </td>
                                                     <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.city || '-'}, {u.country || '-'}</td>
                                                     <td className="px-6 py-4">
                                                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${u.membershipStatus === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
@@ -540,14 +565,14 @@ const AdminDashboard = () => {
                                                     </td>
                                                     <td className="px-6 py-4 text-right space-x-2">
                                                         <button
-                                                            onClick={() => handleToggleBlock(u._id, u.isBlocked)}
+                                                            onClick={(e) => { e.stopPropagation(); handleToggleBlock(u._id, u.isBlocked); }}
                                                             title={u.isBlocked ? 'Unblock User (Allow Login)' : 'Block User (Prevent Login)'}
                                                             className={`p-2 rounded-lg transition-all ${u.isBlocked ? 'bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white' : 'dark:bg-gray-800 bg-gray-100 text-amber-500 hover:bg-amber-500/20 hover:text-amber-400'}`}
                                                         >
                                                             {u.isBlocked ? <CheckCircle size={16} /> : <Ban size={16} />}
                                                         </button>
                                                         <button
-                                                            onClick={() => handleDeleteUser(u._id)}
+                                                            onClick={(e) => { e.stopPropagation(); handleDeleteUser(u._id); }}
                                                             title="Permanently Delete User"
                                                             className="p-2 rounded-lg dark:bg-gray-800 bg-gray-100 text-red-500 hover:bg-red-500 hover:text-white transition-all"
                                                         >
@@ -916,6 +941,63 @@ const AdminDashboard = () => {
                     </div>
                 )}
             </AnimatePresence>
+            
+            <AnimatePresence>
+                {isBulkEmailModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden"
+                        >
+                            <div className="px-6 py-4 border-b dark:border-gray-800 border-gray-200 flex justify-between items-center">
+                                <h2 className="text-xl font-bold dark:text-white text-gray-900">Send Bulk Reminder</h2>
+                                <button onClick={() => setIsBulkEmailModalOpen(false)} className="dark:text-gray-400 text-gray-500 hover:text-gray-900 dark:hover:text-white">
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <form onSubmit={handleConfirmBulkEmail} className="p-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Email Title / Subject</label>
+                                        <input
+                                            type="text"
+                                            required
+                                            value={bulkEmailForm.title}
+                                            onChange={(e) => setBulkEmailForm({ ...bulkEmailForm, title: e.target.value })}
+                                            placeholder="e.g. Important Update from KMSF"
+                                            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Email Message</label>
+                                        <textarea
+                                            required
+                                            rows="6"
+                                            value={bulkEmailForm.message}
+                                            onChange={(e) => setBulkEmailForm({ ...bulkEmailForm, message: e.target.value })}
+                                            placeholder="Type your message here..."
+                                            className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-4 py-2 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
+                                        ></textarea>
+                                    </div>
+                                </div>
+                                <div className="mt-6 flex justify-end gap-3">
+                                    <button type="button" onClick={() => setIsBulkEmailModalOpen(false)} className="px-5 py-2 rounded-lg font-medium dark:text-gray-300 text-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" disabled={isSendingBulk} className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-gray-900 px-6 py-2 rounded-lg font-bold disabled:opacity-50">
+                                        {isSendingBulk ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
+                                        Send to {selectedUserIds.length} Users
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <AdminEditUserModal isOpen={!!editingUserId} userId={editingUserId} onClose={() => setEditingUserId(null)} />
         </div>
     );
 };

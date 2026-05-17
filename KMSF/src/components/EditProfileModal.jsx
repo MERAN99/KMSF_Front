@@ -91,6 +91,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                 organization: u.organization || '',
                 profession: u.profession || '',
                 speciality: u.speciality || '',
+                telephone: u.telephone || '',
                 addressLine1: u.addressLine1 || '',
                 addressLine2: u.addressLine2 || '',
                 city: u.city || '',
@@ -299,7 +300,10 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                                                 <InputField label="First Name" name="firstName" value={form.firstName} onChange={handleFormChange} required />
                                                 <InputField label="Last Name" name="lastName" value={form.lastName} onChange={handleFormChange} required />
                                             </div>
-                                            <InputField label="Organisation" name="organization" value={form.organization} onChange={handleFormChange} required />
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <InputField label="Organisation" name="organization" value={form.organization} onChange={handleFormChange} required />
+                                                <InputField label="Phone Number" name="telephone" value={form.telephone} onChange={handleFormChange} type="tel" required />
+                                            </div>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <InputField label="Profession" name="profession" value={form.profession} onChange={handleFormChange} required />
                                                 <InputField label="Speciality" name="speciality" value={form.speciality} onChange={handleFormChange} required />

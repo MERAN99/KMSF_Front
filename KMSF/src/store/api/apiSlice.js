@@ -90,10 +90,10 @@ export const apiSlice = createApi({
             providesTags: ['User'],
         }),
         sendBulkReminderEmail: builder.mutation({
-            query: (userIds) => ({
+            query: (data) => ({
                 url: '/admin/member/bulk-email',
                 method: 'POST',
-                body: { userIds },
+                body: data,
             }),
         }),
         adminGetEvents: builder.query({
@@ -124,6 +124,18 @@ export const apiSlice = createApi({
             invalidatesTags: ['Event'],
         }),
         // User Admin Endpoints
+        getMember: builder.query({
+            query: (id) => `/admin/member/${id}`,
+            providesTags: ['User'],
+        }),
+        adminUpdateMember: builder.mutation({
+            query: ({ id, ...patch }) => ({
+                url: `/admin/member/${id}`,
+                method: 'PUT',
+                body: patch,
+            }),
+            invalidatesTags: ['User', 'Stats'],
+        }),
         toggleBlockUser: builder.mutation({
             query: (id) => ({
                 url: `/admin/member/${id}/toggle-block`,
@@ -261,6 +273,8 @@ export const {
     useAdminCreateEventMutation,
     useAdminUpdateEventMutation,
     useAdminDeleteEventMutation,
+    useGetMemberQuery,
+    useAdminUpdateMemberMutation,
     useToggleBlockUserMutation,
     useDeleteMemberMutation,
     useNotifyEventMutation,

@@ -195,6 +195,17 @@ const Members = () => {
     }
   ];
 
+  const audioVisualMembers = [
+    {
+      id: 1,
+      name: 'Aran Rahman-Jackson',
+      position: 'Audio Visual Specialist',
+      image: '/Team/Aran Rahman-Jackson.jpeg',
+      bio: 'A 20-year-old DJ, music producer, and Audio Visual Specialist for KMSF, combining creative talent, technical skill, and community commitment.',
+      detail: 'Aran Rahman-Jackson (known as Ary) is a 20-year-old DJ, music producer, and Audio Visual Specialist for KMSF. With over three years of study in music production, audio engineering, and media technology, he has performed at major KMSF events including Nawroz celebrations. Driven by his Kurdish heritage and lived experience with cerebral palsy, Aran is also a dedicated fundraiser, having raised £12,000 for mobility equipment sent to Kurdistan in memory of his grandfather and over £20,000 for Palestine through a 5K swim challenge. He combines creative talent, technical skill, and community commitment to make a lasting cultural impact.'
+    }
+  ];
+
   const [selectedMember, setSelectedMember] = useState(null);
   return (
     <section className="py-16 w-full dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-gradient-to-b from-gray-50 via-white to-gray-50 overflow-hidden">
@@ -351,6 +362,55 @@ const Members = () => {
                   <h3 className="text-sm sm:text-xl font-bold dark:text-white text-gray-900 mb-1 sm:mb-2 group-hover:text-[#C8A441] transition-colors duration-300 leading-tight">{member.name}</h3>
                   <p className="text-[#C8A441] font-medium mb-2 sm:mb-3 text-xs leading-tight">{member.position}</p>
                   <p className="dark:text-gray-300 text-gray-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 flex-grow line-clamp-3 sm:line-clamp-none">{member.bio}</p>
+                  <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-xs sm:text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-2 sm:px-4 py-1.5 sm:py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
+                  <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                    <div className="w-3 h-3 bg-[#C8A441]"></div>
+                  </div>
+                </div>
+                <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#C8A441]/50 transition-all duration-300 pointer-events-none"></div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Audio Visual Specialist */}
+        <div className="mb-16 mt-24">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-12"
+          >
+            <h3 className="text-3xl font-bold dark:text-white text-gray-900 mb-4">Audio Visual Specialist</h3>
+            <p className="dark:text-gray-400 text-gray-500 max-w-2xl mx-auto">
+              Our dedicated audio and visual production team
+            </p>
+          </motion.div>
+
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="flex justify-center"
+          >
+            {audioVisualMembers.map((member) => (
+              <motion.div
+                key={member.id}
+                variants={cardVariants}
+                className="group relative dark:bg-gray-800 bg-white dark:bg-opacity-50 bg-opacity-100 overflow-hidden shadow-xl hover:shadow-2xl dark:shadow-gray-900/50 shadow-gray-200 transition-all duration-500 flex flex-col border dark:border-gray-700/50 border-gray-200 max-w-sm w-full mx-auto"
+                whileHover={{ y: -10 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-[#C8A441]/20 to-[#F2AE02]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                <div className="relative w-full h-48 overflow-hidden flex-shrink-0">
+                  <img src={member.image || '/Team/user.png'} alt={member.name} className="w-full h-full object-cover object-[center_20%] filter grayscale transition-all duration-500 group-hover:scale-110 group-hover:filter-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent pointer-events-none"></div>
+                </div>
+                <div className="relative p-3 sm:p-6 flex flex-col flex-grow">
+                  <h3 className="text-sm sm:text-xl font-bold dark:text-white text-gray-900 mb-1 sm:mb-2 group-hover:text-[#C8A441] transition-colors duration-300 leading-tight">{member.name}</h3>
+                  <p className="text-[#C8A441] font-medium mb-2 sm:mb-3 text-xs leading-tight">{member.position}</p>
+                  <p className="dark:text-gray-300 text-gray-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 flex-grow">{member.bio}</p>
                   <button onClick={() => setSelectedMember(member)} className="mt-auto self-start text-xs sm:text-sm font-semibold dark:text-white text-gray-800 border border-[#C8A441] px-2 sm:px-4 py-1.5 sm:py-2 hover:bg-[#C8A441] hover:text-gray-900 transition-colors z-10">Read More</button>
                   <div className="absolute top-4 right-4 w-8 h-8 bg-[#C8A441]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
                     <div className="w-3 h-3 bg-[#C8A441]"></div>

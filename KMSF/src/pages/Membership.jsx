@@ -175,6 +175,10 @@ const Membership = () => {
       setErrorMsg('Please fill in all required personal details (Title, Name, Gender).');
       return;
     }
+    if (!formData.telephone) {
+      setErrorMsg('Please provide a valid phone number.');
+      return;
+    }
 
     if (!validatePassword(formData.password)) {
       setErrorMsg('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.');
