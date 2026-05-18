@@ -57,7 +57,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
     const [form, setForm] = useState({
         title: '', firstName: '', lastName: '', gender: '',
         organization: '', profession: '', speciality: '',
-        addressLine1: '', addressLine2: '', city: '', country: '', postCode: '',
+        addressLine1: '', addressLine2: '', city: '', countyRegion: '', country: '', postCode: '',
     });
 
     // ── Email change state
@@ -95,6 +95,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                 addressLine1: u.addressLine1 || '',
                 addressLine2: u.addressLine2 || '',
                 city: u.city || '',
+                countyRegion: u.countyRegion || '',
                 country: u.country || '',
                 postCode: u.postCode || '',
             });
@@ -108,13 +109,18 @@ const EditProfileModal = ({ isOpen, onClose }) => {
 
     const handleFormChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-    const handleSaveProfile = async () => {
+    const handleSaveProfile = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
         try {
             const result = await updateProfile(form).unwrap();
             dispatch(updateUser(result.user));
             showToast('success', 'Profile updated successfully!');
         } catch (err) {
-            showToast('error', err?.data?.message || 'Failed to update profile.');
+            if (err?.data?.errors) {
+                showToast('error', err.data.errors.map(e => e.message).join(' '));
+            } else {
+                showToast('error', err?.data?.message || 'Failed to update profile.');
+            }
         }
     };
 
@@ -281,7 +287,7 @@ const EditProfileModal = ({ isOpen, onClose }) => {
 
                                     {/* ── Personal Info Tab ─────────────────────────── */}
                                     {activeTab === 'personal' && (
-                                        <div className="space-y-4">
+                                        <form onSubmit={handleSaveProfile} className="space-y-4">
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <InputField label="Title" name="title" value={form.title} onChange={handleFormChange} required>
                                                     <select name="title" value={form.title} onChange={handleFormChange} className={SELECT_CLS}>
@@ -309,31 +315,53 @@ const EditProfileModal = ({ isOpen, onClose }) => {
                                                 <InputField label="Speciality" name="speciality" value={form.speciality} onChange={handleFormChange} required />
                                             </div>
                                             <div className="pt-2">
-                                                <button onClick={handleSaveProfile} disabled={saving} className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-gray-900 font-bold px-6 py-2.5 rounded hover:opacity-90 transition-opacity disabled:opacity-60">
+                                                <button type="submit" disabled={saving} className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-gray-900 font-bold px-6 py-2.5 rounded hover:opacity-90 transition-opacity disabled:opacity-60">
                                                     {saving ? <Loader2 size={16} className="animate-spin" /> : null}
                                                     {saving ? 'Saving...' : 'Save Changes'}
                                                 </button>
                                             </div>
-                                        </div>
+                                        </form>
                                     )}
 
                                     {/* ── Address Tab ───────────────────────────────── */}
                                     {activeTab === 'address' && (
-                                        <div className="space-y-4">
+                                        <form onSubmit={handleSaveProfile} className="space-y-4">
                                             <InputField label="Address Line 1" name="addressLine1" value={form.addressLine1} onChange={handleFormChange} required />
                                             <InputField label="Address Line 2" name="addressLine2" value={form.addressLine2} onChange={handleFormChange} />
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                 <InputField label="City" name="city" value={form.city} onChange={handleFormChange} required />
+                                                <div className="flex flex-col gap-1.5">
+                                                    <label className="text-sm font-semibold dark:text-gray-300 text-gray-700">County Region *</label>
+                                                    <select name="countyRegion" value={form.countyRegion} onChange={handleFormChange} className="w-full bg-transparent border-b border-gray-300 dark:border-gray-700 pb-2 dark:text-white text-gray-900 focus:outline-none focus:border-[#C8A441] transition-colors" required>
+                                                        <option value="" className="dark:bg-gray-800 text-gray-500">Select Region</option>
+                                                        <option value="East of England" className="dark:bg-gray-800">East of England</option>
+                                                        <option value="East Midlands" className="dark:bg-gray-800">East Midlands</option>
+                                                        <option value="Greater London" className="dark:bg-gray-800">Greater London</option>
+                                                        <option value="North East" className="dark:bg-gray-800">North East</option>
+                                                        <option value="North West" className="dark:bg-gray-800">North West</option>
+                                                        <option value="South East" className="dark:bg-gray-800">South East</option>
+                                                        <option value="South West" className="dark:bg-gray-800">South West</option>
+                                                        <option value="West Midlands" className="dark:bg-gray-800">West Midlands</option>
+                                                        <option disabled className="dark:bg-gray-800">──────────</option>
+                                                        <option value="Northern Ireland" className="dark:bg-gray-800">Northern Ireland</option>
+                                                        <option value="Scotland" className="dark:bg-gray-800">Scotland</option>
+                                                        <option value="Wales" className="dark:bg-gray-800">Wales</option>
+                                                        <option disabled className="dark:bg-gray-800">──────────</option>
+                                                        <option value="Non-UK" className="dark:bg-gray-800">Non-UK</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <InputField label="Country" name="country" value={form.country} onChange={handleFormChange} required />
                                                 <InputField label="Post Code" name="postCode" value={form.postCode} onChange={handleFormChange} required />
                                             </div>
-                                            <InputField label="Country" name="country" value={form.country} onChange={handleFormChange} required />
                                             <div className="pt-2">
-                                                <button onClick={handleSaveProfile} disabled={saving} className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-gray-900 font-bold px-6 py-2.5 rounded hover:opacity-90 transition-opacity disabled:opacity-60">
+                                                <button type="submit" disabled={saving} className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-gray-900 font-bold px-6 py-2.5 rounded hover:opacity-90 transition-opacity disabled:opacity-60">
                                                     {saving ? <Loader2 size={16} className="animate-spin" /> : null}
                                                     {saving ? 'Saving...' : 'Save Address'}
                                                 </button>
                                             </div>
-                                        </div>
+                                        </form>
                                     )}
 
                                     {/* ── Security Tab ──────────────────────────────── */}

@@ -20,7 +20,7 @@ const AdminEditUserModal = ({ isOpen, onClose, userId }) => {
     const [form, setForm] = useState({
         title: '', firstName: '', lastName: '', gender: '',
         organization: '', profession: '', speciality: '', telephone: '',
-        addressLine1: '', addressLine2: '', city: '', country: '', postCode: '',
+        addressLine1: '', addressLine2: '', city: '', countyRegion: '', country: '', postCode: '',
         role: '', membershipStatus: '',
         customDuration: '', emailTitle: '', emailMessage: '',
         newPassword: ''
@@ -43,6 +43,7 @@ const AdminEditUserModal = ({ isOpen, onClose, userId }) => {
                 addressLine1: u.addressLine1 || '',
                 addressLine2: u.addressLine2 || '',
                 city: u.city || '',
+                countyRegion: u.countyRegion || '',
                 country: u.country || '',
                 postCode: u.postCode || '',
                 role: u.role || 'member',
@@ -141,6 +142,26 @@ const AdminEditUserModal = ({ isOpen, onClose, userId }) => {
                                     <InputField label="Address Line 1" name="addressLine1" value={form.addressLine1} onChange={handleFormChange} />
                                     <InputField label="Address Line 2" name="addressLine2" value={form.addressLine2} onChange={handleFormChange} />
                                     <InputField label="City" name="city" value={form.city} onChange={handleFormChange} />
+                                    <div className="flex flex-col gap-1.5">
+                                        <label className="text-sm font-semibold dark:text-gray-300 text-gray-700">County Region *</label>
+                                        <select name="countyRegion" value={form.countyRegion} onChange={handleFormChange} className="w-full bg-transparent border-b border-gray-300 dark:border-gray-700 pb-2 dark:text-white text-gray-900 focus:outline-none focus:border-[#C8A441] transition-colors" required>
+                                            <option value="" className="dark:bg-gray-800 text-gray-500">Select Region</option>
+                                            <option value="East of England" className="dark:bg-gray-800">East of England</option>
+                                            <option value="East Midlands" className="dark:bg-gray-800">East Midlands</option>
+                                            <option value="Greater London" className="dark:bg-gray-800">Greater London</option>
+                                            <option value="North East" className="dark:bg-gray-800">North East</option>
+                                            <option value="North West" className="dark:bg-gray-800">North West</option>
+                                            <option value="South East" className="dark:bg-gray-800">South East</option>
+                                            <option value="South West" className="dark:bg-gray-800">South West</option>
+                                            <option value="West Midlands" className="dark:bg-gray-800">West Midlands</option>
+                                            <option disabled className="dark:bg-gray-800">──────────</option>
+                                            <option value="Northern Ireland" className="dark:bg-gray-800">Northern Ireland</option>
+                                            <option value="Scotland" className="dark:bg-gray-800">Scotland</option>
+                                            <option value="Wales" className="dark:bg-gray-800">Wales</option>
+                                            <option disabled className="dark:bg-gray-800">──────────</option>
+                                            <option value="Non-UK" className="dark:bg-gray-800">Non-UK</option>
+                                        </select>
+                                    </div>
                                     <InputField label="Country" name="country" value={form.country} onChange={handleFormChange} />
                                     <InputField label="Post Code" name="postCode" value={form.postCode} onChange={handleFormChange} />
                                 </div>

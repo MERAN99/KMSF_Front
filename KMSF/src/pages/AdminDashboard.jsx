@@ -379,19 +379,19 @@ const AdminDashboard = () => {
                                             </div>
                                         </div>
 
-                                        {/* Top Countries Bar Chart */}
+                                        {/* Top Regions Bar Chart */}
                                         <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6 lg:col-span-2 shadow-inner">
-                                            <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-6 flex items-center gap-2"><MapPin size={20} className="text-amber-500" /> Top Locations (Countries)</h3>
+                                            <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-6 flex items-center gap-2"><MapPin size={20} className="text-amber-500" /> Top Locations (Regions)</h3>
                                             <div className="h-72">
-                                                {statsData.data.countryCounts.length > 0 ? (
+                                                {statsData.data.regionCounts.length > 0 ? (
                                                     <ResponsiveContainer width="100%" height="100%">
-                                                        <BarChart data={statsData.data.countryCounts} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                                                        <BarChart data={statsData.data.regionCounts} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
                                                             <CartesianGrid strokeDasharray="3 3" stroke="#374151" horizontal={false} />
                                                             <XAxis type="number" stroke="#9CA3AF" />
                                                             <YAxis dataKey="_id" type="category" stroke="#9CA3AF" width={100} />
                                                             <RechartsTooltip contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#fff' }} cursor={{ fill: '#374151', opacity: 0.4 }} />
                                                             <Bar dataKey="count" name="Users" fill="#F59E0B" radius={[0, 4, 4, 0]} barSize={30}>
-                                                                {statsData.data.countryCounts.map((entry, index) => (
+                                                                {statsData.data.regionCounts.map((entry, index) => (
                                                                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                                                 ))}
                                                             </Bar>
@@ -554,7 +554,7 @@ const AdminDashboard = () => {
                                                     <td className="px-6 py-4 dark:text-gray-400 text-gray-500">
                                                         {u.organization ? <span className="bg-gray-500/10 text-gray-500 dark:text-gray-400 px-2 py-1 rounded text-xs font-medium border border-gray-500/20">{u.organization}</span> : '-'}
                                                     </td>
-                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.city || '-'}, {u.country || '-'}</td>
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.countyRegion || '-'}, {u.country || '-'}</td>
                                                     <td className="px-6 py-4">
                                                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${u.membershipStatus === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
                                                             u.membershipStatus === 'registered' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :

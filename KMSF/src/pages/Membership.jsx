@@ -110,7 +110,7 @@ const Membership = () => {
     title: '', firstName: '', lastName: '', gender: '', organization: '', profession: '', customProfession: '',
     email: '', password: '', confirmPassword: '',
     speciality: '', telephone: '',
-    addressLine1: '', addressLine2: '', city: '', country: '', postCode: '',
+    addressLine1: '', addressLine2: '', city: '', countyRegion: '', country: '', postCode: '',
     acceptedTerms: false,
   };
   const [formData, setFormData] = useState(emptyForm);
@@ -730,22 +730,39 @@ const Membership = () => {
                     <input type="text" name="addressLine2" value={formData.addressLine2} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Apartment, suite, unit, building, etc." />
                   </div>
 
-                  {/* City + Post Code */}
+                  {/* City + County Region */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">City *</label>
                       <input type="text" name="city" value={formData.city} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="City" />
                     </div>
                     <div>
-                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Post Code *</label>
-                      <input type="text" name="postCode" value={formData.postCode} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Post / Zip code" />
+                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">County Region *</label>
+                      <select name="countyRegion" value={formData.countyRegion} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                        <option value="">Select Region</option>
+                        <option value="East of England">East of England</option>
+                        <option value="East Midlands">East Midlands</option>
+                        <option value="Greater London">Greater London</option>
+                        <option value="North East">North East</option>
+                        <option value="North West">North West</option>
+                        <option value="South East">South East</option>
+                        <option value="South West">South West</option>
+                        <option value="West Midlands">West Midlands</option>
+                        <option disabled>──────────</option>
+                        <option value="Northern Ireland">Northern Ireland</option>
+                        <option value="Scotland">Scotland</option>
+                        <option value="Wales">Wales</option>
+                        <option disabled>──────────</option>
+                        <option value="Non-UK">Non-UK</option>
+                      </select>
                     </div>
                   </div>
 
-                  {/* Country */}
-                  <div>
-                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Country *</label>
-                    <select name="country" value={formData.country} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
+                  {/* Country + Post Code */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Country *</label>
+                      <select name="country" value={formData.country} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all">
                       <option value="">Select Country</option>
                       <optgroup label="🇬🇧 United Kingdom">
                         <option value="United Kingdom">United Kingdom</option>
@@ -855,8 +872,13 @@ const Membership = () => {
                       <option value="Other">Other</option>
                     </select>
                   </div>
+                  <div>
+                    <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Post Code *</label>
+                    <input type="text" name="postCode" value={formData.postCode} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Post / Zip code" />
+                  </div>
+                </div>
 
-                  {/* Terms */}
+                {/* Terms */}
                   <div className="flex items-start gap-3">
                     <input 
                       type="checkbox" 
