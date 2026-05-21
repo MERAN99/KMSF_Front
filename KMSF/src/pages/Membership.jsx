@@ -13,6 +13,7 @@ import {
   useConfirmVerificationMutation,
 } from '../store/api/apiSlice';
 import ForgotPasswordModal from '../components/ForgotPasswordModal';
+import CelebrationModal from '../components/CelebrationModal';
 import { setCredentials, selectCurrentToken, selectCurrentUser } from '../store/slices/authSlice';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -105,6 +106,7 @@ const Membership = () => {
   const [showSignInPassword, setShowSignInPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
+  const [showMemberModal, setShowMemberModal] = useState(false);
 
   const emptyForm = {
     title: '', firstName: '', lastName: '', gender: '', organization: '', profession: '', customProfession: '',
@@ -133,6 +135,7 @@ const Membership = () => {
           const result = await verifySession(sessionId).unwrap();
           dispatch(setCredentials(result));
           setSuccessMsg('Payment verified! Your membership is now active.');
+          setShowMemberModal(true);
           window.history.replaceState({}, document.title, window.location.pathname);
         } catch (err) {
           setErrorMsg(err.data?.message || 'Payment verification failed. Please contact support.');
@@ -348,18 +351,21 @@ const Membership = () => {
   // ─── Active paying member ───────────────────────────────────────────────────
   if (token && currentUser?.membershipStatus === 'active') {
     return (
-      <section className="min-h-screen dark:bg-gray-900 bg-gray-50 flex items-center justify-center">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center px-4">
-          <div className="w-20 h-20 bg-amber-500/10  flex items-center justify-center mx-auto mb-6">
-            <Star size={40} className="text-amber-400" />
-          </div>
-          <h1 className="text-4xl font-bold dark:text-white text-gray-900 mb-3">You're a Paying Member!</h1>
-          <p className="dark:text-gray-400 text-gray-500 text-lg mb-6">You have full access to everything KMSF has to offer.</p>
-          <button onClick={() => navigate('/')} className="bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold px-8 py-3  transition-all">
-            Go to Homepage
-          </button>
-        </motion.div>
-      </section>
+      <>
+        <section className="min-h-screen dark:bg-gray-900 bg-gray-50 flex items-center justify-center">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center px-4">
+            <div className="w-20 h-20 bg-amber-500/10  flex items-center justify-center mx-auto mb-6">
+              <Star size={40} className="text-amber-400" />
+            </div>
+            <h1 className="text-4xl font-bold dark:text-white text-gray-900 mb-3">You're a Paying Member!</h1>
+            <p className="dark:text-gray-400 text-gray-500 text-lg mb-6">You have full access to everything KMSF has to offer.</p>
+            <button onClick={() => navigate('/')} className="bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold px-8 py-3  transition-all">
+              Go to Homepage
+            </button>
+          </motion.div>
+        </section>
+        <CelebrationModal isOpen={showMemberModal} type="membership" onClose={() => setShowMemberModal(false)} />
+      </>
     );
   }
 
@@ -935,6 +941,7 @@ const Membership = () => {
       </div>
 
       <ForgotPasswordModal isOpen={isForgotModalOpen} onClose={() => setIsForgotModalOpen(false)} />
+      <CelebrationModal isOpen={showMemberModal} type="membership" onClose={() => setShowMemberModal(false)} />
     </section >
   );
 };

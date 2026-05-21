@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Users, Stethoscope, GraduationCap, Check, Quote, ChevronDown, ChevronUp } from 'lucide-react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useCreateDonationSessionMutation, useConfirmDonationSessionMutation, useGetDonationMessagesQuery } from '../store/api/apiSlice';
+import CelebrationModal from '../components/CelebrationModal';
 
 // ─── Colour palette for the stacked cards ──────────────────────────────────
 const CARD_STYLES = [
@@ -49,14 +50,23 @@ const MessageCard = ({ item, index }) => {
         <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold bg-gradient-to-br from-yellow-500 to-amber-600 text-gray-900 flex-shrink-0`}>
           {initials}
         </div>
-        <div>
-          <p className="dark:text-white text-gray-900 font-semibold text-sm">
+        <div className="flex-1 min-w-0">
+          <p className="dark:text-white text-gray-900 font-semibold text-sm truncate">
             {item.donorName === 'Anonymous' ? 'Anonymous Supporter' : item.donorName}
           </p>
           <p className="dark:text-gray-400 text-gray-500 text-xs">
             {new Date(item.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
         </div>
+        {item.amount && (
+          <div className="flex-shrink-0 text-right">
+            <span className="inline-block px-2.5 py-1 rounded-full text-xs font-bold"
+              style={{ background: 'rgba(245,158,11,0.15)', color: '#F59E0B', border: '1px solid rgba(245,158,11,0.3)' }}>
+              {item.currency === 'GBP' ? '£' : item.currency === 'USD' ? '$' : item.currency === 'EUR' ? '€' : (item.currency + ' ')}
+              {Number(item.amount).toFixed(2)}
+            </span>
+          </div>
+        )}
       </div>
     </motion.div>
   );
@@ -135,6 +145,7 @@ const DonationPage = () => {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [donationMessage, setDonationMessage] = useState('');
   const [donatedAmount, setDonatedAmount] = useState(null);
+  const [showDonationModal, setShowDonationModal] = useState(false);
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -146,12 +157,18 @@ const DonationPage = () => {
       setSuccessMsg('Thank you so much for your generous donation! Your support means the world to us.');
       const sessionId = searchParams.get('session_id');
       const amountParam = searchParams.get('amount');
-      if (amountParam) setDonatedAmount(parseFloat(amountParam));
+      if (amountParam) {
+        setDonatedAmount(parseFloat(amountParam));
+        setShowDonationModal(true);
+      }
       if (sessionId) {
         confirmDonationSession(sessionId)
           .unwrap()
           .then((res) => {
-            if (res?.data?.amount) setDonatedAmount(res.data.amount);
+            if (res?.data?.amount) {
+              setDonatedAmount(res.data.amount);
+              setShowDonationModal(true);
+            }
             console.log('Donation confirmed and saved.');
           })
           .catch((err) => console.error('Failed to confirm donation:', err));
@@ -218,6 +235,7 @@ const DonationPage = () => {
   };
 
   return (
+    <>
     <section className="min-h-screen dark:bg-gradient-to-b dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 bg-gradient-to-b from-gray-50 via-white to-gray-50">
       {/* Hero Section */}
       <div className="relative overflow-hidden pt-32 pb-20">
@@ -530,6 +548,13 @@ const DonationPage = () => {
         </div>
       </motion.div>
     </section >
+      <CelebrationModal
+        isOpen={showDonationModal}
+        type="donation"
+        amount={donatedAmount}
+        onClose={() => setShowDonationModal(false)}
+      />
+    </>
   );
 };
 
