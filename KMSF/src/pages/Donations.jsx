@@ -134,6 +134,7 @@ const DonationPage = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [donationMessage, setDonationMessage] = useState('');
+  const [donatedAmount, setDonatedAmount] = useState(null);
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -143,12 +144,16 @@ const DonationPage = () => {
   useEffect(() => {
     if (searchParams.get('donation') === 'success') {
       setSuccessMsg('Thank you so much for your generous donation! Your support means the world to us.');
-      // Confirm donation directly with backend using the Stripe session_id
       const sessionId = searchParams.get('session_id');
+      const amountParam = searchParams.get('amount');
+      if (amountParam) setDonatedAmount(parseFloat(amountParam));
       if (sessionId) {
         confirmDonationSession(sessionId)
           .unwrap()
-          .then(() => console.log('Donation confirmed and saved.'))
+          .then((res) => {
+            if (res?.data?.amount) setDonatedAmount(res.data.amount);
+            console.log('Donation confirmed and saved.');
+          })
           .catch((err) => console.error('Failed to confirm donation:', err));
       }
     } else if (searchParams.get('donation') === 'canceled') {
@@ -305,6 +310,14 @@ const DonationPage = () => {
                   <Heart className="w-12 h-12 text-green-500" />
                 </div>
                 <h3 className="text-4xl font-bold dark:text-white text-gray-900">Thank You!</h3>
+                {donatedAmount && (
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-5xl font-extrabold bg-gradient-to-r from-yellow-500 to-amber-400 bg-clip-text text-transparent">
+                      £{donatedAmount.toFixed(2)}
+                    </span>
+                    <span className="text-lg dark:text-gray-400 text-gray-500 font-medium">donated</span>
+                  </div>
+                )}
                 <p className="text-xl text-green-400 max-w-lg mx-auto leading-relaxed">
                   {successMsg}
                 </p>

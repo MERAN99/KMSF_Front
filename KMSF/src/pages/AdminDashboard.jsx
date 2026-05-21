@@ -487,7 +487,7 @@ const AdminDashboard = () => {
                                         className="bg-amber-500 hover:bg-amber-400 text-gray-900 px-4 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors disabled:opacity-50"
                                     >
                                         {isSendingBulk ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
-                                        Send Reminder
+                                        Send Message
                                     </button>
                                 </div>
                             )}
@@ -952,7 +952,7 @@ const AdminDashboard = () => {
                             className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden"
                         >
                             <div className="px-6 py-4 border-b dark:border-gray-800 border-gray-200 flex justify-between items-center">
-                                <h2 className="text-xl font-bold dark:text-white text-gray-900">Send Bulk Reminder</h2>
+                                <h2 className="text-xl font-bold dark:text-white text-gray-900">Send Bulk Message</h2>
                                 <button onClick={() => setIsBulkEmailModalOpen(false)} className="dark:text-gray-400 text-gray-500 hover:text-gray-900 dark:hover:text-white">
                                     <X size={20} />
                                 </button>

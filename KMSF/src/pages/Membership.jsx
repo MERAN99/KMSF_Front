@@ -715,7 +715,17 @@ const Membership = () => {
                   {/* Telephone */}
                   <div>
                     <label className="block dark:text-gray-300 text-gray-700 font-medium mb-1.5">Telephone *</label>
-                    <input type="tel" name="telephone" value={formData.telephone} onChange={handleChange} className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all" placeholder="Phone number" />
+                    <input
+                      type="tel"
+                      name="telephone"
+                      value={formData.telephone}
+                      onChange={handleChange}
+                      inputMode="numeric"
+                      pattern="[0-9+\-\s()]*"
+                      onKeyDown={(e) => { if (!/[0-9+\-\s()\b]/.test(e.key) && !['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'].includes(e.key)) e.preventDefault(); }}
+                      className="w-full dark:bg-gray-700 bg-gray-50 dark:text-white text-gray-900 px-4 py-3 border dark:border-gray-600 border-gray-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all"
+                      placeholder="Phone number"
+                    />
                   </div>
 
                   {/* Address Line 1 */}

@@ -258,12 +258,12 @@ const Navbar = () => {
                   </AnimatePresence>
                 </div>
               ) : (
-                /* Become a member Button */
+                /* Log In Button */
                 <a
                   href="/membership"
                   className="bg-amber-500 hover:bg-amber-400 text-gray-900 px-5 py-2 font-bold text-sm transition-all duration-200 shadow-[0_0_15px_rgba(245,158,11,0.3)] hover:shadow-[0_0_20px_rgba(245,158,11,0.5)]"
                 >
-                  Become a member
+                  Log In
                 </a>
               )}
 

@@ -30,6 +30,9 @@ const InputField = ({ label, name, value, onChange, type = 'text', required = fa
                 value={value || ''}
                 onChange={onChange}
                 disabled={disabled}
+                inputMode={type === 'tel' ? 'numeric' : undefined}
+                pattern={type === 'tel' ? '[0-9+\\-\\s()]*' : undefined}
+                onKeyDown={type === 'tel' ? (e) => { if (!/[0-9+\-\s()\b]/.test(e.key) && !['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'].includes(e.key)) e.preventDefault(); } : undefined}
                 className="w-full bg-gray-700/60 border border-gray-600 text-white px-3 py-2.5 text-sm rounded focus:outline-none focus:border-[#C8A441] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
         )}
