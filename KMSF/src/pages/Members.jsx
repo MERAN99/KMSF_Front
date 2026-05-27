@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 
 const containerVariants = {
@@ -18,6 +19,7 @@ const cardVariants = {
 };
 
 const Members = () => {
+  const navigate = useNavigate();
   const kmsfMembers = [
     {
       id: 1,
@@ -97,7 +99,7 @@ const Members = () => {
     {
       id: 8,
       name: 'Dr Tahir Hassan',
-      position: 'Research Fellow in Machine Learning',
+      position: 'Senior Lecturer in AI and Data Science',
       image: '/Team/Dr-Tahir.jpeg',
       bio: 'Senior Lecturer in AI and Data Science at Solent University and Executive Committee member of KSA, specializing in deep learning and healthcare.',
       detail: 'Dr Tahir Hassan is a Senior Lecturer in Artificial Intelligence and Data Science at Solent University and an Executive Committee member of the Kurdistan Scientific Association (KSA). With a PhD in Computing, his expertise lies at the intersection of deep learning and healthcare, specifically focusing on fairness-aware AI and medical image analysis.\n\nFormerly a Research Fellow at the University of Surrey, Tahir led critical work on the OPTIMAM mammography dataset to improve diagnostic equity. He is a passionate advocate for explainable, mathematically grounded AI systems and dedicated to leveraging his UK-based expertise to support Kurdistan’s healthcare and academic advancement.'
@@ -431,12 +433,15 @@ const Members = () => {
           className="text-center mt-16"
         >
           <div className="bg-gradient-to-r from-[#C8A441] to-[#F2AE02] p-8 shadow-2xl">
-            <h3 className="text-2xl font-bold text-white mb-4">Join Our Team</h3>
+            <h3 className="text-2xl font-bold text-white mb-4">Join Our Community</h3>
             <p className="text-gray-200 mb-6 max-w-2xl mx-auto">
               Interested in contributing to Kurdish healthcare and scientific advancement?
               We welcome passionate professionals to join our growing community.
             </p>
-            <button className="bg-white text-gray-900 px-8 py-3 font-semibold hover:bg-gray-100 transition-colors duration-300">
+            <button
+              onClick={() => navigate('/membership')}
+              className="bg-white text-gray-900 px-8 py-3 font-semibold hover:bg-gray-100 transition-colors duration-300"
+            >
               Learn About Membership
             </button>
           </div>

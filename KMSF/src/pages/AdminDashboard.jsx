@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
-import { selectCurrentUser } from '../store/slices/authSlice';
+import { selectCurrentUser, selectCurrentToken } from '../store/slices/authSlice';
 import { API_BASE_URL } from '../config';
 import {
     useGetAllUsersQuery,
@@ -15,11 +15,14 @@ import {
     useGetAdminStatsQuery,
     useGetAdminDonationsQuery,
     useToggleDonationMessageMutation,
-    useSendBulkReminderEmailMutation
+    useSendBulkReminderEmailMutation,
+    useGetArchiveFoldersQuery,
+    useCreateArchiveAlbumMutation,
+    useDeleteArchiveAlbumMutation,
 } from '../store/api/apiSlice';
 import {
     Users, Calendar, Plus, Edit, Trash2, X, CheckCircle,
-    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign, Tag, Eye, EyeOff
+    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign, Tag, Eye, EyeOff, Images, Upload, FolderOpen, ImagePlus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -291,6 +294,14 @@ const AdminDashboard = () => {
                     >
                         <Heart size={20} />
                         <span>Donations</span>
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('photoAlbums')}
+                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'photoAlbums' ? 'text-amber-500 border-b-2 border-amber-500' : 'dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'
+                            }`}
+                    >
+                        <Images size={20} />
+                        <span>Photo Albums</span>
                     </button>
                 </div>
 
@@ -790,6 +801,10 @@ const AdminDashboard = () => {
                             </div>
                         </div>
                     )}
+
+                    {/* PHOTO ALBUMS TAB */}
+                    {activeTab === 'photoAlbums' && <PhotoAlbumsTab />}
+
                 </div>
             </div>
 
@@ -1002,4 +1017,345 @@ const AdminDashboard = () => {
     );
 };
 
+// ─── Photo Albums Tab ─────────────────────────────────────────────────────────
+const PhotoAlbumsTab = () => {
+    const token = useSelector(selectCurrentToken);
+    const [showForm, setShowForm] = useState(false);
+    const [form, setForm] = useState({
+        folderName: '',
+        description: '',
+        date: '',
+        location: '',
+        category: 'Conference',
+    });
+    const [files, setFiles] = useState([]);
+    const [previews, setPreviews] = useState([]);
+    const [uploading, setUploading] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [successMsg, setSuccessMsg] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+    const [deletingPath, setDeletingPath] = useState(null);
+    const fileInputRef = React.useRef(null);
+    const dropRef = React.useRef(null);
+
+    const { data: foldersData, isLoading: foldersLoading, refetch } = useGetArchiveFoldersQuery();
+    const [createArchiveAlbum] = useCreateArchiveAlbumMutation();
+    const [deleteArchiveAlbum] = useDeleteArchiveAlbumMutation();
+
+    const albums = foldersData?.folders || [];
+
+    const handleFieldChange = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+
+    const addFiles = (newFiles) => {
+        const arr = Array.from(newFiles).filter(f => f.type.startsWith('image/'));
+        setFiles(prev => [...prev, ...arr]);
+        const newPreviews = arr.map(f => URL.createObjectURL(f));
+        setPreviews(prev => [...prev, ...newPreviews]);
+    };
+
+    const removeFile = (idx) => {
+        setFiles(prev => prev.filter((_, i) => i !== idx));
+        setPreviews(prev => prev.filter((_, i) => i !== idx));
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        addFiles(e.dataTransfer.files);
+    };
+
+    const resetForm = () => {
+        setForm({ folderName: '', description: '', date: '', location: '', category: 'Conference' });
+        setFiles([]);
+        setPreviews([]);
+        setUploadProgress(0);
+        setShowForm(false);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!form.folderName.trim()) { setErrorMsg('Album title is required.'); return; }
+        setErrorMsg('');
+        setSuccessMsg('');
+        setUploading(true);
+        setUploadProgress(0);
+
+        const fd = new FormData();
+        fd.append('folderName', form.folderName.trim());
+        fd.append('description', form.description);
+        fd.append('date', form.date);
+        fd.append('location', form.location);
+        fd.append('category', form.category);
+        files.forEach(f => fd.append('images', f));
+
+        // Use XMLHttpRequest for real upload progress
+        try {
+            await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001'}/archive-gallery/album`);
+                if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+
+                xhr.upload.onprogress = (ev) => {
+                    if (ev.lengthComputable) {
+                        setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
+                    }
+                };
+                xhr.onload = () => {
+                    if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
+                    else reject(new Error(JSON.parse(xhr.responseText)?.message || 'Upload failed'));
+                };
+                xhr.onerror = () => reject(new Error('Network error'));
+                xhr.send(fd);
+            });
+
+            setSuccessMsg(`Album "${form.folderName.trim()}" created with ${files.length} photo(s)!`);
+            resetForm();
+            refetch();
+        } catch (err) {
+            setErrorMsg(err.message || 'Upload failed. Please try again.');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleDeleteAlbum = async (folderPath, name) => {
+        if (!window.confirm(`Delete album "${name}" and ALL its photos? This cannot be undone.`)) return;
+        setDeletingPath(folderPath);
+        try {
+            await deleteArchiveAlbum(folderPath).unwrap();
+            refetch();
+        } catch (err) {
+            alert(err?.data?.message || 'Failed to delete album.');
+        } finally {
+            setDeletingPath(null);
+        }
+    };
+
+    return (
+        <div className="p-6">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+                <div>
+                    <h2 className="text-xl font-bold dark:text-white text-gray-900">Photo Albums</h2>
+                    <p className="text-sm dark:text-gray-400 text-gray-500 mt-0.5">Albums appear in the public Gallery &amp; Archive pages. Images are compressed automatically.</p>
+                </div>
+                <button
+                    onClick={() => setShowForm(s => !s)}
+                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-gray-900 px-4 py-2 rounded-lg font-bold transition-all shadow-lg shadow-amber-500/20"
+                >
+                    {showForm ? <X size={18} /> : <Plus size={18} />}
+                    <span>{showForm ? 'Cancel' : 'New Album'}</span>
+                </button>
+            </div>
+
+            {/* Success / Error banners */}
+            <AnimatePresence>
+                {successMsg && (
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                        className="mb-4 flex items-center gap-3 bg-green-500/10 border border-green-500/20 text-green-400 px-4 py-3 rounded-lg">
+                        <CheckCircle size={18} /> {successMsg}
+                        <button onClick={() => setSuccessMsg('')} className="ml-auto"><X size={16} /></button>
+                    </motion.div>
+                )}
+                {errorMsg && (
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                        className="mb-4 flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg">
+                        <AlertCircle size={18} /> {errorMsg}
+                        <button onClick={() => setErrorMsg('')} className="ml-auto"><X size={16} /></button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Create Album Form */}
+            <AnimatePresence>
+                {showForm && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden mb-8"
+                    >
+                        <form onSubmit={handleSubmit} className="dark:bg-gray-900/60 bg-gray-50 border dark:border-gray-700/50 border-gray-200 rounded-xl p-6 space-y-5">
+                            <h3 className="font-bold dark:text-white text-gray-900 text-lg flex items-center gap-2">
+                                <ImagePlus size={20} className="text-amber-500" /> Create New Album
+                            </h3>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Title */}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Album Title *</label>
+                                    <input name="folderName" value={form.folderName} onChange={handleFieldChange} required
+                                        placeholder="e.g. Annual Conference 2025"
+                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors" />
+                                    <p className="text-xs dark:text-gray-500 text-gray-400 mt-1">This becomes the folder name in Cloudinary — choose a unique, descriptive name.</p>
+                                </div>
+
+                                {/* Description */}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Description</label>
+                                    <textarea name="description" value={form.description} onChange={handleFieldChange} rows={3}
+                                        placeholder="Brief description of the album..."
+                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors resize-none" />
+                                </div>
+
+                                {/* Date */}
+                                <div>
+                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Date</label>
+                                    <input name="date" type="date" value={form.date} onChange={handleFieldChange}
+                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors" />
+                                </div>
+
+                                {/* Location */}
+                                <div>
+                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Location</label>
+                                    <input name="location" value={form.location} onChange={handleFieldChange}
+                                        placeholder="e.g. London, UK"
+                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors" />
+                                </div>
+
+                                {/* Category */}
+                                <div>
+                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Category</label>
+                                    <select name="category" value={form.category} onChange={handleFieldChange}
+                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors">
+                                        <option>Conference</option>
+                                        <option>Workshop</option>
+                                        <option>Seminar</option>
+                                        <option>Ceremony</option>
+                                        <option>Community</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Drag-and-drop image area */}
+                            <div>
+                                <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Photos (no limit)</label>
+                                <div
+                                    ref={dropRef}
+                                    onDragOver={(e) => e.preventDefault()}
+                                    onDrop={handleDrop}
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="border-2 border-dashed dark:border-gray-600 border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-amber-500 transition-colors group"
+                                >
+                                    <Upload size={32} className="mx-auto mb-3 dark:text-gray-500 text-gray-400 group-hover:text-amber-500 transition-colors" />
+                                    <p className="dark:text-gray-400 text-gray-500 text-sm">
+                                        <span className="text-amber-500 font-semibold">Click to browse</span> or drag &amp; drop images here
+                                    </p>
+                                    <p className="text-xs dark:text-gray-600 text-gray-400 mt-1">JPG, PNG, WebP, GIF — max 20MB each — unlimited count</p>
+                                    <p className="text-xs text-amber-500/70 mt-1">✓ Auto-compressed on upload (quality:auto, max 2000px wide)</p>
+                                    <input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden"
+                                        onChange={(e) => addFiles(e.target.files)} />
+                                </div>
+
+                                {/* Preview grid */}
+                                {previews.length > 0 && (
+                                    <div className="mt-4">
+                                        <p className="text-sm dark:text-gray-400 text-gray-500 mb-2">{previews.length} photo(s) ready to upload</p>
+                                        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
+                                            {previews.map((url, idx) => (
+                                                <div key={idx} className="relative aspect-square group/img">
+                                                    <img src={url} alt="" className="w-full h-full object-cover rounded-lg" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeFile(idx)}
+                                                        className="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-400 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity shadow-lg"
+                                                    >
+                                                        <X size={10} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Upload progress */}
+                            {uploading && (
+                                <div>
+                                    <div className="flex items-center justify-between text-sm dark:text-gray-400 text-gray-500 mb-1">
+                                        <span>Uploading &amp; compressing…</span>
+                                        <span>{uploadProgress}%</span>
+                                    </div>
+                                    <div className="h-2 dark:bg-gray-700 bg-gray-200 rounded-full overflow-hidden">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-300"
+                                            style={{ width: `${uploadProgress}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Submit */}
+                            <div className="flex gap-3 pt-2">
+                                <button type="submit" disabled={uploading}
+                                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-gray-900 px-6 py-2.5 rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-amber-500/20">
+                                    {uploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
+                                    {uploading ? `Uploading… ${uploadProgress}%` : `Create Album${files.length ? ` (${files.length} photos)` : ''}`}
+                                </button>
+                                <button type="button" onClick={resetForm} disabled={uploading}
+                                    className="px-6 py-2.5 rounded-lg font-semibold dark:text-gray-400 text-gray-500 hover:dark:text-white hover:text-gray-900 border dark:border-gray-700 border-gray-300 transition-colors disabled:opacity-50">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Albums List */}
+            {foldersLoading ? (
+                <div className="flex justify-center py-20"><Loader2 className="animate-spin text-amber-500" size={40} /></div>
+            ) : albums.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-24 gap-3 dark:text-gray-600 text-gray-400">
+                    <FolderOpen size={48} className="opacity-30" />
+                    <p className="text-lg font-medium">No albums yet</p>
+                    <p className="text-sm">Create your first album above to get started.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                    {albums.map((album) => (
+                        <motion.div
+                            key={album.path}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="group relative dark:bg-gray-900 bg-white border dark:border-gray-700/50 border-gray-200 rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:border-amber-500/40 transition-all"
+                        >
+                            {/* Cover */}
+                            <div className="relative h-40 dark:bg-gray-800 bg-gray-100 overflow-hidden">
+                                {album.coverThumb ? (
+                                    <img src={album.coverThumb} alt={album.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                        <Images size={40} className="text-gray-400 opacity-30" />
+                                    </div>
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                                <div className="absolute bottom-3 left-3 text-white">
+                                    <p className="font-bold text-sm line-clamp-2">{album.name}</p>
+                                    <p className="text-xs text-gray-300">{album.totalImages} photo{album.totalImages !== 1 ? 's' : ''}</p>
+                                </div>
+                                {/* Delete button */}
+                                <button
+                                    onClick={() => handleDeleteAlbum(album.path, album.name)}
+                                    disabled={deletingPath === album.path}
+                                    className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all disabled:opacity-50"
+                                    title="Delete album"
+                                >
+                                    {deletingPath === album.path ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                                </button>
+                            </div>
+                            {/* Meta */}
+                            <div className="p-3">
+                                <p className="text-xs dark:text-gray-400 text-gray-500 flex items-center gap-1">
+                                    <Images size={11} className="text-amber-500" />
+                                    {album.totalImages} photos
+                                </p>
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 export default AdminDashboard;
+

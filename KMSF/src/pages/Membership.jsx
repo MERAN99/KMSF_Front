@@ -473,8 +473,8 @@ const Membership = () => {
                   <Star size={18} />
                   <span className="text-xs font-semibold uppercase tracking-widest">Paying Member</span>
                 </div>
-                <p className="dark:text-white text-gray-900 font-bold text-2xl">Subscription</p>
-                <p className="text-amber-400/70 text-sm mt-0.5">via Stripe — cancel anytime</p>
+                <p className="dark:text-white text-gray-900 font-bold text-2xl">£4.50 <span className="text-sm font-normal text-amber-500/80">/ month</span></p>
+                <p className="text-amber-500/70 text-sm mt-0.5">via Stripe — cancel anytime</p>
               </div>
               <ul className="px-6 py-5 space-y-3">
                 {[

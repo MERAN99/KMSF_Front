@@ -13,7 +13,7 @@ export const apiSlice = createApi({
             return headers;
         },
     }),
-    tagTypes: ['User', 'Subscription', 'Event', 'Donation'],
+    tagTypes: ['User', 'Subscription', 'Event', 'Donation', 'ArchiveGallery'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (credentials) => ({
@@ -253,6 +253,34 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['User'],
         }),
+        // ─── Archive Cloudinary Gallery ───────────────────────────────────────
+        getArchiveFolders: builder.query({
+            query: () => '/archive-gallery/folders',
+            providesTags: ['ArchiveGallery'],
+        }),
+        getArchiveImages: builder.query({
+            query: ({ folder, limit = 12, cursor }) => {
+                let url = `/archive-gallery/images?folder=${encodeURIComponent(folder)}&limit=${limit}`;
+                if (cursor) url += `&cursor=${encodeURIComponent(cursor)}`;
+                return url;
+            },
+            providesTags: ['ArchiveGallery'],
+        }),
+        createArchiveAlbum: builder.mutation({
+            query: (formData) => ({
+                url: '/archive-gallery/album',
+                method: 'POST',
+                body: formData,
+            }),
+            invalidatesTags: ['ArchiveGallery'],
+        }),
+        deleteArchiveAlbum: builder.mutation({
+            query: (folderPath) => ({
+                url: `/archive-gallery/album/${encodeURIComponent(folderPath)}`,
+                method: 'DELETE',
+            }),
+            invalidatesTags: ['ArchiveGallery'],
+        }),
     }),
 });
 
@@ -293,4 +321,8 @@ export const {
     useUpdateProfileMutation,
     useRequestEmailChangeMutation,
     useConfirmEmailChangeMutation,
+    useGetArchiveFoldersQuery,
+    useGetArchiveImagesQuery,
+    useCreateArchiveAlbumMutation,
+    useDeleteArchiveAlbumMutation,
 } = apiSlice;
