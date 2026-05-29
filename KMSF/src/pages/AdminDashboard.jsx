@@ -752,15 +752,29 @@ const AdminDashboard = () => {
                             ) : eventsData?.data?.length === 0 ? (
                                 <div className="text-center py-20 text-gray-500">No events created yet.</div>
                             ) : (
-                                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                                    {[...eventsData.data]
-                                        .sort((a, b) => {
+                                    (() => {
+                                        const allEvents = eventsData?.data ? [...eventsData.data] : [];
+                                        
+                                        // Helper: check if past/finished
+                                        const isFinishedEvent = (ev) => {
+                                            if (ev.isTBD) return false;
+                                            if (!ev.date) return false;
+                                            const eventDate = new Date(ev.date);
+                                            const threeDaysAfter = new Date(eventDate.getTime() + 3 * 24 * 60 * 60 * 1000);
+                                            return new Date() > threeDaysAfter;
+                                        };
+
+                                        // Partition events
+                                        const upcomingEvents = allEvents.filter(ev => !isFinishedEvent(ev)).sort((a, b) => {
                                             if (a.isTBD && !b.isTBD) return 1;
                                             if (!a.isTBD && b.isTBD) return -1;
                                             if (a.isTBD && b.isTBD) return 0;
                                             return new Date(a.date) - new Date(b.date);
-                                        })
-                                        .map((ev) => (
+                                        });
+
+                                        const finishedEvents = allEvents.filter(ev => isFinishedEvent(ev)).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+                                        const renderEventCard = (ev) => (
                                             <div key={ev._id} className="dark:bg-gray-900 bg-white dark:border-gray-700/50 border-gray-200 border rounded-xl p-5 flex flex-col sm:flex-row gap-5 group hover:border-amber-500/50 transition-all shadow-lg hover:shadow-amber-500/5">
                                                 <div className="relative w-full sm:w-48 h-48 sm:h-full shrink-0 rounded-lg overflow-hidden bg-gray-800">
                                                     {ev.image ? (
@@ -787,42 +801,76 @@ const AdminDashboard = () => {
                                                             <Calendar size={14} className="text-amber-500 shrink-0" />
                                                             <span className="truncate">{ev.isTBD ? 'TBD (To Be Decided)' : new Date(ev.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                                                         </div>
-                                                    <div className="flex items-center space-x-2">
-                                                        <Clock size={14} className="text-amber-500 shrink-0" />
-                                                        <span className="truncate">{ev.time}</span>
+                                                        <div className="flex items-center space-x-2">
+                                                            <Clock size={14} className="text-amber-500 shrink-0" />
+                                                            <span className="truncate">{ev.time}</span>
+                                                        </div>
+                                                        <div className="flex items-center space-x-2">
+                                                            <MapPin size={14} className="text-amber-500 shrink-0" />
+                                                            <span className="truncate">{ev.location}</span>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center space-x-2">
-                                                        <MapPin size={14} className="text-amber-500 shrink-0" />
-                                                        <span className="truncate">{ev.location}</span>
+                                                    <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-800 border-gray-200">
+                                                        <button
+                                                            onClick={() => handleNotifyMembers(ev._id)}
+                                                            disabled={isNotifying}
+                                                            title="Email to All Members"
+                                                            className="flex items-center gap-2 px-3 py-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-200 transition-colors text-sm disabled:opacity-50"
+                                                        >
+                                                            {notifyingId === ev._id ? <Loader2 size={14} className="animate-spin text-amber-500" /> : <Mail size={14} className="text-blue-400" />}
+                                                            <span>Notify</span>
+                                                        </button>
+                                                        <button
+                                                            onClick={() => { setEditingEvent(ev); setIsEventModalOpen(true); }}
+                                                            className="p-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-400 text-gray-500 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
+                                                        >
+                                                            <Edit size={16} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteEvent(ev._id)}
+                                                            className="p-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-400 text-gray-500 hover:bg-red-500/10 hover:text-red-500 transition-colors"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
                                                     </div>
-                                                </div>
-                                                <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-800 border-gray-200">
-                                                    <button
-                                                        onClick={() => handleNotifyMembers(ev._id)}
-                                                        disabled={isNotifying}
-                                                        title="Email to All Members"
-                                                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-300 text-gray-600 dark:hover:text-white hover:text-gray-900 dark:hover:bg-gray-700 hover:bg-gray-200 transition-colors text-sm disabled:opacity-50"
-                                                    >
-                                                        {notifyingId === ev._id ? <Loader2 size={14} className="animate-spin text-amber-500" /> : <Mail size={14} className="text-blue-400" />}
-                                                        <span>Notify</span>
-                                                    </button>
-                                                    <button
-                                                        onClick={() => { setEditingEvent(ev); setIsEventModalOpen(true); }}
-                                                        className="p-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-400 text-gray-500 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
-                                                    >
-                                                        <Edit size={16} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteEvent(ev._id)}
-                                                        className="p-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-400 text-gray-500 hover:bg-red-500/10 hover:text-red-500 transition-colors"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
+                                        );
+
+                                        return (
+                                            <div className="space-y-10">
+                                                {/* Upcoming Events Section */}
+                                                <div>
+                                                    <h3 className="text-lg font-bold dark:text-[#C8A441] text-amber-600 mb-4 flex items-center gap-2">
+                                                        <Calendar size={20} />
+                                                        <span>Upcoming &amp; Active Events ({upcomingEvents.length})</span>
+                                                    </h3>
+                                                    {upcomingEvents.length === 0 ? (
+                                                        <div className="text-center py-10 dark:bg-gray-900/30 bg-gray-50 rounded-xl border dark:border-gray-800 border-gray-200 text-gray-500">No upcoming events.</div>
+                                                    ) : (
+                                                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                                            {upcomingEvents.map(renderEventCard)}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Finished Events Section */}
+                                                <div>
+                                                    <h3 className="text-lg font-bold dark:text-emerald-400 text-emerald-600 mb-4 flex items-center gap-2">
+                                                        <CheckCircle size={20} />
+                                                        <span>Finished Events ({finishedEvents.length})</span>
+                                                    </h3>
+                                                    {finishedEvents.length === 0 ? (
+                                                        <div className="text-center py-10 dark:bg-gray-900/30 bg-gray-50 rounded-xl border dark:border-gray-800 border-gray-200 text-gray-500">No finished events.</div>
+                                                    ) : (
+                                                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                                            {finishedEvents.map(renderEventCard)}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })()
                             )}
                         </div>
                     )}
