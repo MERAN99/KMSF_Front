@@ -16,13 +16,14 @@ import {
     useGetAdminDonationsQuery,
     useToggleDonationMessageMutation,
     useSendBulkReminderEmailMutation,
-    useGetArchiveFoldersQuery,
-    useCreateArchiveAlbumMutation,
-    useDeleteArchiveAlbumMutation,
+    useGetTeamMembersQuery,
+    useCreateTeamMemberMutation,
+    useDeleteTeamMemberMutation,
+    useUpdateTeamMemberMutation,
 } from '../store/api/apiSlice';
 import {
     Users, Calendar, Plus, Edit, Trash2, X, CheckCircle,
-    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign, Tag, Eye, EyeOff, Images, Upload, FolderOpen, ImagePlus
+    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign, Tag, Eye, EyeOff, Images, Upload, FolderOpen, ImagePlus, ArrowLeft, Save
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -46,16 +47,33 @@ const AdminDashboard = () => {
     const [newImageFiles, setNewImageFiles] = useState([]);   // File objects to upload
     const [newImagePreviews, setNewImagePreviews] = useState([]); // Data URLs for preview
     const imageInputRef = useRef(null);
+    
+    // Gallery images
+    const [existingGalleryImages, setExistingGalleryImages] = useState([]); 
+    const [newGalleryFiles, setNewGalleryFiles] = useState([]);   
+    const [newGalleryPreviews, setNewGalleryPreviews] = useState([]); 
+    const galleryInputRef = useRef(null);
+
+    // Team member form state
+    const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+    const [editingTeamMember, setEditingTeamMember] = useState(null);
+    const [teamImageFile, setTeamImageFile] = useState(null);
+    const [teamImagePreview, setTeamImagePreview] = useState('');
+    const teamImageInputRef = useRef(null);
 
     // When editing opens, seed existing images
     useEffect(() => {
         if (editingEvent) {
             setExistingImages(editingEvent.images || (editingEvent.image ? [editingEvent.image] : []));
+            setExistingGalleryImages(editingEvent.galleryImages || []);
         } else {
             setExistingImages([]);
+            setExistingGalleryImages([]);
         }
         setNewImageFiles([]);
         setNewImagePreviews([]);
+        setNewGalleryFiles([]);
+        setNewGalleryPreviews([]);
     }, [editingEvent, isEventModalOpen]);
 
     // Pagination & Search specific to Users tab
@@ -86,10 +104,14 @@ const AdminDashboard = () => {
     const { data: usersData, isLoading: usersLoading } = useGetAllUsersQuery({ page, limit, search: debouncedSearch, status: statusFilter, organization: orgFilter });
     const { data: eventsData, isLoading: eventsLoading } = useAdminGetEventsQuery();
     const { data: donationsData, isLoading: donationsLoading } = useGetAdminDonationsQuery();
+    const { data: teamData, isLoading: teamLoading } = useGetTeamMembersQuery();
+    const [createTeamMember, { isLoading: isCreatingTeam }] = useCreateTeamMemberMutation();
+    const [deleteTeamMember] = useDeleteTeamMemberMutation();
+    const [updateTeamMember, { isLoading: isUpdatingTeam }] = useUpdateTeamMemberMutation();
     const [toggleDonationMsg] = useToggleDonationMessageMutation();
 
-    const [createEvent] = useAdminCreateEventMutation();
-    const [updateEvent] = useAdminUpdateEventMutation();
+    const [createEvent, { isLoading: isCreatingEvent }] = useAdminCreateEventMutation();
+    const [updateEvent, { isLoading: isUpdatingEvent }] = useAdminUpdateEventMutation();
     const [deleteEvent] = useAdminDeleteEventMutation();
     const [toggleBlockUser] = useToggleBlockUserMutation();
     const [deleteMember] = useDeleteMemberMutation();
@@ -126,9 +148,11 @@ const AdminDashboard = () => {
 
         // Existing images to keep (edit mode)
         formData.set('existingImages', JSON.stringify(existingImages));
+        formData.set('existingGalleryImages', JSON.stringify(existingGalleryImages));
 
         // New image files to upload
         newImageFiles.forEach(file => formData.append('images', file));
+        newGalleryFiles.forEach(file => formData.append('galleryImages', file));
 
         try {
             if (editingEvent) {
@@ -146,11 +170,25 @@ const AdminDashboard = () => {
     const handleImageFilesSelected = (e) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
+        const totalImages = existingImages.length + newImageFiles.length + files.length;
+        if (totalImages > 3) {
+            alert('You can only select up to 3 posters.');
+            return;
+        }
         const previews = files.map(f => URL.createObjectURL(f));
         setNewImageFiles(prev => [...prev, ...files]);
         setNewImagePreviews(prev => [...prev, ...previews]);
         // Reset input so same file can be added again if needed
         if (imageInputRef.current) imageInputRef.current.value = '';
+    };
+
+    const handleGalleryFilesSelected = (e) => {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+        const previews = files.map(f => URL.createObjectURL(f));
+        setNewGalleryFiles(prev => [...prev, ...files]);
+        setNewGalleryPreviews(prev => [...prev, ...previews]);
+        if (galleryInputRef.current) galleryInputRef.current.value = '';
     };
 
     const removeExistingImage = (idx) => {
@@ -162,6 +200,15 @@ const AdminDashboard = () => {
         setNewImagePreviews(prev => prev.filter((_, i) => i !== idx));
     };
 
+    const removeExistingGalleryImage = (idx) => {
+        setExistingGalleryImages(prev => prev.filter((_, i) => i !== idx));
+    };
+
+    const removeNewGalleryImage = (idx) => {
+        setNewGalleryFiles(prev => prev.filter((_, i) => i !== idx));
+        setNewGalleryPreviews(prev => prev.filter((_, i) => i !== idx));
+    };
+
     const handleDeleteEvent = async (id) => {
         if (window.confirm('Are you sure you want to delete this event?')) {
             try {
@@ -170,6 +217,60 @@ const AdminDashboard = () => {
                 console.error('Failed to delete event:', err);
             }
         }
+    };
+
+    const handleCreateTeamMember = async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData();
+
+        formData.set('name', form.memberName.value);
+        formData.set('position', form.memberPosition.value);
+        formData.set('bio', form.memberBio.value);
+        formData.set('detail', form.memberDetail.value);
+        formData.set('teamType', form.memberTeamType.value);
+        formData.set('order', form.memberOrder.value || '0');
+
+        if (teamImageFile) {
+            formData.append('image', teamImageFile);
+        } else if (!editingTeamMember) {
+            alert('Please select an image/photo for the team member.');
+            return;
+        }
+
+        try {
+            if (editingTeamMember) {
+                await updateTeamMember({ id: editingTeamMember._id, formData }).unwrap();
+            } else {
+                await createTeamMember(formData).unwrap();
+            }
+            setIsTeamModalOpen(false);
+            setEditingTeamMember(null);
+            setTeamImageFile(null);
+            setTeamImagePreview('');
+            form.reset();
+        } catch (err) {
+            console.error('Failed to save team member:', err);
+            alert(err?.data?.message || 'Failed to save team member.');
+        }
+    };
+
+    const handleDeleteTeamMember = async (id, name) => {
+        if (window.confirm(`Are you sure you want to delete team member ${name}?`)) {
+            try {
+                await deleteTeamMember(id).unwrap();
+            } catch (err) {
+                console.error('Failed to delete team member:', err);
+                alert('Failed to delete team member.');
+            }
+        }
+    };
+
+    const handleTeamImageFileSelected = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setTeamImageFile(file);
+        setTeamImagePreview(URL.createObjectURL(file));
     };
 
     const handleToggleBlock = async (id, isBlocked) => {
@@ -288,20 +389,20 @@ const AdminDashboard = () => {
                         <span>Events</span>
                     </button>
                     <button
+                        onClick={() => setActiveTab('team')}
+                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'team' ? 'text-amber-500 border-b-2 border-amber-500' : 'dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'
+                            }`}
+                    >
+                        <Briefcase size={20} />
+                        <span>Team</span>
+                    </button>
+                    <button
                         onClick={() => setActiveTab('donations')}
                         className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'donations' ? 'text-amber-500 border-b-2 border-amber-500' : 'dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'
                             }`}
                     >
                         <Heart size={20} />
                         <span>Donations</span>
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('photoAlbums')}
-                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'photoAlbums' ? 'text-amber-500 border-b-2 border-amber-500' : 'dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'
-                            }`}
-                    >
-                        <Images size={20} />
-                        <span>Photo Albums</span>
                     </button>
                 </div>
 
@@ -802,9 +903,121 @@ const AdminDashboard = () => {
                         </div>
                     )}
 
-                    {/* PHOTO ALBUMS TAB */}
-                    {activeTab === 'photoAlbums' && <PhotoAlbumsTab />}
+                    {/* TEAM TAB */}
+                    {activeTab === 'team' && (
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xl font-bold dark:text-white text-gray-900 flex items-center gap-2">
+                                    <Users className="text-amber-500" /> Team Members
+                                </h2>
+                                <button
+                                    onClick={() => {
+                                        setTeamImagePreview('');
+                                        setTeamImageFile(null);
+                                        setIsTeamModalOpen(true);
+                                    }}
+                                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-gray-900 px-4 py-2 rounded-lg font-bold transition-all shadow-lg shadow-amber-500/20 text-sm"
+                                >
+                                    <Plus size={16} />
+                                    <span>Add Team Member</span>
+                                </button>
+                            </div>
 
+                            <div className="overflow-x-auto min-h-[400px]">
+                                {teamLoading ? (
+                                    <div className="flex justify-center py-20">
+                                        <Loader2 className="animate-spin text-amber-500" size={48} />
+                                    </div>
+                                ) : !teamData?.data || teamData.data.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+                                        <Users size={48} className="mb-4 opacity-20" />
+                                        <p>No team members recorded yet.</p>
+                                    </div>
+                                ) : (
+                                    <table className="w-full text-left">
+                                        <thead className="bg-gray-900/80 text-gray-400 text-xs uppercase tracking-wider sticky top-0 backdrop-blur-md z-10">
+                                            <tr>
+                                                <th className="px-6 py-4 font-semibold">Member</th>
+                                                <th className="px-6 py-4 font-semibold">Position</th>
+                                                <th className="px-6 py-4 font-semibold">Team Type</th>
+                                                <th className="px-6 py-4 font-semibold text-center">Sort Order</th>
+                                                <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-700/50 relative">
+                                            {[...teamData.data]
+                                                .sort((a, b) => {
+                                                    if (a.teamType !== b.teamType) {
+                                                        return a.teamType.localeCompare(b.teamType);
+                                                    }
+                                                    return (a.order || 0) - (b.order || 0);
+                                                })
+                                                .map((member) => (
+                                                    <tr key={member._id} className="dark:hover:bg-gray-700/30 hover:bg-gray-50 transition-colors text-sm">
+                                                        <td className="px-6 py-4">
+                                                            <div className="flex items-center space-x-3">
+                                                                <div className="w-10 h-10 rounded-full border border-gray-700 overflow-hidden flex-shrink-0">
+                                                                    <img
+                                                                        src={member.image || '/Team/user.png'}
+                                                                        alt={member.name}
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <div className="dark:text-white text-gray-900 font-medium">
+                                                                        {member.name}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td className="px-6 py-4 dark:text-gray-300 text-gray-700 max-w-xs truncate" title={member.position}>
+                                                            {member.position}
+                                                        </td>
+                                                        <td className="px-6 py-4">
+                                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${
+                                                                member.teamType === 'kmsf'
+                                                                    ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20'
+                                                                    : member.teamType === 'ksa'
+                                                                    ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                                                    : member.teamType === 'kuma'
+                                                                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                                                    : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                                                            }`}>
+                                                                {member.teamType}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-center dark:text-gray-300 text-gray-700 font-mono">
+                                                            {member.order || 0}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setEditingTeamMember(member);
+                                                                    setTeamImagePreview('');
+                                                                    setTeamImageFile(null);
+                                                                    setIsTeamModalOpen(true);
+                                                                }}
+                                                                className="p-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-400 text-gray-500 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
+                                                                title="Edit Member"
+                                                            >
+                                                                <Edit size={16} />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteTeamMember(member._id, member.name)}
+                                                                className="p-1.5 rounded-lg dark:bg-gray-800 bg-gray-100 dark:text-gray-400 text-gray-500 hover:bg-red-500/10 hover:text-red-500 transition-colors"
+                                                                title="Delete Member"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -841,7 +1054,7 @@ const AdminDashboard = () => {
                                         <input name="title" defaultValue={editingEvent?.title} required className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
                                     </div>
                                     <div className="md:col-span-2">
-                                        <label className="block text-sm font-medium text-gray-400 mb-2">Event Images <span className="text-gray-500 text-xs">(up to 10)</span></label>
+                                        <label className="block text-sm font-medium text-gray-400 mb-2">Event Posters <span className="text-gray-500 text-xs">(up to 3)</span></label>
 
                                         {/* Existing saved images (edit mode) */}
                                         {existingImages.length > 0 && (
@@ -900,7 +1113,70 @@ const AdminDashboard = () => {
                                             />
                                             <div className="text-amber-500 mb-1"><Plus size={22} className="mx-auto" /></div>
                                             <span className="text-sm text-gray-400">Click to add images (multiple allowed)</span>
-                                            <p className="text-xs text-gray-600 mt-0.5">{existingImages.length + newImagePreviews.length} / 10 selected</p>
+                                            <p className="text-xs text-gray-600 mt-0.5">{existingImages.length + newImagePreviews.length} / 3 selected</p>
+                                        </div>
+                                    </div>
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-400 mb-2">Gallery Images <span className="text-gray-500 text-xs">(unlimited)</span></label>
+
+                                        {/* Existing saved gallery images (edit mode) */}
+                                        {existingGalleryImages.length > 0 && (
+                                            <div className="mb-3">
+                                                <p className="text-xs text-gray-500 mb-2">Saved gallery images — click ✕ to remove:</p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {existingGalleryImages.map((url, idx) => (
+                                                        <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden group">
+                                                            <img src={url} alt="" className="w-full h-full object-cover" />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeExistingGalleryImage(idx)}
+                                                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                                                            >
+                                                                <X size={16} className="text-red-400" />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* New gallery previews */}
+                                        {newGalleryPreviews.length > 0 && (
+                                            <div className="mb-3">
+                                                <p className="text-xs text-gray-500 mb-2">New gallery images to upload:</p>
+                                                <div className="flex flex-wrap gap-2">
+                                                    {newGalleryPreviews.map((url, idx) => (
+                                                        <div key={idx} className="relative w-20 h-20 rounded-lg overflow-hidden group">
+                                                            <img src={url} alt="" className="w-full h-full object-cover" />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeNewGalleryImage(idx)}
+                                                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                                                            >
+                                                                <X size={16} className="text-red-400" />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Upload button for Gallery Images */}
+                                        <div
+                                            className="relative border-2 border-dashed border-gray-700 hover:border-amber-500/50 rounded-lg p-4 bg-gray-800/50 text-center transition-colors cursor-pointer"
+                                            onClick={() => galleryInputRef.current?.click()}
+                                        >
+                                            <input
+                                                ref={galleryInputRef}
+                                                type="file"
+                                                accept="image/*"
+                                                multiple
+                                                className="hidden"
+                                                onChange={handleGalleryFilesSelected}
+                                            />
+                                            <div className="text-amber-500 mb-1"><Plus size={22} className="mx-auto" /></div>
+                                            <span className="text-sm text-gray-400">Click to add gallery images (unlimited allowed)</span>
+                                            <p className="text-xs text-gray-600 mt-0.5">{existingGalleryImages.length + newGalleryPreviews.length} selected</p>
                                         </div>
                                     </div>
                                     <div className="md:col-span-2">
@@ -944,11 +1220,27 @@ const AdminDashboard = () => {
                                 </div>
 
                                 <div className="mt-8 pt-6 border-t border-gray-800 flex justify-end gap-4">
-                                    <button type="button" onClick={() => { setIsEventModalOpen(false); setEditingEvent(null); }} className="px-6 py-2.5 rounded-lg font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors">
+                                    <button 
+                                        type="button" 
+                                        disabled={isCreatingEvent || isUpdatingEvent}
+                                        onClick={() => { setIsEventModalOpen(false); setEditingEvent(null); }} 
+                                        className="px-6 py-2.5 rounded-lg font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
                                         Cancel
                                     </button>
-                                    <button type="submit" className="bg-amber-500 hover:bg-amber-400 text-gray-900 px-8 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-amber-500/20">
-                                        {editingEvent ? 'Save Changes' : 'Publish Event'}
+                                    <button 
+                                        type="submit" 
+                                        disabled={isCreatingEvent || isUpdatingEvent}
+                                        className="bg-amber-500 hover:bg-amber-400 text-gray-900 px-8 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
+                                    >
+                                        {(isCreatingEvent || isUpdatingEvent) ? (
+                                            <>
+                                                <Loader2 size={16} className="animate-spin" />
+                                                <span>{editingEvent ? 'Saving...' : 'Publishing...'}</span>
+                                            </>
+                                        ) : (
+                                            <span>{editingEvent ? 'Save Changes' : 'Publish Event'}</span>
+                                        )}
                                     </button>
                                 </div>
                             </form>
@@ -1012,350 +1304,191 @@ const AdminDashboard = () => {
                 )}
             </AnimatePresence>
 
+            {/* Team Member Modal */}
+            <AnimatePresence>
+                {isTeamModalOpen && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => { if (!isCreatingTeam && !isUpdatingTeam) { setIsTeamModalOpen(false); setEditingTeamMember(null); } }}
+                            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-xl dark:bg-gray-900 bg-white dark:border-gray-800 border-gray-200 border rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar"
+                        >
+                            <form key={editingTeamMember?._id || 'new'} onSubmit={handleCreateTeamMember} className="p-8">
+                                <div className="flex justify-between items-center mb-8 pb-4 border-b border-gray-800">
+                                    <h2 className="text-2xl font-bold dark:text-white text-gray-900">
+                                        {editingTeamMember ? 'Edit Team Member' : 'Add New Team Member'}
+                                    </h2>
+                                    <button
+                                        type="button"
+                                        disabled={isCreatingTeam || isUpdatingTeam}
+                                        onClick={() => { setIsTeamModalOpen(false); setEditingTeamMember(null); }}
+                                        className="text-gray-400 hover:text-white p-2 hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50"
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
+
+                                <div className="space-y-6">
+                                    {/* Photo Selector */}
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-400 mb-2">Member Photo {editingTeamMember ? '(optional)' : '*'}</label>
+                                        {(teamImagePreview || editingTeamMember?.image) ? (
+                                            <div className="relative w-32 h-32 mx-auto rounded-full overflow-hidden border-2 border-[#C8A441] shadow-lg group">
+                                                <img src={teamImagePreview || editingTeamMember?.image} alt="Preview" className="w-full h-full object-cover" />
+                                                <button
+                                                    type="button"
+                                                    disabled={isCreatingTeam || isUpdatingTeam}
+                                                    onClick={() => {
+                                                        setTeamImagePreview('');
+                                                        setTeamImageFile(null);
+                                                        if (editingTeamMember) {
+                                                            // Temporarily clear local reference to force file selector to render
+                                                            setEditingTeamMember(prev => ({ ...prev, image: '' }));
+                                                        }
+                                                    }}
+                                                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-red-400 font-bold"
+                                                >
+                                                    Change
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div
+                                                className="border-2 border-dashed border-gray-700 hover:border-[#C8A441]/50 rounded-xl p-6 bg-gray-800/40 text-center transition-colors cursor-pointer max-w-xs mx-auto"
+                                                onClick={() => { if (!isCreatingTeam && !isUpdatingTeam) teamImageInputRef.current?.click(); }}
+                                            >
+                                                <input
+                                                    ref={teamImageInputRef}
+                                                    type="file"
+                                                    accept="image/*"
+                                                    className="hidden"
+                                                    onChange={handleTeamImageFileSelected}
+                                                    required={!editingTeamMember}
+                                                />
+                                                <Upload size={32} className="mx-auto text-amber-500 mb-2" />
+                                                <span className="text-sm text-gray-400 font-medium">Select Photo</span>
+                                                <p className="text-xs text-gray-500 mt-1">Accepts PNG, JPG, JPEG (will be compressed to WebP)</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-400 mb-2">Full Name *</label>
+                                            <input
+                                                name="memberName"
+                                                required
+                                                defaultValue={editingTeamMember?.name}
+                                                placeholder="e.g. Dr. Jane Doe"
+                                                className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all text-sm"
+                                            />
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-400 mb-2">Position / Title *</label>
+                                            <input
+                                                name="memberPosition"
+                                                required
+                                                defaultValue={editingTeamMember?.position}
+                                                placeholder="e.g. Secretary - Surgeon, Consultant"
+                                                className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all text-sm"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-400 mb-2">Team Group *</label>
+                                            <select
+                                                name="memberTeamType"
+                                                required
+                                                defaultValue={editingTeamMember?.teamType || 'kmsf'}
+                                                className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all text-sm"
+                                            >
+                                                <option value="kmsf">KMSF</option>
+                                                <option value="ksa">KSA</option>
+                                                <option value="kuma">KuMA</option>
+                                                <option value="audiovisual">Audio Visual</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-400 mb-2">Sort Order Number</label>
+                                            <input
+                                                type="number"
+                                                name="memberOrder"
+                                                defaultValue={editingTeamMember?.order || '0'}
+                                                min="0"
+                                                className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all text-sm font-mono"
+                                            />
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-400 mb-2">Brief Bio (1-2 sentences overview) *</label>
+                                            <textarea
+                                                name="memberBio"
+                                                required
+                                                defaultValue={editingTeamMember?.bio}
+                                                rows="2"
+                                                placeholder="Brief intro shown on grid card..."
+                                                className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all text-sm resize-none"
+                                            />
+                                        </div>
+
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-400 mb-2">Full Details (Shown in popup modal on read more) *</label>
+                                            <textarea
+                                                name="memberDetail"
+                                                required
+                                                defaultValue={editingTeamMember?.detail}
+                                                rows="5"
+                                                placeholder="Complete academic background, career highlights, and contributions..."
+                                                className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all text-sm resize-y"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-8 pt-6 border-t border-gray-800 flex justify-end gap-4">
+                                    <button
+                                        type="button"
+                                        disabled={isCreatingTeam || isUpdatingTeam}
+                                        onClick={() => { setIsTeamModalOpen(false); setEditingTeamMember(null); }}
+                                        className="px-6 py-2.5 rounded-lg font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isCreatingTeam || isUpdatingTeam}
+                                        className="bg-amber-500 hover:bg-amber-400 text-gray-900 px-8 py-2.5 rounded-lg font-bold transition-all shadow-lg shadow-amber-500/20 flex items-center gap-2 disabled:opacity-75 disabled:cursor-not-allowed"
+                                    >
+                                        {(isCreatingTeam || isUpdatingTeam) ? (
+                                            <>
+                                                <Loader2 size={16} className="animate-spin" />
+                                                <span>{editingTeamMember ? 'Saving...' : 'Adding...'}</span>
+                                            </>
+                                        ) : (
+                                            <span>{editingTeamMember ? 'Save Changes' : 'Add Member'}</span>
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
             <AdminEditUserModal isOpen={!!editingUserId} userId={editingUserId} onClose={() => setEditingUserId(null)} />
         </div>
     );
 };
 
-// ─── Photo Albums Tab ─────────────────────────────────────────────────────────
-const PhotoAlbumsTab = () => {
-    const token = useSelector(selectCurrentToken);
-    const [showForm, setShowForm] = useState(false);
-    const [form, setForm] = useState({
-        folderName: '',
-        description: '',
-        date: '',
-        location: '',
-        category: 'Conference',
-    });
-    const [files, setFiles] = useState([]);
-    const [previews, setPreviews] = useState([]);
-    const [uploading, setUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
-    const [successMsg, setSuccessMsg] = useState('');
-    const [errorMsg, setErrorMsg] = useState('');
-    const [deletingPath, setDeletingPath] = useState(null);
-    const fileInputRef = React.useRef(null);
-    const dropRef = React.useRef(null);
-
-    const { data: foldersData, isLoading: foldersLoading, refetch } = useGetArchiveFoldersQuery();
-    const [createArchiveAlbum] = useCreateArchiveAlbumMutation();
-    const [deleteArchiveAlbum] = useDeleteArchiveAlbumMutation();
-
-    const albums = foldersData?.folders || [];
-
-    const handleFieldChange = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
-
-    const addFiles = (newFiles) => {
-        const arr = Array.from(newFiles).filter(f => f.type.startsWith('image/'));
-        setFiles(prev => [...prev, ...arr]);
-        const newPreviews = arr.map(f => URL.createObjectURL(f));
-        setPreviews(prev => [...prev, ...newPreviews]);
-    };
-
-    const removeFile = (idx) => {
-        setFiles(prev => prev.filter((_, i) => i !== idx));
-        setPreviews(prev => prev.filter((_, i) => i !== idx));
-    };
-
-    const handleDrop = (e) => {
-        e.preventDefault();
-        addFiles(e.dataTransfer.files);
-    };
-
-    const resetForm = () => {
-        setForm({ folderName: '', description: '', date: '', location: '', category: 'Conference' });
-        setFiles([]);
-        setPreviews([]);
-        setUploadProgress(0);
-        setShowForm(false);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!form.folderName.trim()) { setErrorMsg('Album title is required.'); return; }
-        setErrorMsg('');
-        setSuccessMsg('');
-        setUploading(true);
-        setUploadProgress(0);
-
-        const fd = new FormData();
-        fd.append('folderName', form.folderName.trim());
-        fd.append('description', form.description);
-        fd.append('date', form.date);
-        fd.append('location', form.location);
-        fd.append('category', form.category);
-        files.forEach(f => fd.append('images', f));
-
-        // Use XMLHttpRequest for real upload progress
-        try {
-            await new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001'}/archive-gallery/album`);
-                if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
-
-                xhr.upload.onprogress = (ev) => {
-                    if (ev.lengthComputable) {
-                        setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
-                    }
-                };
-                xhr.onload = () => {
-                    if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
-                    else reject(new Error(JSON.parse(xhr.responseText)?.message || 'Upload failed'));
-                };
-                xhr.onerror = () => reject(new Error('Network error'));
-                xhr.send(fd);
-            });
-
-            setSuccessMsg(`Album "${form.folderName.trim()}" created with ${files.length} photo(s)!`);
-            resetForm();
-            refetch();
-        } catch (err) {
-            setErrorMsg(err.message || 'Upload failed. Please try again.');
-        } finally {
-            setUploading(false);
-        }
-    };
-
-    const handleDeleteAlbum = async (folderPath, name) => {
-        if (!window.confirm(`Delete album "${name}" and ALL its photos? This cannot be undone.`)) return;
-        setDeletingPath(folderPath);
-        try {
-            await deleteArchiveAlbum(folderPath).unwrap();
-            refetch();
-        } catch (err) {
-            alert(err?.data?.message || 'Failed to delete album.');
-        } finally {
-            setDeletingPath(null);
-        }
-    };
-
-    return (
-        <div className="p-6">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h2 className="text-xl font-bold dark:text-white text-gray-900">Photo Albums</h2>
-                    <p className="text-sm dark:text-gray-400 text-gray-500 mt-0.5">Albums appear in the public Gallery &amp; Archive pages. Images are compressed automatically.</p>
-                </div>
-                <button
-                    onClick={() => setShowForm(s => !s)}
-                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-gray-900 px-4 py-2 rounded-lg font-bold transition-all shadow-lg shadow-amber-500/20"
-                >
-                    {showForm ? <X size={18} /> : <Plus size={18} />}
-                    <span>{showForm ? 'Cancel' : 'New Album'}</span>
-                </button>
-            </div>
-
-            {/* Success / Error banners */}
-            <AnimatePresence>
-                {successMsg && (
-                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                        className="mb-4 flex items-center gap-3 bg-green-500/10 border border-green-500/20 text-green-400 px-4 py-3 rounded-lg">
-                        <CheckCircle size={18} /> {successMsg}
-                        <button onClick={() => setSuccessMsg('')} className="ml-auto"><X size={16} /></button>
-                    </motion.div>
-                )}
-                {errorMsg && (
-                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                        className="mb-4 flex items-center gap-3 bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg">
-                        <AlertCircle size={18} /> {errorMsg}
-                        <button onClick={() => setErrorMsg('')} className="ml-auto"><X size={16} /></button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Create Album Form */}
-            <AnimatePresence>
-                {showForm && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
-                        className="overflow-hidden mb-8"
-                    >
-                        <form onSubmit={handleSubmit} className="dark:bg-gray-900/60 bg-gray-50 border dark:border-gray-700/50 border-gray-200 rounded-xl p-6 space-y-5">
-                            <h3 className="font-bold dark:text-white text-gray-900 text-lg flex items-center gap-2">
-                                <ImagePlus size={20} className="text-amber-500" /> Create New Album
-                            </h3>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* Title */}
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Album Title *</label>
-                                    <input name="folderName" value={form.folderName} onChange={handleFieldChange} required
-                                        placeholder="e.g. Annual Conference 2025"
-                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors" />
-                                    <p className="text-xs dark:text-gray-500 text-gray-400 mt-1">This becomes the folder name in Cloudinary — choose a unique, descriptive name.</p>
-                                </div>
-
-                                {/* Description */}
-                                <div className="md:col-span-2">
-                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Description</label>
-                                    <textarea name="description" value={form.description} onChange={handleFieldChange} rows={3}
-                                        placeholder="Brief description of the album..."
-                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors resize-none" />
-                                </div>
-
-                                {/* Date */}
-                                <div>
-                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Date</label>
-                                    <input name="date" type="date" value={form.date} onChange={handleFieldChange}
-                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors" />
-                                </div>
-
-                                {/* Location */}
-                                <div>
-                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Location</label>
-                                    <input name="location" value={form.location} onChange={handleFieldChange}
-                                        placeholder="e.g. London, UK"
-                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors" />
-                                </div>
-
-                                {/* Category */}
-                                <div>
-                                    <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-1">Category</label>
-                                    <select name="category" value={form.category} onChange={handleFieldChange}
-                                        className="w-full dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-2.5 text-sm dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 transition-colors">
-                                        <option>Conference</option>
-                                        <option>Workshop</option>
-                                        <option>Seminar</option>
-                                        <option>Ceremony</option>
-                                        <option>Community</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* Drag-and-drop image area */}
-                            <div>
-                                <label className="block text-sm font-medium dark:text-gray-300 text-gray-700 mb-2">Photos (no limit)</label>
-                                <div
-                                    ref={dropRef}
-                                    onDragOver={(e) => e.preventDefault()}
-                                    onDrop={handleDrop}
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="border-2 border-dashed dark:border-gray-600 border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-amber-500 transition-colors group"
-                                >
-                                    <Upload size={32} className="mx-auto mb-3 dark:text-gray-500 text-gray-400 group-hover:text-amber-500 transition-colors" />
-                                    <p className="dark:text-gray-400 text-gray-500 text-sm">
-                                        <span className="text-amber-500 font-semibold">Click to browse</span> or drag &amp; drop images here
-                                    </p>
-                                    <p className="text-xs dark:text-gray-600 text-gray-400 mt-1">JPG, PNG, WebP, GIF — max 20MB each — unlimited count</p>
-                                    <p className="text-xs text-amber-500/70 mt-1">✓ Auto-compressed on upload (quality:auto, max 2000px wide)</p>
-                                    <input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden"
-                                        onChange={(e) => addFiles(e.target.files)} />
-                                </div>
-
-                                {/* Preview grid */}
-                                {previews.length > 0 && (
-                                    <div className="mt-4">
-                                        <p className="text-sm dark:text-gray-400 text-gray-500 mb-2">{previews.length} photo(s) ready to upload</p>
-                                        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-                                            {previews.map((url, idx) => (
-                                                <div key={idx} className="relative aspect-square group/img">
-                                                    <img src={url} alt="" className="w-full h-full object-cover rounded-lg" />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => removeFile(idx)}
-                                                        className="absolute -top-1.5 -right-1.5 bg-red-500 hover:bg-red-400 text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity shadow-lg"
-                                                    >
-                                                        <X size={10} />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Upload progress */}
-                            {uploading && (
-                                <div>
-                                    <div className="flex items-center justify-between text-sm dark:text-gray-400 text-gray-500 mb-1">
-                                        <span>Uploading &amp; compressing…</span>
-                                        <span>{uploadProgress}%</span>
-                                    </div>
-                                    <div className="h-2 dark:bg-gray-700 bg-gray-200 rounded-full overflow-hidden">
-                                        <div
-                                            className="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-300"
-                                            style={{ width: `${uploadProgress}%` }}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Submit */}
-                            <div className="flex gap-3 pt-2">
-                                <button type="submit" disabled={uploading}
-                                    className="flex items-center gap-2 bg-amber-500 hover:bg-amber-400 text-gray-900 px-6 py-2.5 rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-amber-500/20">
-                                    {uploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
-                                    {uploading ? `Uploading… ${uploadProgress}%` : `Create Album${files.length ? ` (${files.length} photos)` : ''}`}
-                                </button>
-                                <button type="button" onClick={resetForm} disabled={uploading}
-                                    className="px-6 py-2.5 rounded-lg font-semibold dark:text-gray-400 text-gray-500 hover:dark:text-white hover:text-gray-900 border dark:border-gray-700 border-gray-300 transition-colors disabled:opacity-50">
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Albums List */}
-            {foldersLoading ? (
-                <div className="flex justify-center py-20"><Loader2 className="animate-spin text-amber-500" size={40} /></div>
-            ) : albums.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-24 gap-3 dark:text-gray-600 text-gray-400">
-                    <FolderOpen size={48} className="opacity-30" />
-                    <p className="text-lg font-medium">No albums yet</p>
-                    <p className="text-sm">Create your first album above to get started.</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                    {albums.map((album) => (
-                        <motion.div
-                            key={album.path}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="group relative dark:bg-gray-900 bg-white border dark:border-gray-700/50 border-gray-200 rounded-xl overflow-hidden shadow-lg hover:shadow-xl hover:border-amber-500/40 transition-all"
-                        >
-                            {/* Cover */}
-                            <div className="relative h-40 dark:bg-gray-800 bg-gray-100 overflow-hidden">
-                                {album.coverThumb ? (
-                                    <img src={album.coverThumb} alt={album.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                        <Images size={40} className="text-gray-400 opacity-30" />
-                                    </div>
-                                )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                                <div className="absolute bottom-3 left-3 text-white">
-                                    <p className="font-bold text-sm line-clamp-2">{album.name}</p>
-                                    <p className="text-xs text-gray-300">{album.totalImages} photo{album.totalImages !== 1 ? 's' : ''}</p>
-                                </div>
-                                {/* Delete button */}
-                                <button
-                                    onClick={() => handleDeleteAlbum(album.path, album.name)}
-                                    disabled={deletingPath === album.path}
-                                    className="absolute top-2 right-2 bg-red-500/80 hover:bg-red-500 text-white p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all disabled:opacity-50"
-                                    title="Delete album"
-                                >
-                                    {deletingPath === album.path ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-                                </button>
-                            </div>
-                            {/* Meta */}
-                            <div className="p-3">
-                                <p className="text-xs dark:text-gray-400 text-gray-500 flex items-center gap-1">
-                                    <Images size={11} className="text-amber-500" />
-                                    {album.totalImages} photos
-                                </p>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
 
 export default AdminDashboard;
 

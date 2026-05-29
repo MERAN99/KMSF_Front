@@ -13,7 +13,7 @@ export const apiSlice = createApi({
             return headers;
         },
     }),
-    tagTypes: ['User', 'Subscription', 'Event', 'Donation', 'ArchiveGallery'],
+    tagTypes: ['User', 'Subscription', 'Event', 'Donation', 'Team'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (credentials) => ({
@@ -253,33 +253,32 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['User'],
         }),
-        // ─── Archive Cloudinary Gallery ───────────────────────────────────────
-        getArchiveFolders: builder.query({
-            query: () => '/archive-gallery/folders',
-            providesTags: ['ArchiveGallery'],
+        getTeamMembers: builder.query({
+            query: () => '/team-members',
+            providesTags: ['Team'],
         }),
-        getArchiveImages: builder.query({
-            query: ({ folder, limit = 12, cursor }) => {
-                let url = `/archive-gallery/images?folder=${encodeURIComponent(folder)}&limit=${limit}`;
-                if (cursor) url += `&cursor=${encodeURIComponent(cursor)}`;
-                return url;
-            },
-            providesTags: ['ArchiveGallery'],
-        }),
-        createArchiveAlbum: builder.mutation({
+        createTeamMember: builder.mutation({
             query: (formData) => ({
-                url: '/archive-gallery/album',
+                url: '/admin/team-member',
                 method: 'POST',
                 body: formData,
             }),
-            invalidatesTags: ['ArchiveGallery'],
+            invalidatesTags: ['Team'],
         }),
-        deleteArchiveAlbum: builder.mutation({
-            query: (folderPath) => ({
-                url: `/archive-gallery/album/${encodeURIComponent(folderPath)}`,
+        deleteTeamMember: builder.mutation({
+            query: (id) => ({
+                url: `/admin/team-member/${id}`,
                 method: 'DELETE',
             }),
-            invalidatesTags: ['ArchiveGallery'],
+            invalidatesTags: ['Team'],
+        }),
+        updateTeamMember: builder.mutation({
+            query: ({ id, formData }) => ({
+                url: `/admin/team-member/${id}`,
+                method: 'PUT',
+                body: formData,
+            }),
+            invalidatesTags: ['Team'],
         }),
     }),
 });
@@ -321,8 +320,8 @@ export const {
     useUpdateProfileMutation,
     useRequestEmailChangeMutation,
     useConfirmEmailChangeMutation,
-    useGetArchiveFoldersQuery,
-    useGetArchiveImagesQuery,
-    useCreateArchiveAlbumMutation,
-    useDeleteArchiveAlbumMutation,
+    useGetTeamMembersQuery,
+    useCreateTeamMemberMutation,
+    useDeleteTeamMemberMutation,
+    useUpdateTeamMemberMutation,
 } = apiSlice;

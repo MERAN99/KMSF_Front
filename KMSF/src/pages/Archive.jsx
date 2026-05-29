@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, MapPin, Users, Clock, X, Loader2, AlertCircle, Archive, Images, ChevronLeft, ChevronRight, FolderOpen } from 'lucide-react';
-import { useGetEventsQuery, useGetArchiveFoldersQuery, useGetArchiveImagesQuery } from '../store/api/apiSlice';
+import { useGetEventsQuery } from '../store/api/apiSlice';
 import LazyImage from '../components/LazyImage';
 
 // Helper: has this event's date already passed?
@@ -11,234 +11,7 @@ const isPastEvent = (dateStr) => {
     return new Date() > threeDaysAfter;
 };
 
-const IMAGES_PER_PAGE = 12;
 
-// ─── Cloudinary folder card — matches other archive event cards exactly ───────
-const CloudinaryFolderSection = ({ folder, index }) => {
-    const [open, setOpen] = useState(false);
-    const [cursor, setCursor] = useState(undefined);
-    const [cursorHistory, setCursorHistory] = useState([]);
-    const [page, setPage] = useState(1);
-    const [lightboxIdx, setLightboxIdx] = useState(null);
-
-    const { data, isFetching, isError } = useGetArchiveImagesQuery(
-        { folder: folder.path, limit: IMAGES_PER_PAGE, cursor },
-        { skip: !open }
-    );
-
-    const images = data?.images || [];
-    const total = data?.total || 0;
-    const nextCursor = data?.nextCursor;
-    const totalPages = total ? Math.ceil(total / IMAGES_PER_PAGE) : '?';
-
-    const handleNext = () => {
-        if (!nextCursor) return;
-        setCursorHistory(p => [...p, cursor]);
-        setCursor(nextCursor);
-        setPage(p => p + 1);
-    };
-    const handlePrev = () => {
-        if (!cursorHistory.length) return;
-        const prev = [...cursorHistory];
-        const c = prev.pop();
-        setCursorHistory(prev);
-        setCursor(c);
-        setPage(p => p - 1);
-    };
-
-    // Cover comes from the pre-fetched folder data — available before user opens the card
-    const coverThumb = folder.coverThumb || null;
-
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.6, delay: (index || 0) * 0.08 }}
-            className="group relative dark:bg-gray-900 bg-white overflow-hidden hover:shadow-xl transition-all duration-500 border dark:border-gray-700/50 border-gray-200"
-        >
-            {/* Horizontal card — same as event cards */}
-            <div className="flex flex-col lg:flex-row">
-
-                {/* Image panel */}
-                <div className="lg:w-2/5 h-64 lg:h-auto relative overflow-hidden dark:bg-gray-800 bg-gray-100">
-                    {coverThumb ? (
-                        <img
-                            src={coverThumb}
-                            alt={folder.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                            <Images size={48} className="text-gray-400 opacity-30" />
-                        </div>
-                    )}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent dark:to-gray-900 to-white opacity-60 lg:opacity-100" />
-                    <div className="absolute top-6 left-6 bg-yellow-500 text-gray-900 px-4 py-2 font-bold text-sm">
-                        {folder.category || 'Conference'}
-                    </div>
-                    <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                        <span>📷</span>
-                        <span>{folder.totalImages || 0} photos</span>
-                    </div>
-                </div>
-
-                {/* Content panel */}
-                <div className="lg:w-3/5 p-8 lg:p-12 flex flex-col justify-center">
-                    <div className="flex flex-wrap items-center gap-4 dark:text-gray-400 text-gray-500 text-sm mb-4">
-                        {folder.date && (
-                            <div className="flex items-center gap-2">
-                                <Calendar size={16} className="text-yellow-500" />
-                                <span>{new Date(folder.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                            </div>
-                        )}
-                        {folder.location && (
-                            <div className="flex items-center gap-2">
-                                <MapPin size={16} className="text-yellow-500" />
-                                <span>{folder.location}</span>
-                            </div>
-                        )}
-                        <div className="flex items-center gap-2">
-                            <Images size={16} className="text-yellow-500" />
-                            <span>Photo Archive</span>
-                        </div>
-                    </div>
-
-                    <h2 className="text-3xl md:text-4xl font-bold dark:text-white text-gray-900 mb-4 group-hover:text-yellow-500 transition-colors duration-300">
-                        {folder.name}
-                    </h2>
-                    
-                    {folder.description && (
-                        <p className="dark:text-gray-300 text-gray-600 line-clamp-3 mb-6">
-                            {folder.description}
-                        </p>
-                    )}
-
-                    <div className="mt-auto flex items-center gap-2 text-yellow-500 font-semibold">
-                        <button
-                            onClick={() => setOpen(o => !o)}
-                            className="flex items-center gap-2 hover:gap-4 transition-all duration-300"
-                        >
-                            <span>{open ? 'Hide Photos' : 'View Photos'}</span>
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Gold left-border hover — identical to event cards */}
-            <div className="absolute inset-0 border-l-4 border-transparent group-hover:border-yellow-500 transition-all duration-300 pointer-events-none" />
-
-            {/* Expandable photo grid */}
-            <AnimatePresence>
-                {open && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.4 }}
-                        className="overflow-hidden border-t dark:border-gray-700/50 border-gray-200"
-                    >
-                        <div className="p-6 lg:p-10">
-                            {isFetching && (
-                                <div className="flex items-center justify-center py-12 gap-3">
-                                    <Loader2 size={30} className="animate-spin text-yellow-500" />
-                                    <span className="dark:text-gray-400 text-gray-500">Loading photos…</span>
-                                </div>
-                            )}
-                            {isError && !isFetching && (
-                                <div className="flex items-center justify-center py-12 gap-3 text-red-400">
-                                    <AlertCircle size={26} /><span>Failed to load photos.</span>
-                                </div>
-                            )}
-                            {!isFetching && !isError && (
-                                <>
-                                    <p className="dark:text-gray-400 text-gray-500 text-sm mb-5">
-                                        Showing {(page - 1) * IMAGES_PER_PAGE + 1}–{Math.min(page * IMAGES_PER_PAGE, total)} of {total} photos · Page {page} of {totalPages}
-                                    </p>
-                                    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                                        {images.map((img, idx) => (
-                                            <motion.button
-                                                key={img.publicId}
-                                                initial={{ opacity: 0, scale: 0.9 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                transition={{ delay: idx * 0.025 }}
-                                                onClick={() => setLightboxIdx(idx)}
-                                                className="aspect-square overflow-hidden dark:bg-gray-800 bg-gray-100 relative"
-                                            >
-                                                <LazyImage
-                                                    src={img.thumb}
-                                                    alt={`Photo ${idx + 1}`}
-                                                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                                                />
-                                                <div className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                    <Images size={16} className="text-white" />
-                                                </div>
-                                            </motion.button>
-                                        ))}
-                                    </div>
-
-                                    <div className="flex items-center justify-between mt-6 pt-5 border-t dark:border-gray-700 border-gray-200">
-                                        <button onClick={handlePrev} disabled={page === 1}
-                                            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white text-sm font-semibold disabled:opacity-30 disabled:cursor-not-allowed hover:from-yellow-500 hover:to-yellow-400 transition-all">
-                                            <ChevronLeft size={16} /> Previous
-                                        </button>
-                                        <span className="dark:text-gray-400 text-gray-500 text-sm">
-                                            {(page - 1) * IMAGES_PER_PAGE + 1}–{Math.min(page * IMAGES_PER_PAGE, total)} of {total}
-                                        </span>
-                                        <button onClick={handleNext} disabled={!nextCursor}
-                                            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white text-sm font-semibold disabled:opacity-30 disabled:cursor-not-allowed hover:from-yellow-500 hover:to-yellow-400 transition-all">
-                                            Next <ChevronRight size={16} />
-                                        </button>
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Lightbox */}
-            <AnimatePresence>
-                {lightboxIdx !== null && images.length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
-                        onClick={() => setLightboxIdx(null)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.92 }} animate={{ scale: 1 }} exit={{ scale: 0.92 }}
-                            transition={{ type: 'spring', damping: 25 }}
-                            className="relative max-w-5xl w-full"
-                            onClick={e => e.stopPropagation()}
-                        >
-                            <img src={images[lightboxIdx].full} alt="" className="w-full max-h-[80vh] object-contain shadow-2xl" />
-                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-5">
-                                <p className="text-white font-semibold">{folder.name}</p>
-                                <p className="text-gray-400 text-sm mt-0.5">{lightboxIdx + 1} / {images.length} · page {page}</p>
-                            </div>
-                            {lightboxIdx > 0 && (
-                                <button onClick={() => setLightboxIdx(i => i - 1)} className="absolute left-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white p-3 transition-all shadow-lg">
-                                    <ChevronLeft size={26} />
-                                </button>
-                            )}
-                            {lightboxIdx < images.length - 1 && (
-                                <button onClick={() => setLightboxIdx(i => i + 1)} className="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white p-3 transition-all shadow-lg">
-                                    <ChevronRight size={26} />
-                                </button>
-                            )}
-                            <button onClick={() => setLightboxIdx(null)} className="absolute -top-4 -right-4 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white p-3 transition-all shadow-lg">
-                                <X size={20} />
-                            </button>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </motion.div>
-    );
-};
 
 
 const Archives = () => {
@@ -246,7 +19,6 @@ const Archives = () => {
     const [filter, setFilter] = useState('All');
 
     const { data: eventsData, isLoading, isError } = useGetEventsQuery();
-    const { data: foldersData, isLoading: foldersLoading } = useGetArchiveFoldersQuery();
 
     // Past events only, sorted newest first
     const pastEvents = React.useMemo(() => {
@@ -256,18 +28,14 @@ const Archives = () => {
             .sort((a, b) => new Date(b.date) - new Date(a.date));
     }, [eventsData]);
 
-    // Build category list dynamically from real data (combining both sources)
+    // Build category list dynamically from real data
     const categories = React.useMemo(() => {
         const eventCats = pastEvents.map(ev => ev.category).filter(Boolean);
-        const folderCats = (foldersData?.folders || []).map(f => f.category || 'Conference').filter(Boolean);
-        const allCats = [...new Set([...eventCats, ...folderCats])];
+        const allCats = [...new Set(eventCats)];
         return ['All', ...allCats.sort()];
-    }, [pastEvents, foldersData]);
+    }, [pastEvents]);
 
     const filteredEvents = filter === 'All' ? pastEvents : pastEvents.filter(ev => ev.category === filter);
-    const filteredFolders = filter === 'All' 
-        ? (foldersData?.folders || []) 
-        : (foldersData?.folders || []).filter(f => (f.category || 'Conference') === filter);
 
 
     return (
@@ -340,17 +108,8 @@ const Archives = () => {
                     {/* Events Timeline */}
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
 
-                        {/* ── Cloudinary Archive Folders ── */}
-                        {filteredFolders.length > 0 && (
-                            <div className="mb-8 space-y-8">
-                                {filteredFolders.map((f, i) => (
-                                    <CloudinaryFolderSection key={f.path} folder={f} index={i} />
-                                ))}
-                            </div>
-                        )}
-
-                        {filteredEvents.length === 0 && filteredFolders.length === 0 ? (
-                            <div className="text-center py-16 dark:text-gray-500 text-gray-400">No events or albums in this category.</div>
+                        {filteredEvents.length === 0 ? (
+                            <div className="text-center py-16 dark:text-gray-500 text-gray-400">No events in this category.</div>
                         ) : (
                             <div className="space-y-8">
                                 {filteredEvents.map((event, index) => {
@@ -384,15 +143,9 @@ const Archives = () => {
                                                         </div>
                                                     )}
                                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent dark:to-gray-900 to-white opacity-60 lg:opacity-100" />
-                                                    <div className="absolute top-6 left-6 bg-yellow-500 text-gray-900 px-4 py-2 font-bold text-sm">
+                                                    <div className="absolute top-6 left-6 bg-[#C8A441] text-gray-900 px-4 py-2 font-bold text-sm">
                                                         {event.category || 'Event'}
                                                     </div>
-                                                    {event.images?.length > 1 && (
-                                                        <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                                                            <span>📷</span>
-                                                            <span>{event.images.length} photos</span>
-                                                        </div>
-                                                    )}
                                                 </div>
 
                                                 {/* Content */}
@@ -494,20 +247,6 @@ const Archives = () => {
                                         {/* Description */}
                                         {selectedEvent.description && (
                                             <p className="dark:text-gray-300 text-gray-600 text-lg mb-8 leading-relaxed">{selectedEvent.description}</p>
-                                        )}
-
-                                        {/* Photo gallery strip (if multiple images) */}
-                                        {selectedEvent.images?.length > 1 && (
-                                            <div>
-                                                <h3 className="text-xl font-bold dark:text-white text-gray-900 mb-4">Event Photos</h3>
-                                                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                                                    {selectedEvent.images.map((img, idx) => (
-                                                        <div key={idx} className="aspect-square overflow-hidden rounded-sm">
-                                                            <img src={img} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
                                         )}
                                     </div>
 
