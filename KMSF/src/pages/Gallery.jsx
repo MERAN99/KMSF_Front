@@ -11,8 +11,10 @@ import { API_BASE_URL } from '../config';
 const IMAGES_PER_PAGE = 12;
 
 // Helper: has this event's date already passed?
-const isPastEvent = (dateStr) => {
-    const eventDate = new Date(dateStr);
+const isPastEvent = (ev) => {
+    if (ev.isTBD) return false;
+    if (!ev.date) return false;
+    const eventDate = new Date(ev.date);
     const threeDaysAfter = new Date(eventDate.getTime() + 3 * 24 * 60 * 60 * 1000);
     return new Date() > threeDaysAfter;
 };
@@ -303,7 +305,7 @@ const Gallery = () => {
     const eventAlbums = React.useMemo(() => {
         if (!eventsData?.data) return [];
         return eventsData.data
-            .filter(ev => isPastEvent(ev.date) && ev.galleryImages && ev.galleryImages.length > 0)
+            .filter(ev => isPastEvent(ev) && ev.galleryImages && ev.galleryImages.length > 0)
             .sort((a, b) => new Date(b.date) - new Date(a.date))
             .map(ev => ({
                 id: ev._id,

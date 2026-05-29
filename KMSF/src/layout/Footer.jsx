@@ -57,7 +57,7 @@ const Footer = () => {
 
         <div className="border-t dark:border-gray-800 border-gray-200 mt-8 pt-8 text-center">
           <p className="dark:text-gray-400 text-gray-500 text-sm">
-            © 2025 Kurdistan Medical and Scientific Federation. All rights reserved.
+            © {new Date().getFullYear()} Kurdistan Medical and Scientific Federation. All rights reserved.
           </p>
         </div>
       </div>

@@ -61,14 +61,19 @@ const AdminDashboard = () => {
     const [teamImagePreview, setTeamImagePreview] = useState('');
     const teamImageInputRef = useRef(null);
 
+    // Event TBD checkbox state
+    const [isEventTBD, setIsEventTBD] = useState(false);
+
     // When editing opens, seed existing images
     useEffect(() => {
         if (editingEvent) {
             setExistingImages(editingEvent.images || (editingEvent.image ? [editingEvent.image] : []));
             setExistingGalleryImages(editingEvent.galleryImages || []);
+            setIsEventTBD(editingEvent.isTBD || false);
         } else {
             setExistingImages([]);
             setExistingGalleryImages([]);
+            setIsEventTBD(false);
         }
         setNewImageFiles([]);
         setNewImagePreviews([]);
@@ -133,10 +138,11 @@ const AdminDashboard = () => {
         // Basic fields
         formData.set('title', form.title.value);
         formData.set('description', form.description.value);
-        formData.set('date', form.date.value);
+        formData.set('date', isEventTBD ? '' : form.date.value);
         formData.set('time', form.time.value);
         formData.set('location', form.location.value);
         formData.set('category', form.category.value);
+        formData.set('isTBD', isEventTBD);
 
         // Prices
         const prices = [
@@ -747,33 +753,40 @@ const AdminDashboard = () => {
                                 <div className="text-center py-20 text-gray-500">No events created yet.</div>
                             ) : (
                                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                                    {eventsData?.data?.map((ev) => (
-                                        <div key={ev._id} className="dark:bg-gray-900 bg-white dark:border-gray-700/50 border-gray-200 border rounded-xl p-5 flex flex-col sm:flex-row gap-5 group hover:border-amber-500/50 transition-all shadow-lg hover:shadow-amber-500/5">
-                                            <div className="relative w-full sm:w-48 h-48 sm:h-full shrink-0 rounded-lg overflow-hidden bg-gray-800">
-                                                {ev.image ? (
-                                                    <img
-                                                        src={ev.image.startsWith('/uploads') ? `${API_BASE_URL}${ev.image}` : ev.image}
-                                                        alt={ev.title}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                        onError={(e) => { e.target.src = 'https://via.placeholder.com/400x200?text=Image+Not+Found'; }}
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
-                                                        <Calendar size={32} className="mb-2 opacity-50" />
-                                                        <span className="text-xs">No Image</span>
+                                    {[...eventsData.data]
+                                        .sort((a, b) => {
+                                            if (a.isTBD && !b.isTBD) return 1;
+                                            if (!a.isTBD && b.isTBD) return -1;
+                                            if (a.isTBD && b.isTBD) return 0;
+                                            return new Date(a.date) - new Date(b.date);
+                                        })
+                                        .map((ev) => (
+                                            <div key={ev._id} className="dark:bg-gray-900 bg-white dark:border-gray-700/50 border-gray-200 border rounded-xl p-5 flex flex-col sm:flex-row gap-5 group hover:border-amber-500/50 transition-all shadow-lg hover:shadow-amber-500/5">
+                                                <div className="relative w-full sm:w-48 h-48 sm:h-full shrink-0 rounded-lg overflow-hidden bg-gray-800">
+                                                    {ev.image ? (
+                                                        <img
+                                                            src={ev.image.startsWith('/uploads') ? `${API_BASE_URL}${ev.image}` : ev.image}
+                                                            alt={ev.title}
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                            onError={(e) => { e.target.src = 'https://via.placeholder.com/400x200?text=Image+Not+Found'; }}
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
+                                                            <Calendar size={32} className="mb-2 opacity-50" />
+                                                            <span className="text-xs">No Image</span>
+                                                        </div>
+                                                    )}
+                                                    <div className="absolute top-2 left-2 bg-gray-900/80 backdrop-blur text-amber-500 text-xs font-bold px-2 py-1 rounded border border-amber-500/20">
+                                                        {ev.category || 'Event'}
                                                     </div>
-                                                )}
-                                                <div className="absolute top-2 left-2 bg-gray-900/80 backdrop-blur text-amber-500 text-xs font-bold px-2 py-1 rounded border border-amber-500/20">
-                                                    {ev.category || 'Event'}
                                                 </div>
-                                            </div>
-                                            <div className="flex-1 flex flex-col py-1">
-                                                <h3 className="dark:text-white text-gray-900 font-bold text-lg mb-2 line-clamp-2">{ev.title}</h3>
-                                                <div className="space-y-2 text-sm dark:text-gray-400 text-gray-500 mb-4 flex-1">
-                                                    <div className="flex items-center space-x-2">
-                                                        <Calendar size={14} className="text-amber-500 shrink-0" />
-                                                        <span className="truncate">{new Date(ev.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-                                                    </div>
+                                                <div className="flex-1 flex flex-col py-1">
+                                                    <h3 className="dark:text-white text-gray-900 font-bold text-lg mb-2 line-clamp-2">{ev.title}</h3>
+                                                    <div className="space-y-2 text-sm dark:text-gray-400 text-gray-500 mb-4 flex-1">
+                                                        <div className="flex items-center space-x-2">
+                                                            <Calendar size={14} className="text-amber-500 shrink-0" />
+                                                            <span className="truncate">{ev.isTBD ? 'TBD (To Be Decided)' : new Date(ev.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                                                        </div>
                                                     <div className="flex items-center space-x-2">
                                                         <Clock size={14} className="text-amber-500 shrink-0" />
                                                         <span className="truncate">{ev.time}</span>
@@ -1184,8 +1197,26 @@ const AdminDashboard = () => {
                                         <textarea name="description" defaultValue={editingEvent?.description} rows="4" className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all resize-none" />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-400 mb-2">Date</label>
-                                        <input type="date" name="date" defaultValue={editingEvent?.date?.split('T')[0]} required className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all" />
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="block text-sm font-medium text-gray-400">Date</label>
+                                            <label className="flex items-center gap-2 cursor-pointer text-xs dark:text-gray-400 text-gray-500">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isEventTBD}
+                                                    onChange={(e) => setIsEventTBD(e.target.checked)}
+                                                    className="rounded dark:bg-gray-800 border-gray-700 text-amber-500 focus:ring-amber-500 w-4 h-4"
+                                                />
+                                                <span>TBD (To Be Decided)</span>
+                                            </label>
+                                        </div>
+                                        <input
+                                            type="date"
+                                            name="date"
+                                            defaultValue={editingEvent?.date?.split('T')[0]}
+                                            required={!isEventTBD}
+                                            disabled={isEventTBD}
+                                            className="w-full dark:bg-gray-800 bg-gray-100 dark:border-gray-700 border-gray-300 border rounded-lg px-4 py-3 dark:text-white text-gray-900 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                        />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-400 mb-2">Time Frame</label>

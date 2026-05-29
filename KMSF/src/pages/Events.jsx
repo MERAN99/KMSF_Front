@@ -7,8 +7,10 @@ import { API_BASE_URL } from '../config';
 import { useGetEventsQuery } from '../store/api/apiSlice';
 
 // Helper: is this event upcoming, or did it end less than 3 days ago?
-const isUpcomingEvent = (dateStr) => {
-    const eventDate = new Date(dateStr);
+const isUpcomingEvent = (ev) => {
+    if (ev.isTBD) return true;
+    if (!ev.date) return false;
+    const eventDate = new Date(ev.date);
     const threeDaysAfter = new Date(eventDate.getTime() + 3 * 24 * 60 * 60 * 1000);
     return new Date() <= threeDaysAfter;
 };
@@ -30,7 +32,13 @@ export default function EventsSection() {
       nonMember: ev.prices?.find(p => p.type === 'Non-member')?.amount || 'N/A'
     }
   }))
-  .filter(ev => isUpcomingEvent(ev.date)) || [];
+  .filter(isUpcomingEvent)
+  .sort((a, b) => {
+    if (a.isTBD && !b.isTBD) return 1;
+    if (!a.isTBD && b.isTBD) return -1;
+    if (a.isTBD && b.isTBD) return 0;
+    return new Date(a.date) - new Date(b.date);
+  }) || [];
 
   if (isLoading) {
     return <div className="min-h-screen dark:bg-gray-900 bg-gray-50 flex items-center justify-center"><div className="animate-spin rounded-full h-16 w-16 border-b-2 border-[#C8A441]"></div></div>;
@@ -122,7 +130,7 @@ export default function EventsSection() {
                   <div className="space-y-1.5 mb-3">
                     <div className="flex items-center dark:text-gray-400 text-gray-500 text-xs">
                       <Calendar className="w-3.5 h-3.5 mr-2 text-[#C8A441]" />
-                      <span>{new Date(event.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                      <span>{event.isTBD ? 'TBD (To Be Decided)' : new Date(event.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}</span>
                     </div>
                     <div className="flex items-center dark:text-gray-400 text-gray-500 text-xs">
                       <Clock className="w-3.5 h-3.5 mr-2 text-[#C8A441]" />
@@ -259,7 +267,7 @@ export default function EventsSection() {
                   <div className="space-y-3 mb-6 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-100 dark:border-gray-800">
                     <div className="flex items-center dark:text-gray-300 text-gray-700">
                       <Calendar className="w-5 h-5 mr-3 text-[#C8A441] flex-shrink-0" />
-                      <span className="font-medium">{new Date(selectedEvent.date).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                      <span className="font-medium">{selectedEvent.isTBD ? 'TBD (To Be Decided)' : new Date(selectedEvent.date).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
                     </div>
                     <div className="flex items-center dark:text-gray-300 text-gray-700">
                       <Clock className="w-5 h-5 mr-3 text-[#C8A441] flex-shrink-0" />

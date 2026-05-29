@@ -5,8 +5,10 @@ import { useGetEventsQuery } from '../store/api/apiSlice';
 import LazyImage from '../components/LazyImage';
 
 // Helper: has this event's date already passed?
-const isPastEvent = (dateStr) => {
-    const eventDate = new Date(dateStr);
+const isPastEvent = (ev) => {
+    if (ev.isTBD) return false;
+    if (!ev.date) return false;
+    const eventDate = new Date(ev.date);
     const threeDaysAfter = new Date(eventDate.getTime() + 3 * 24 * 60 * 60 * 1000);
     return new Date() > threeDaysAfter;
 };
@@ -24,7 +26,7 @@ const Archives = () => {
     const pastEvents = React.useMemo(() => {
         if (!eventsData?.data) return [];
         return eventsData.data
-            .filter(ev => isPastEvent(ev.date))
+            .filter(isPastEvent)
             .sort((a, b) => new Date(b.date) - new Date(a.date));
     }, [eventsData]);
 
