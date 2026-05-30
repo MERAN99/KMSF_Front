@@ -27,10 +27,10 @@ const Members = () => {
 
   const { kmsfMembers, ksaMembers, kumaMembers, audioVisualMembers } = React.useMemo(() => {
     const list = teamData?.data || [];
-    const kmsf = list.filter(m => m.teamType === 'kmsf').sort((a, b) => (a.order || 0) - (b.order || 0));
-    const ksa = list.filter(m => m.teamType === 'ksa').sort((a, b) => (a.order || 0) - (b.order || 0));
-    const kuma = list.filter(m => m.teamType === 'kuma').sort((a, b) => (a.order || 0) - (b.order || 0));
-    const audiovisual = list.filter(m => m.teamType === 'audiovisual').sort((a, b) => (a.order || 0) - (b.order || 0));
+    const kmsf = list.filter(m => m.teamType?.toLowerCase() === 'kmsf').sort((a, b) => (a.order || 0) - (b.order || 0));
+    const ksa = list.filter(m => m.teamType?.toLowerCase() === 'ksa').sort((a, b) => (a.order || 0) - (b.order || 0));
+    const kuma = list.filter(m => m.teamType?.toLowerCase() === 'kuma').sort((a, b) => (a.order || 0) - (b.order || 0));
+    const audiovisual = list.filter(m => m.teamType?.toLowerCase() === 'audiovisual').sort((a, b) => (a.order || 0) - (b.order || 0));
     return { kmsfMembers: kmsf, ksaMembers: ksa, kumaMembers: kuma, audioVisualMembers: audiovisual };
   }, [teamData]);
 

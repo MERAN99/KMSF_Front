@@ -1492,7 +1492,7 @@ const AdminDashboard = () => {
                                                 <option value="kmsf">KMSF</option>
                                                 <option value="ksa">KSA</option>
                                                 <option value="kuma">KuMA</option>
-                                                <option value="audiovisual">Audio Visual</option>
+                                                <option value="audioVisual">Audio Visual</option>
                                             </select>
                                         </div>
 
