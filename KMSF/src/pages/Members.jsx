@@ -54,7 +54,7 @@ const Members = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold dark:text-white text-gray-900 mb-6">
-            Meet Our <span className="bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">Members</span>
+            Meet Our <span className="bg-gradient-to-r from-[#C8A441] to-[#F2AE02] bg-clip-text text-transparent">Committee</span>
           </h2>
           <p className="text-xl dark:text-gray-300 text-gray-600 max-w-3xl mx-auto">
             Our dedicated team of professionals from KMSF, KSA and KuMA working together to advance Kurdish healthcare and scientific excellence.
