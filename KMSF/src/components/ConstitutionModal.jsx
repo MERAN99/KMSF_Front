@@ -328,7 +328,6 @@ const ConstitutionModal = ({ org, onClose }) => {
     const data = CONSTITUTIONS[org];
 
     const handlePrint = () => {
-        const printContent = printRef.current?.innerHTML;
         const w = window.open('', '_blank');
         w.document.write(`
       <html>
