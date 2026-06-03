@@ -1,18 +1,31 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { API_BASE_URL } from '../../config';
+import { logout } from '../slices/authSlice';
+
+const baseQuery = fetchBaseQuery({
+    baseUrl: API_BASE_URL,
+    prepareHeaders: (headers, { getState }) => {
+        const token = getState().auth.token;
+        if (token) {
+            headers.set('authorization', `Bearer ${token}`);
+        }
+        return headers;
+    },
+});
+
+// Wraps the base query: if the server returns 401 (token expired / invalid),
+// automatically log the user out so they are redirected to login.
+const baseQueryWithReauth = async (args, api, extraOptions) => {
+    const result = await baseQuery(args, api, extraOptions);
+    if (result?.error?.status === 401) {
+        api.dispatch(logout());
+    }
+    return result;
+};
 
 export const apiSlice = createApi({
     reducerPath: 'api',
-    baseQuery: fetchBaseQuery({
-        baseUrl: API_BASE_URL,
-        prepareHeaders: (headers, { getState }) => {
-            const token = getState().auth.token;
-            if (token) {
-                headers.set('authorization', `Bearer ${token}`);
-            }
-            return headers;
-        },
-    }),
+    baseQuery: baseQueryWithReauth,
     tagTypes: ['User', 'Subscription', 'Event', 'Donation', 'Team'],
     endpoints: (builder) => ({
         login: builder.mutation({
