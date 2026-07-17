@@ -4,7 +4,10 @@ import { Calendar, MapPin, Clock, ArrowRight, X, ChevronLeft, ChevronRight, Exte
 import LazyImage from '../components/LazyImage';
 import { API_BASE_URL } from '../config';
 
-import { useGetEventsQuery } from '../store/api/apiSlice';
+import { useGetEventsQuery, useCheckoutTicketMutation, useClaimFreeTicketMutation } from '../store/api/apiSlice';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 // Helper: is this event upcoming, or did it end less than 3 days ago?
 const isUpcomingEvent = (ev) => {
@@ -20,7 +23,40 @@ export default function EventsSection() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const { data: eventsData, isLoading } = useGetEventsQuery();
+  const [checkoutTicket, { isLoading: isCheckingOut }] = useCheckoutTicketMutation();
+  const [claimFreeTicket, { isLoading: isClaimingFree }] = useClaimFreeTicketMutation();
+  
+  const token = useSelector((state) => state.auth.token);
+  const navigate = useNavigate();
+
   const baseUrl = API_BASE_URL;
+
+  const handleBuyTicket = async (ticketType, amountString) => {
+    if (!token) {
+      toast.error('Please log in or create an account to get a ticket.');
+      navigate('/membership', { state: { returnTo: '/events' } });
+      return;
+    }
+
+    try {
+      const isFree = amountString.toLowerCase() === 'free' || parseFloat(amountString.replace(/[^0-9.-]+/g,"")) === 0;
+      
+      if (isFree) {
+        await claimFreeTicket({ id: selectedEvent._id, ticketType }).unwrap();
+        toast.success('Free ticket claimed successfully! View it in your profile.');
+      } else {
+        toast.loading('Redirecting to checkout...', { id: 'checkoutToast' });
+        const amount = parseFloat(amountString.replace(/[^0-9.-]+/g,""));
+        const response = await checkoutTicket({ id: selectedEvent._id, ticketType, amount }).unwrap();
+        if (response.url) {
+          toast.dismiss('checkoutToast');
+          window.location.href = response.url;
+        }
+      }
+    } catch (err) {
+      toast.error(err?.data?.message || 'Failed to process ticket request');
+    }
+  };
 
   const events = eventsData?.data?.map(ev => ({
     ...ev,
@@ -97,7 +133,8 @@ export default function EventsSection() {
             <motion.div
               key={event.id}
               variants={cardVariants}
-              className="group relative dark:bg-gray-900 bg-white backdrop-blur-sm overflow-hidden border dark:border-white/10 border-gray-200 hover:border-[#C8A441]/50 transition-all duration-300 shadow-xl hover:shadow-2xl min-h-[500px] flex flex-col"
+              onClick={() => { setSelectedEvent(event); setCurrentImageIndex(0); }}
+              className="group relative dark:bg-gray-900 bg-white backdrop-blur-sm overflow-hidden border dark:border-white/10 border-gray-200 hover:border-[#C8A441]/50 transition-all duration-300 shadow-xl hover:shadow-2xl min-h-[500px] flex flex-col cursor-pointer"
             >
               {/* Category Badge */}
               <div className="absolute top-4 right-4 z-10">
@@ -282,18 +319,35 @@ export default function EventsSection() {
                   <div className="mb-6">
                     <h4 className="text-lg font-bold dark:text-white text-gray-900 mb-2">Registration</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
-                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Student</p>
-                        <p className="font-bold text-[#C8A441] text-lg">{selectedEvent.registration.student}</p>
-                      </div>
-                      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
-                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Member</p>
-                        <p className="font-bold text-[#C8A441] text-lg">{selectedEvent.registration.kmsfMember}</p>
-                      </div>
-                      <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
-                        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Non-member</p>
-                        <p className="font-bold text-[#C8A441] text-lg">{selectedEvent.registration.nonMember}</p>
-                      </div>
+                      {selectedEvent.prices && selectedEvent.prices.length > 0 ? (
+                        selectedEvent.prices.map((price, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => handleBuyTicket(price.type, price.amount)}
+                            disabled={isCheckingOut || isClaimingFree}
+                            className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 text-center hover:border-[#C8A441] dark:hover:border-[#C8A441] transition-colors cursor-pointer disabled:opacity-50"
+                          >
+                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">{price.type}</p>
+                            <p className="font-bold text-[#C8A441] text-lg">{price.amount}</p>
+                            <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-semibold bg-[#C8A441]/10 py-1 rounded">Get Ticket</p>
+                          </button>
+                        ))
+                      ) : (
+                        <>
+                          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Student</p>
+                            <p className="font-bold text-[#C8A441] text-lg">{selectedEvent.registration.student}</p>
+                          </div>
+                          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Member</p>
+                            <p className="font-bold text-[#C8A441] text-lg">{selectedEvent.registration.kmsfMember}</p>
+                          </div>
+                          <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Non-member</p>
+                            <p className="font-bold text-[#C8A441] text-lg">{selectedEvent.registration.nonMember}</p>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
 
@@ -312,7 +366,7 @@ export default function EventsSection() {
                         rel="noopener noreferrer"
                         className="w-full bg-gradient-to-r from-[#C8A441] to-[#F2AE02] text-white py-3.5 px-6 font-bold rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-[#C8A441]/30"
                       >
-                        Register / External Link
+                        External Link
                         <ExternalLink className="w-5 h-5" />
                       </a>
                     </div>

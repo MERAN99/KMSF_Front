@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, X, LogOut, User as UserIcon, CreditCard, ChevronDown, Lock, Zap, Star, Pencil, Sun, Moon } from 'lucide-react';
+import { Menu, X, LogOut, User as UserIcon, CreditCard, ChevronDown, Lock, Zap, Star, Pencil, Sun, Moon, Ticket as TicketIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { selectCurrentUser, selectCurrentToken, logout } from '../store/slices/a
 import MemberIDCard from '../components/MemberIDCard';
 import ChangePasswordModal from '../components/ChangePasswordModal';
 import EditProfileModal from '../components/EditProfileModal';
+import MyTicketsModal from '../components/MyTicketsModal';
 import { useTheme } from '../context/ThemeContext';
 
 const Navbar = () => {
@@ -16,6 +17,7 @@ const Navbar = () => {
   const [isIDCardOpen, setIsIDCardOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isMyTicketsOpen, setIsMyTicketsOpen] = useState(false);
   const mobileMenuRef = useRef(null);
   const profileRef = useRef(null);
   const toggleButtonRef = useRef(null);
@@ -235,6 +237,14 @@ const Navbar = () => {
                             <span>My ID Card</span>
                           </button>
 
+                          <button
+                            onClick={() => { setIsMyTicketsOpen(true); setIsProfileOpen(false); }}
+                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm dark:text-gray-300 text-gray-600 hover:bg-amber-500/10 hover:text-amber-500 transition-colors"
+                          >
+                            <TicketIcon size={18} />
+                            <span>My Tickets</span>
+                          </button>
+
                           {user?.role === 'admin' && (
                             <button
                               onClick={() => { navigate('/admin'); setIsProfileOpen(false); }}
@@ -348,6 +358,7 @@ const Navbar = () => {
         isOpen={isChangePasswordOpen}
         onClose={() => setIsChangePasswordOpen(false)}
       />
+      <MyTicketsModal isOpen={isMyTicketsOpen} onClose={() => setIsMyTicketsOpen(false)} />
     </>
   );
 };

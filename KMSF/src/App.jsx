@@ -6,6 +6,7 @@ import Navbar from './layout/Navbar';
 import Footer from './layout/Footer';
 import RouteScrollToTop from './components/RouteScrollToTop';
 import MemberRoute from './components/MemberRoute';
+import { Toaster } from 'react-hot-toast';
 
 // Lazy load components for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -19,6 +20,7 @@ const Contact = lazy(() => import('./pages/Contact'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Privacy = lazy(() => import('./pages/Privacy'));
+const TicketSuccess = lazy(() => import('./pages/TicketSuccess'));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -30,6 +32,7 @@ const LoadingSpinner = () => (
 function App() {
   return (
     <Router>
+      <Toaster position="top-center" />
       <RouteScrollToTop />
       <div className="dark:bg-gray-900 bg-white min-h-screen">
         <Navbar />
@@ -46,6 +49,7 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/ticket-success" element={<TicketSuccess />} />
           </Routes>
         </Suspense>
       </div>

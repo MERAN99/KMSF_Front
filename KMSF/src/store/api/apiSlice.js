@@ -26,7 +26,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: baseQueryWithReauth,
-    tagTypes: ['User', 'Subscription', 'Event', 'Donation', 'Team'],
+    tagTypes: ['User', 'Subscription', 'Event', 'Donation', 'Team', 'Ticket'],
     endpoints: (builder) => ({
         login: builder.mutation({
             query: (credentials) => ({
@@ -293,6 +293,29 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['Team'],
         }),
+        checkoutTicket: builder.mutation({
+            query: ({ id, ticketType, amount }) => ({
+                url: `/events/${id}/tickets/checkout`,
+                method: 'POST',
+                body: { ticketType, amount }
+            })
+        }),
+        claimFreeTicket: builder.mutation({
+            query: ({ id, ticketType }) => ({
+                url: `/events/${id}/tickets/free`,
+                method: 'POST',
+                body: { ticketType }
+            }),
+            invalidatesTags: ['Ticket']
+        }),
+        getUserTickets: builder.query({
+            query: () => `/users/me/tickets`,
+            providesTags: ['Ticket']
+        }),
+        getAdminEventTickets: builder.query({
+            query: (id) => `/admin/events/${id}/tickets`,
+            providesTags: ['Ticket']
+        }),
     }),
 });
 
@@ -337,4 +360,8 @@ export const {
     useCreateTeamMemberMutation,
     useDeleteTeamMemberMutation,
     useUpdateTeamMemberMutation,
+    useCheckoutTicketMutation,
+    useClaimFreeTicketMutation,
+    useGetUserTicketsQuery,
+    useGetAdminEventTicketsQuery,
 } = apiSlice;

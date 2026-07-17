@@ -31,6 +31,8 @@ import {
     CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import AdminEditUserModal from '../components/AdminEditUserModal';
+import AdminTickets from '../components/AdminTickets';
+import { Ticket as TicketIcon } from 'lucide-react';
 
 const AdminDashboard = () => {
     const user = useSelector(selectCurrentUser);
@@ -403,6 +405,14 @@ const AdminDashboard = () => {
                         <span>Team</span>
                     </button>
                     <button
+                        onClick={() => setActiveTab('tickets')}
+                        className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'tickets' ? 'text-amber-500 border-b-2 border-amber-500' : 'dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'
+                            }`}
+                    >
+                        <TicketIcon size={20} />
+                        <span>Tickets</span>
+                    </button>
+                    <button
                         onClick={() => setActiveTab('donations')}
                         className={`flex items-center space-x-2 px-4 py-2 font-medium transition-colors whitespace-nowrap ${activeTab === 'donations' ? 'text-amber-500 border-b-2 border-amber-500' : 'dark:text-gray-400 text-gray-500 dark:hover:text-white hover:text-gray-800'
                             }`}
@@ -414,6 +424,10 @@ const AdminDashboard = () => {
 
                 {/* Content */}
                 <div className="dark:bg-gray-800/50 bg-white dark:border-gray-700/50 border-gray-200 border rounded-xl overflow-hidden backdrop-blur-sm shadow-xl">
+
+                    {activeTab === 'tickets' && (
+                        <AdminTickets />
+                    )}
 
                     {/* STATS VIEW */}
                     {activeTab === 'dashboard' && (
@@ -473,16 +487,16 @@ const AdminDashboard = () => {
                                             </div>
                                         </div>
 
-                                        {/* Role Pie Chart */}
+                                        {/* Organization Pie Chart */}
                                         <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6">
-                                            <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-6">Role Distribution</h3>
+                                            <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-6">Organization Distribution</h3>
                                             <div className="h-64">
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <PieChart>
                                                         <Pie
                                                             data={[
-                                                                { name: 'Admins', value: statsData.data.roleCounts.admin || 0 },
-                                                                { name: 'Members', value: statsData.data.roleCounts.member || 0 },
+                                                                { name: 'KSA', value: statsData.data.organizationCounts?.find(o => o._id === 'KSA')?.count || 0 },
+                                                                { name: 'KuMA', value: statsData.data.organizationCounts?.find(o => o._id === 'KuMA')?.count || 0 },
                                                             ]}
                                                             cx="50%" cy="50%" innerRadius={60} outerRadius={80}
                                                             paddingAngle={5} dataKey="value"
@@ -522,13 +536,13 @@ const AdminDashboard = () => {
                                         {/* Top Professions Bar Chart */}
                                         <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6 lg:col-span-3 shadow-inner">
                                             <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-6 flex items-center gap-2"><Briefcase size={20} className="text-amber-500" /> Top Professions</h3>
-                                            <div className="h-72">
+                                            <div style={{ height: statsData.data.professionCounts ? Math.max(288, statsData.data.professionCounts.length * 45) : 288 }} className="w-full transition-all duration-300">
                                                 {statsData.data.professionCounts && statsData.data.professionCounts.length > 0 ? (
                                                     <ResponsiveContainer width="100%" height="100%">
                                                         <BarChart data={statsData.data.professionCounts} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
                                                             <CartesianGrid strokeDasharray="3 3" stroke="#374151" horizontal={false} />
                                                             <XAxis type="number" stroke="#9CA3AF" />
-                                                            <YAxis dataKey="_id" type="category" stroke="#9CA3AF" width={100} />
+                                                            <YAxis dataKey="_id" type="category" stroke="#9CA3AF" width={150} interval={0} tick={{ fontSize: 12 }} />
                                                             <RechartsTooltip contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#fff' }} cursor={{ fill: '#374151', opacity: 0.4 }} />
                                                             <Bar dataKey="count" name="Professionals" fill="#10B981" radius={[0, 4, 4, 0]} barSize={30}>
                                                                 {statsData.data.professionCounts.map((entry, index) => (
