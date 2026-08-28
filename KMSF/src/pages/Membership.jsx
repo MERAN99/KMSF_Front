@@ -34,6 +34,21 @@ const KSA_PROFESSIONS = [
   'Oceanographer', 'Physicist', 'Psychologist', 'Statistician', 'Other'
 ];
 
+const STUDENT_PROFESSIONS = [
+  'Actuarial Science', 'Astrophysics', 'Biochemistry', 'Biology',
+  'Biomedical Engineering', 'Biomedical Science', 'Biotechnology', 'Chemistry',
+  'Computer Science', 'Dentistry', 'Dietetics', 'Ecology',
+  'Environmental Science', 'Forensic Science', 'Genetics', 'Geography',
+  'Geology', 'Immunology', 'Marine Biology', 'Materials Science',
+  'Mathematics', 'Medical Science', 'Medicine', 'Microbiology',
+  'Midwifery', 'Natural Sciences', 'Neuroscience', 'Nursing',
+  'Nutrition', 'Occupational Therapy', 'Optometry', 'Paramedic Science',
+  'Pharmaceutical Sciences', 'Pharmacy', 'Physics', 'Physiology',
+  'Physiotherapy', 'Psychology', 'Radiography', 'Speech and Language Therapy',
+  'Sport & Exercise Science', 'Statistics', 'Veterinary Medicine', 'Zoology',
+  'Other'
+];
+
 const DEFAULT_PROFESSIONS = [
   'Doctor', 'Dentist', 'Pharmacist', 'Nurse', 'Engineer', 'Teacher',
   'Professor', 'Scientist', 'Physicist', 'Biologist', 'Other'
@@ -655,6 +670,7 @@ const Membership = () => {
                         <option value="">Select Organization</option>
                         <option value="KSA">KSA (Kurdistan Scientific Association)</option>
                         <option value="KuMA">KuMA (Kurdish Medical Association)</option>
+                        <option value="Students">Students</option>
                       </select>
                     </div>
 
@@ -667,7 +683,9 @@ const Membership = () => {
                           ? KUMA_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
                           : formData.organization === 'KSA'
                             ? KSA_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
-                            : DEFAULT_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
+                            : formData.organization === 'Students'
+                              ? STUDENT_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
+                              : DEFAULT_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
                         }
                       </select>
                     </div>
