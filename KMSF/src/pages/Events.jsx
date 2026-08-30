@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, MapPin, Clock, ArrowRight, X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { Calendar, MapPin, Clock, ArrowRight, X, ChevronLeft, ChevronRight, ExternalLink, Lock } from "lucide-react";
 import LazyImage from '../components/LazyImage';
 import { API_BASE_URL } from '../config';
 
@@ -8,6 +8,43 @@ import { useGetEventsQuery, useCheckoutTicketMutation, useClaimFreeTicketMutatio
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+
+// Determine which ticket types the current user is eligible for
+const getTicketEligibility = (user) => {
+  if (!user) return { eligible: [], reason: {} };
+
+  const isStudent = user.profession?.toLowerCase() === 'student';
+  const isActiveMember = user.membershipStatus === 'active';
+
+  const eligible = [];
+  const reason = {};
+
+  // Student ticket
+  if (isStudent) {
+    eligible.push('Student');
+  } else {
+    reason['Student'] = 'Only students can select this ticket';
+  }
+
+  // Member ticket
+  if (isActiveMember) {
+    eligible.push('Member');
+  } else {
+    reason['Member'] = 'Requires active KMSF membership';
+  }
+
+  // Non-member ticket — available only if the user is NOT an active member
+  // (an active member should use Member pricing; a student should use Student pricing)
+  if (!isActiveMember && !isStudent) {
+    eligible.push('Non-member');
+  } else {
+    reason['Non-member'] = isActiveMember
+      ? 'You have a better rate as a Member'
+      : 'You have a better rate as a Student';
+  }
+
+  return { eligible, reason };
+};
 
 // Helper: is this event upcoming, or did it end less than 3 days ago?
 const isUpcomingEvent = (ev) => {
@@ -27,7 +64,10 @@ export default function EventsSection() {
   const [claimFreeTicket, { isLoading: isClaimingFree }] = useClaimFreeTicketMutation();
   
   const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
+
+  const { eligible: eligibleTypes, reason: disabledReasons } = getTicketEligibility(user);
 
   const baseUrl = API_BASE_URL;
 
@@ -320,18 +360,36 @@ export default function EventsSection() {
                     <h4 className="text-lg font-bold dark:text-white text-gray-900 mb-2">Registration</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       {selectedEvent.prices && selectedEvent.prices.length > 0 ? (
-                        selectedEvent.prices.map((price, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => handleBuyTicket(price.type, price.amount)}
-                            disabled={isCheckingOut || isClaimingFree}
-                            className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 text-center hover:border-[#C8A441] dark:hover:border-[#C8A441] transition-colors cursor-pointer disabled:opacity-50"
-                          >
-                            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">{price.type}</p>
-                            <p className="font-bold text-[#C8A441] text-lg">{price.amount}</p>
-                            <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-semibold bg-[#C8A441]/10 py-1 rounded">Get Ticket</p>
-                          </button>
-                        ))
+                        selectedEvent.prices.map((price, idx) => {
+                          const isEligible = !token || eligibleTypes.includes(price.type);
+                          const reasonText = disabledReasons[price.type];
+                          return (
+                            <button
+                              key={idx}
+                              onClick={() => isEligible && handleBuyTicket(price.type, price.amount)}
+                              disabled={!isEligible || isCheckingOut || isClaimingFree}
+                              className={`p-3 rounded-lg border text-center transition-all relative ${
+                                isEligible
+                                  ? 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-[#C8A441] dark:hover:border-[#C8A441] cursor-pointer'
+                                  : 'bg-gray-100 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700/50 cursor-not-allowed opacity-50'
+                              }`}
+                              title={!isEligible ? reasonText : ''}
+                            >
+                              {!isEligible && (
+                                <div className="absolute top-2 right-2">
+                                  <Lock size={14} className="text-gray-400 dark:text-gray-500" />
+                                </div>
+                              )}
+                              <p className={`text-xs uppercase tracking-wider mb-1 ${isEligible ? 'text-gray-500 dark:text-gray-400' : 'text-gray-400 dark:text-gray-500'}`}>{price.type}</p>
+                              <p className={`font-bold text-lg ${isEligible ? 'text-[#C8A441]' : 'text-gray-400 dark:text-gray-500'}`}>{price.amount}</p>
+                              {isEligible ? (
+                                <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-semibold bg-[#C8A441]/10 py-1 rounded">Get Ticket</p>
+                              ) : (
+                                <p className="text-[9px] text-red-400 dark:text-red-400/70 mt-1 leading-tight">{reasonText}</p>
+                              )}
+                            </button>
+                          );
+                        })
                       ) : (
                         <>
                           <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg border border-gray-100 dark:border-gray-700 text-center">
