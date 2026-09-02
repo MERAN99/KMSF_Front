@@ -125,7 +125,21 @@ const AdminDashboard = () => {
     const [deleteMember] = useDeleteMemberMutation();
     const [notifyEvent, { isLoading: isNotifying }] = useNotifyEventMutation();
     const [sendBulkReminderEmail] = useSendBulkReminderEmailMutation();
+    const [notifyingId, setNotifyingId] = useState(null);
+    const [isSendingBulk, setIsSendingBulk] = useState(false);
     const [syncStripeMembers, { isLoading: isSyncingStripe }] = useSyncStripeMembersMutation();
+
+    // Automatically sync Stripe subscriptions in background when admin opens the dashboard
+    useEffect(() => {
+        syncStripeMembers()
+            .unwrap()
+            .then((res) => {
+                console.log('[AutoSyncStripe] Background sync finished:', res?.message);
+            })
+            .catch((err) => {
+                console.warn('[AutoSyncStripe] Background sync failed:', err);
+            });
+    }, [syncStripeMembers]);
 
     const handleSyncStripe = async () => {
         try {
