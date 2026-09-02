@@ -20,10 +20,11 @@ import {
     useCreateTeamMemberMutation,
     useDeleteTeamMemberMutation,
     useUpdateTeamMemberMutation,
+    useSyncStripeMembersMutation,
 } from '../store/api/apiSlice';
 import {
     Users, Calendar, Plus, Edit, Trash2, X, CheckCircle,
-    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign, Tag, Eye, EyeOff, Images, Upload, FolderOpen, ImagePlus, ArrowLeft, Save
+    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign, Tag, Eye, EyeOff, Images, Upload, FolderOpen, ImagePlus, ArrowLeft, Save, RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -124,8 +125,16 @@ const AdminDashboard = () => {
     const [deleteMember] = useDeleteMemberMutation();
     const [notifyEvent, { isLoading: isNotifying }] = useNotifyEventMutation();
     const [sendBulkReminderEmail] = useSendBulkReminderEmailMutation();
-    const [notifyingId, setNotifyingId] = useState(null);
-    const [isSendingBulk, setIsSendingBulk] = useState(false);
+    const [syncStripeMembers, { isLoading: isSyncingStripe }] = useSyncStripeMembersMutation();
+
+    const handleSyncStripe = async () => {
+        try {
+            const res = await syncStripeMembers().unwrap();
+            alert(res.message || 'Stripe synchronization completed successfully!');
+        } catch (err) {
+            alert(err?.data?.message || 'Failed to sync with Stripe.');
+        }
+    };
 
     // Redirect if not admin
     if (!user || user.role !== 'admin') {
@@ -365,9 +374,20 @@ const AdminDashboard = () => {
     return (
         <div className="min-h-screen dark:bg-gray-900 bg-gray-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
-                <header className="mb-8">
-                    <h1 className="text-3xl font-bold dark:text-white text-gray-900 mb-2">Admin Control Panel</h1>
-                    <p className="dark:text-gray-400 text-gray-500">Manage KMSF statistics, users, and events</p>
+                <header className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold dark:text-white text-gray-900 mb-2">Admin Control Panel</h1>
+                        <p className="dark:text-gray-400 text-gray-500">Manage KMSF statistics, users, and events</p>
+                    </div>
+                    <button
+                        onClick={handleSyncStripe}
+                        disabled={isSyncingStripe}
+                        className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold px-4 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all disabled:opacity-50 text-sm cursor-pointer"
+                        title="Synchronize active subscriptions from Stripe into the database"
+                    >
+                        <RefreshCw size={16} className={isSyncingStripe ? 'animate-spin' : ''} />
+                        <span>{isSyncingStripe ? 'Syncing with Stripe...' : 'Sync Stripe Subscriptions'}</span>
+                    </button>
                 </header>
 
                 {/* Tabs */}

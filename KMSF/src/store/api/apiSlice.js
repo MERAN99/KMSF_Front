@@ -169,6 +169,13 @@ export const apiSlice = createApi({
                 method: 'POST',
             }),
         }),
+        syncStripeMembers: builder.mutation({
+            query: () => ({
+                url: '/admin/sync-stripe',
+                method: 'POST',
+            }),
+            invalidatesTags: ['User', 'Stats'],
+        }),
         // Public Events
         getEvents: builder.query({
             query: () => '/events',
@@ -364,4 +371,5 @@ export const {
     useClaimFreeTicketMutation,
     useGetUserTicketsQuery,
     useGetAdminEventTicketsQuery,
+    useSyncStripeMembersMutation,
 } = apiSlice;
