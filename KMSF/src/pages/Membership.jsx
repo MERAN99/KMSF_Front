@@ -670,7 +670,7 @@ const Membership = () => {
                         <option value="">Select Organization</option>
                         <option value="KSA">KSA (Kurdistan Scientific Association)</option>
                         <option value="KuMA">KuMA (Kurdish Medical Association)</option>
-                        <option value="Students">Students</option>
+                        <option value="Student">Student</option>
                       </select>
                     </div>
 
@@ -683,7 +683,7 @@ const Membership = () => {
                           ? KUMA_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
                           : formData.organization === 'KSA'
                             ? KSA_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
-                            : formData.organization === 'Students'
+                            : formData.organization === 'Student'
                               ? STUDENT_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
                               : DEFAULT_PROFESSIONS.map((prof) => <option key={prof} value={prof}>{prof}</option>)
                         }

@@ -709,21 +709,23 @@ const AdminDashboard = () => {
                                                             {u.membershipStatus}
                                                         </span>
                                                     </td>
-                                                    <td className="px-6 py-4 text-right space-x-2">
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); handleToggleBlock(u._id, u.isBlocked); }}
-                                                            title={u.isBlocked ? 'Unblock User (Allow Login)' : 'Block User (Prevent Login)'}
-                                                            className={`p-2 rounded-lg transition-all ${u.isBlocked ? 'bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white' : 'dark:bg-gray-800 bg-gray-100 text-amber-500 hover:bg-amber-500/20 hover:text-amber-400'}`}
-                                                        >
-                                                            {u.isBlocked ? <CheckCircle size={16} /> : <Ban size={16} />}
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); handleDeleteUser(u._id); }}
-                                                            title="Permanently Delete User"
-                                                            className="p-2 rounded-lg dark:bg-gray-800 bg-gray-100 text-red-500 hover:bg-red-500 hover:text-white transition-all"
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
+                                                    <td className="px-6 py-4 text-right">
+                                                        <div className="flex items-center justify-end gap-2 flex-nowrap">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleToggleBlock(u._id, u.isBlocked); }}
+                                                                title={u.isBlocked ? 'Unblock User (Allow Login)' : 'Block User (Prevent Login)'}
+                                                                className={`p-2 rounded-lg transition-all flex-shrink-0 ${u.isBlocked ? 'bg-green-500/10 text-green-500 hover:bg-green-500 hover:text-white' : 'dark:bg-gray-800 bg-gray-100 text-amber-500 hover:bg-amber-500/20 hover:text-amber-400'}`}
+                                                            >
+                                                                {u.isBlocked ? <CheckCircle size={16} /> : <Ban size={16} />}
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleDeleteUser(u._id); }}
+                                                                title="Permanently Delete User"
+                                                                className="p-2 rounded-lg dark:bg-gray-800 bg-gray-100 text-red-500 hover:bg-red-500 hover:text-white transition-all flex-shrink-0"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}
