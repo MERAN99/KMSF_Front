@@ -378,7 +378,7 @@ const AdminDashboard = () => {
 
     return (
         <div className="min-h-screen dark:bg-gray-900 bg-gray-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
+            <div className="w-full mx-auto">
                 <header className="mb-8">
                     <h1 className="text-3xl font-bold dark:text-white text-gray-900 mb-2">Admin Control Panel</h1>
                     <p className="dark:text-gray-400 text-gray-500">Manage KMSF statistics, users, and events</p>
@@ -658,14 +658,14 @@ const AdminDashboard = () => {
                                                         onChange={handleSelectAllUsers}
                                                     />
                                                 </th>
-                                                <th className="px-6 py-4 font-semibold">Name</th>
-                                                <th className="px-6 py-4 font-semibold">Email</th>
-                                                <th className="px-6 py-4 font-semibold">Phone</th>
-                                                <th className="px-6 py-4 font-semibold">Profession</th>
-                                                <th className="px-6 py-4 font-semibold">Org</th>
-                                                <th className="px-6 py-4 font-semibold">Location</th>
-                                                <th className="px-6 py-4 font-semibold">Status</th>
-                                                <th className="px-6 py-4 font-semibold text-right">Actions</th>
+                                                <th className="px-6 py-4 font-semibold whitespace-nowrap">Name</th>
+                                                <th className="px-6 py-4 font-semibold whitespace-nowrap">Email</th>
+                                                <th className="px-6 py-4 font-semibold whitespace-nowrap">Phone</th>
+                                                <th className="px-6 py-4 font-semibold whitespace-nowrap">Profession</th>
+                                                <th className="px-6 py-4 font-semibold whitespace-nowrap">Org</th>
+                                                <th className="px-6 py-4 font-semibold whitespace-nowrap">Location</th>
+                                                <th className="px-6 py-4 font-semibold whitespace-nowrap">Status</th>
+                                                <th className="px-6 py-4 font-semibold text-right whitespace-nowrap">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-700/50 relative">
@@ -694,13 +694,13 @@ const AdminDashboard = () => {
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.email}</td>
-                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.telephone || '-'}</td>
-                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.profession || '-'}</td>
-                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500 whitespace-nowrap">{u.email}</td>
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500 whitespace-nowrap">{u.telephone || '-'}</td>
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500 whitespace-nowrap">{u.profession || '-'}</td>
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500 whitespace-nowrap">
                                                         {u.organization ? <span className="bg-gray-500/10 text-gray-500 dark:text-gray-400 px-2 py-1 rounded text-xs font-medium border border-gray-500/20">{u.organization}</span> : '-'}
                                                     </td>
-                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500">{u.countyRegion || '-'}, {u.country || '-'}</td>
+                                                    <td className="px-6 py-4 dark:text-gray-400 text-gray-500 whitespace-nowrap">{u.countyRegion || '-'}, {u.country || '-'}</td>
                                                     <td className="px-6 py-4">
                                                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium border ${u.membershipStatus === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
                                                             u.membershipStatus === 'registered' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
