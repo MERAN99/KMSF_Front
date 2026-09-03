@@ -77,12 +77,17 @@ export default function AdminTickets() {
         );
     }
 
-    const filteredTickets = ticketsData?.data?.filter(t => 
-        t.user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        t.user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        t.ticketCode.toLowerCase().includes(searchTerm.toLowerCase())
-    ) || [];
+    const filteredTickets = ticketsData?.data?.filter(t => {
+        const firstName = t.user?.firstName || '';
+        const lastName = t.user?.lastName || '';
+        const email = t.user?.email || '';
+        const code = t.ticketCode || '';
+        const term = searchTerm.toLowerCase();
+        return firstName.toLowerCase().includes(term) || 
+               lastName.toLowerCase().includes(term) ||
+               email.toLowerCase().includes(term) ||
+               code.toLowerCase().includes(term);
+    }) || [];
 
     return (
         <div className="p-6" id="printable-area">
@@ -152,17 +157,19 @@ export default function AdminTickets() {
                         </thead>
                         <tbody className="divide-y divide-gray-200 dark:divide-gray-700 print:divide-gray-300">
                             {filteredTickets.map((ticket, index) => (
-                                <tr key={ticket._id} className="dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 print:hover:bg-transparent">
+                                <tr key={ticket._id} className={`dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 print:hover:bg-transparent ${!ticket.user ? 'opacity-60' : ''}`}>
                                     <td className="px-6 py-3 print:px-2">{index + 1}</td>
                                     <td className="px-6 py-3 print:px-2 font-mono font-medium">{ticket.ticketCode}</td>
-                                    <td className="px-6 py-3 print:px-2 font-medium dark:text-white print:text-black">{ticket.user.firstName} {ticket.user.lastName}</td>
-                                    <td className="px-6 py-3 print:px-2 text-gray-500 dark:text-gray-400 print:text-gray-700">{ticket.user.email}</td>
+                                    <td className="px-6 py-3 print:px-2 font-medium dark:text-white print:text-black">
+                                        {ticket.user ? `${ticket.user.firstName} ${ticket.user.lastName}` : <span className="italic text-gray-400">Deleted User</span>}
+                                    </td>
+                                    <td className="px-6 py-3 print:px-2 text-gray-500 dark:text-gray-400 print:text-gray-700">{ticket.user?.email || '—'}</td>
                                     <td className="px-6 py-3 print:px-2">
                                         <span className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-xs font-medium print:bg-transparent print:p-0">
                                             {ticket.ticketType}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-3 print:px-2 text-gray-500 dark:text-gray-400 print:text-gray-700">{ticket.user.profession || '-'}</td>
+                                    <td className="px-6 py-3 print:px-2 text-gray-500 dark:text-gray-400 print:text-gray-700">{ticket.user?.profession || '-'}</td>
                                     <td className="px-6 py-3 print:px-2 text-gray-500 dark:text-gray-400 print:text-gray-700">{new Date(ticket.createdAt).toLocaleDateString()}</td>
                                     <td className="px-6 py-3 print:px-2 print-hidden">
                                         <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${
