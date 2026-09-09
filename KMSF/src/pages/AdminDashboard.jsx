@@ -511,12 +511,14 @@ const AdminDashboard = () => {
                                                             data={[
                                                                 { name: 'KSA', value: statsData.data.organizationCounts?.find(o => o._id === 'KSA')?.count || 0 },
                                                                 { name: 'KuMA', value: statsData.data.organizationCounts?.find(o => o._id === 'KuMA')?.count || 0 },
+                                                                { name: 'Student', value: (statsData.data.organizationCounts?.find(o => o._id === 'Student')?.count || 0) + (statsData.data.organizationCounts?.find(o => o._id === 'Students')?.count || 0) },
                                                             ]}
                                                             cx="50%" cy="50%" innerRadius={60} outerRadius={80}
                                                             paddingAngle={5} dataKey="value"
                                                         >
                                                             <Cell fill="#8B5CF6" />
                                                             <Cell fill="#3B82F6" />
+                                                            <Cell fill="#F59E0B" />
                                                         </Pie>
                                                         <RechartsTooltip contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#fff' }} itemStyle={{ color: '#fff' }} />
                                                         <Legend />
@@ -607,6 +609,7 @@ const AdminDashboard = () => {
                                         <option value="">All Organizations</option>
                                         <option value="KSA">KSA</option>
                                         <option value="KuMA">KuMA</option>
+                                        <option value="Student">Student</option>
                                     </select>
                                     <select
                                         value={statusFilter}

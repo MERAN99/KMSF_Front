@@ -127,6 +127,7 @@ const AdminEditUserModal = ({ isOpen, onClose, userId }) => {
                                         <select name="organization" value={form.organization} onChange={handleFormChange} className="w-full dark:bg-gray-800 bg-gray-50 dark:text-white text-gray-900 px-4 py-2 border dark:border-gray-700 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all">
                                             <option value="KSA">KSA</option>
                                             <option value="KuMA">KuMA</option>
+                                            <option value="Student">Student</option>
                                         </select>
                                     </div>
                                     <InputField label="Profession" name="profession" value={form.profession} onChange={handleFormChange} />
