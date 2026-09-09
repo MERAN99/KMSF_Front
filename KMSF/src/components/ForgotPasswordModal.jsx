@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, Key, Lock, Loader2, CheckCircle2, AlertCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { X, Mail, Key, Lock, Loader2, CheckCircle2, AlertCircle, Eye, EyeOff, Info, Check } from 'lucide-react';
 import { useForgotPasswordMutation, useVerifyResetCodeMutation, useResetPasswordMutation } from '../store/api/apiSlice';
 
 const ForgotPasswordModal = ({ isOpen, onClose }) => {
@@ -17,6 +17,14 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     const [forgotPassword, { isLoading: isSendingCode }] = useForgotPasswordMutation();
     const [verifyResetCode, { isLoading: isVerifyingCode }] = useVerifyResetCodeMutation();
     const [resetPassword, { isLoading: isResetting }] = useResetPasswordMutation();
+
+    // Password requirement checks
+    const hasMinLength = newPassword.length >= 8;
+    const hasUppercase = /[A-Z]/.test(newPassword);
+    const hasLowercase = /[a-z]/.test(newPassword);
+    const hasNumber = /\d/.test(newPassword);
+    const hasSpecial = /[@$!%*?&]/.test(newPassword);
+    const isPasswordValid = hasMinLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
 
     const handleSendCode = async (e) => {
         e.preventDefault();
@@ -42,12 +50,12 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
 
     const handleResetPassword = async (e) => {
         e.preventDefault();
-        if (newPassword !== confirmPassword) {
-            setError('Passwords do not match.');
+        if (!hasMinLength || !hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
+            setError('Password must be at least 8 characters and include uppercase, lowercase, number, and special character (@$!%*?&).');
             return;
         }
-        if (newPassword.length < 6) {
-            setError('Password must be at least 6 characters.');
+        if (newPassword !== confirmPassword) {
+            setError('Passwords do not match.');
             return;
         }
 
@@ -215,6 +223,57 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
                                                     </button>
                                                 </div>
                                             </div>
+
+                                            {/* Password Requirements Tip */}
+                                            <div className="p-3.5 bg-gray-800/60 border border-gray-700/60 rounded-xl text-xs space-y-2">
+                                                <div className="flex items-center space-x-1.5 text-amber-400 font-medium">
+                                                    <Info size={14} className="flex-shrink-0" />
+                                                    <span>Password Requirements:</span>
+                                                </div>
+                                                <div className="space-y-1.5 text-gray-400">
+                                                    <div className={`flex items-center space-x-2 transition-colors ${hasMinLength ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
+                                                        {hasMinLength ? (
+                                                            <Check size={14} className="text-emerald-400 flex-shrink-0" />
+                                                        ) : (
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 ml-1 mr-0.5" />
+                                                        )}
+                                                        <span>At least 8 characters long</span>
+                                                    </div>
+                                                    <div className={`flex items-center space-x-2 transition-colors ${hasUppercase ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
+                                                        {hasUppercase ? (
+                                                            <Check size={14} className="text-emerald-400 flex-shrink-0" />
+                                                        ) : (
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 ml-1 mr-0.5" />
+                                                        )}
+                                                        <span>At least one capital letter (A-Z)</span>
+                                                    </div>
+                                                    <div className={`flex items-center space-x-2 transition-colors ${hasLowercase ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
+                                                        {hasLowercase ? (
+                                                            <Check size={14} className="text-emerald-400 flex-shrink-0" />
+                                                        ) : (
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 ml-1 mr-0.5" />
+                                                        )}
+                                                        <span>At least one small letter (a-z)</span>
+                                                    </div>
+                                                    <div className={`flex items-center space-x-2 transition-colors ${hasNumber ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
+                                                        {hasNumber ? (
+                                                            <Check size={14} className="text-emerald-400 flex-shrink-0" />
+                                                        ) : (
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 ml-1 mr-0.5" />
+                                                        )}
+                                                        <span>At least one number (0-9)</span>
+                                                    </div>
+                                                    <div className={`flex items-center space-x-2 transition-colors ${hasSpecial ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
+                                                        {hasSpecial ? (
+                                                            <Check size={14} className="text-emerald-400 flex-shrink-0" />
+                                                        ) : (
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 ml-1 mr-0.5" />
+                                                        )}
+                                                        <span>At least one special sign / symbol (@, $, !, %, *, ?, &)</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <div>
                                                 <label className="block text-gray-500 text-xs mb-1">Confirm New Password</label>
                                                 <div className="relative">
