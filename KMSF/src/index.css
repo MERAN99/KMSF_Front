@@ -10,3 +10,24 @@ html.theme-transition *::after {
   transition-timing-function: ease !important;
   transition-duration: 300ms !important;
 }
+
+/* Infinite Horizontal Marquee for Sponsors */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 32s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}

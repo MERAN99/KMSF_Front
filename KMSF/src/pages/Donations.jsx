@@ -135,6 +135,119 @@ const DonationMessagesWall = () => {
   );
 };
 
+// ─── Sponsors Carousel Section ──────────────────────────────────────────────
+const SPONSORS = [
+  {
+    name: 'Shanidar Publisher',
+    logo: '/sponsors/shanidar.png',
+    role: 'Publishing Partner',
+  },
+  {
+    name: 'KRG UK Representation',
+    logo: '/sponsors/krg.png',
+    role: 'Institutional Sponsor',
+  },
+  {
+    name: 'SIGN4U',
+    logo: '/sponsors/sign4u.png',
+    role: 'Creative & Print Partner',
+  },
+  {
+    name: 'Excel College',
+    logo: '/sponsors/excel-college.png',
+    role: 'Educational Sponsor',
+  },
+  {
+    name: 'Kurdistan Chronicle',
+    logo: '/sponsors/kurdistan-chronicle.jpg',
+    role: 'Media Partner',
+    isRedBadge: true,
+  },
+];
+
+const SponsorsSection = () => {
+  // Quadruple items to ensure seamless infinite loop on any screen width
+  const tickerItems = [...SPONSORS, ...SPONSORS, ...SPONSORS, ...SPONSORS];
+
+  return (
+    <div className="relative pt-12 pb-24 overflow-hidden border-t dark:border-gray-800/80 border-gray-200/80">
+      {/* Background ambient glow */}
+      <div className="absolute inset-0 pointer-events-none opacity-40">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-48 bg-gradient-to-r from-amber-500/10 via-yellow-500/15 to-amber-500/10 blur-3xl rounded-full" />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 sm:mb-12 text-center relative z-10">
+        <motion.span
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="inline-block text-yellow-500 font-semibold text-xs md:text-sm uppercase tracking-widest mb-3"
+        >
+          Proudly Supported By
+        </motion.span>
+        <motion.h3
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="text-3xl md:text-4xl font-bold dark:text-white text-gray-900 mb-4"
+        >
+          Our Valued <span className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 bg-clip-text text-transparent">Sponsors & Partners</span>
+        </motion.h3>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="text-sm md:text-base dark:text-gray-400 text-gray-600 max-w-2xl mx-auto"
+        >
+          We extend our profound gratitude to our esteemed partners whose vital contributions and steadfast commitment empower our medical, academic, and community initiatives.
+        </motion.p>
+      </div>
+
+      {/* Infinite Horizontal Carousel */}
+      <div className="relative w-full overflow-hidden">
+        {/* Left & Right gradient fades for smooth mask effect */}
+        <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-16 sm:w-28 md:w-44 z-10 bg-gradient-to-r dark:from-gray-900 from-gray-50 to-transparent" />
+        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 sm:w-28 md:w-44 z-10 bg-gradient-to-l dark:from-gray-900 from-gray-50 to-transparent" />
+
+        {/* Ticker Track */}
+        <div className="animate-marquee flex items-center gap-6 py-4">
+          {tickerItems.map((sponsor, idx) => (
+            <div
+              key={idx}
+              className="flex-shrink-0 w-64 sm:w-72 h-36 rounded-2xl bg-white dark:bg-gray-800/95 border border-gray-200/80 dark:border-gray-700/60 shadow-sm hover:shadow-xl hover:border-amber-500/50 dark:hover:border-amber-500/50 transition-all duration-300 p-4 flex flex-col justify-between group cursor-pointer"
+            >
+              {/* Logo container */}
+              <div className="w-full h-20 flex items-center justify-center bg-white rounded-xl p-2.5 overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.04)] transition-transform duration-300 group-hover:scale-105">
+                <img
+                  src={sponsor.logo}
+                  alt={sponsor.name}
+                  className={`max-h-16 w-auto max-w-[190px] object-contain ${sponsor.isRedBadge ? 'rounded-md shadow-sm' : ''}`}
+                  loading="lazy"
+                />
+              </div>
+
+              {/* Sponsor info & role badge */}
+              <div className="flex items-center justify-between pt-2 border-t dark:border-gray-700/40 border-gray-100">
+                <div className="min-w-0 pr-2">
+                  <p className="text-xs font-bold text-gray-800 dark:text-gray-200 truncate">
+                    {sponsor.name}
+                  </p>
+                </div>
+                <span className="flex-shrink-0 text-[10px] font-semibold tracking-wide uppercase text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+                  {sponsor.role}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ─── Main Donation Page ─────────────────────────────────────────────────────
 const DonationPage = () => {
   const [selectedAmount, setSelectedAmount] = useState(50);
@@ -537,16 +650,25 @@ const DonationPage = () => {
               Can't donate right now? Share our mission, volunteer your time, or partner with us to make a lasting impact.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <button className="bg-white text-gray-900 px-8 py-4 font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+              <button
+                onClick={() => navigate('/contact')}
+                className="bg-white text-gray-900 px-8 py-4 font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+              >
                 Volunteer
               </button>
-              <button className="bg-white text-gray-900 px-8 py-4 font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+              <button
+                onClick={() => navigate('/contact')}
+                className="bg-white text-gray-900 px-8 py-4 font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+              >
                 Partner With Us
               </button>
             </div>
           </div>
         </div>
       </motion.div>
+
+      {/* ── Our Sponsors & Partners Infinite Ticker ───────────────────── */}
+      <SponsorsSection />
     </section >
       <CelebrationModal
         isOpen={showDonationModal}
