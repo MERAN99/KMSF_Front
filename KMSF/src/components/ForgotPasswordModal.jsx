@@ -23,6 +23,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     const hasUppercase = /[A-Z]/.test(newPassword);
     const hasLowercase = /[a-z]/.test(newPassword);
     const hasNumber = /\d/.test(newPassword);
+    const hasSymbol = /[^A-Za-z0-9]/.test(newPassword);
     const hasSpecial = /[@$!%*?&]/.test(newPassword);
     const isPasswordValid = hasMinLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
 
@@ -231,21 +232,13 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
                                                     <span>Password Requirements:</span>
                                                 </div>
                                                 <div className="space-y-1.5 text-gray-400">
-                                                    <div className={`flex items-center space-x-2 transition-colors ${hasMinLength ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
-                                                        {hasMinLength ? (
-                                                            <Check size={14} className="text-emerald-400 flex-shrink-0" />
-                                                        ) : (
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 ml-1 mr-0.5" />
-                                                        )}
-                                                        <span>At least 8 characters long</span>
-                                                    </div>
                                                     <div className={`flex items-center space-x-2 transition-colors ${hasUppercase ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
                                                         {hasUppercase ? (
                                                             <Check size={14} className="text-emerald-400 flex-shrink-0" />
                                                         ) : (
                                                             <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 ml-1 mr-0.5" />
                                                         )}
-                                                        <span>At least one capital letter (A-Z)</span>
+                                                        <span>At least one uppercase letter</span>
                                                     </div>
                                                     <div className={`flex items-center space-x-2 transition-colors ${hasLowercase ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
                                                         {hasLowercase ? (
@@ -253,15 +246,15 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
                                                         ) : (
                                                             <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 ml-1 mr-0.5" />
                                                         )}
-                                                        <span>At least one small letter (a-z)</span>
+                                                        <span>At least one lowercase letter</span>
                                                     </div>
-                                                    <div className={`flex items-center space-x-2 transition-colors ${hasNumber ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
-                                                        {hasNumber ? (
+                                                    <div className={`flex items-center space-x-2 transition-colors ${hasSymbol ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
+                                                        {hasSymbol ? (
                                                             <Check size={14} className="text-emerald-400 flex-shrink-0" />
                                                         ) : (
                                                             <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 ml-1 mr-0.5" />
                                                         )}
-                                                        <span>At least one number (0-9)</span>
+                                                        <span>At least one symbol</span>
                                                     </div>
                                                     <div className={`flex items-center space-x-2 transition-colors ${hasSpecial ? 'text-emerald-400 font-medium' : 'text-gray-400'}`}>
                                                         {hasSpecial ? (
@@ -269,7 +262,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
                                                         ) : (
                                                             <span className="w-1.5 h-1.5 rounded-full bg-gray-600 flex-shrink-0 ml-1 mr-0.5" />
                                                         )}
-                                                        <span>At least one special sign / symbol (@, $, !, %, *, ?, &)</span>
+                                                        <span>At least one special character.</span>
                                                     </div>
                                                 </div>
                                             </div>
