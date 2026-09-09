@@ -21,6 +21,7 @@ import {
     useDeleteTeamMemberMutation,
     useUpdateTeamMemberMutation,
     useSyncStripeMembersMutation,
+    useLazyGetAllUserIdsQuery,
 } from '../store/api/apiSlice';
 import {
     Users, Calendar, Plus, Edit, Trash2, X, CheckCircle,
@@ -330,10 +331,23 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleSelectAllUsers = (e) => {
+    const [triggerGetAllIds] = useLazyGetAllUserIdsQuery();
+    const [isSelectingAll, setIsSelectingAll] = useState(false);
+
+    const handleSelectAllUsers = async (e) => {
         if (e.target.checked) {
-            const allIds = usersData?.data?.map(u => u._id) || [];
-            setSelectedUserIds(allIds);
+            // If all on this page are already selected, fetch ALL matching IDs
+            setIsSelectingAll(true);
+            try {
+                const result = await triggerGetAllIds({ search: debouncedSearch, status: statusFilter, organization: orgFilter }).unwrap();
+                setSelectedUserIds(result.ids || []);
+            } catch (err) {
+                // Fallback: select only current page
+                const allIds = usersData?.data?.map(u => u._id) || [];
+                setSelectedUserIds(allIds);
+            } finally {
+                setIsSelectingAll(false);
+            }
         } else {
             setSelectedUserIds([]);
         }
@@ -657,8 +671,9 @@ const AdminDashboard = () => {
                                                     <input
                                                         type="checkbox"
                                                         className="w-4 h-4 rounded border-gray-600 bg-gray-700 checked:bg-amber-500 text-amber-500 focus:ring-amber-500 focus:ring-offset-gray-900"
-                                                        checked={usersData?.data?.length > 0 && selectedUserIds.length === usersData?.data?.length}
+                                                        checked={usersData?.data?.length > 0 && selectedUserIds.length > 0 && usersData?.data?.every(u => selectedUserIds.includes(u._id))}
                                                         onChange={handleSelectAllUsers}
+                                                        disabled={isSelectingAll}
                                                     />
                                                 </th>
                                                 <th className="px-6 py-4 font-semibold whitespace-nowrap">Name</th>

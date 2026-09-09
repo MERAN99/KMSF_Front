@@ -102,6 +102,15 @@ export const apiSlice = createApi({
             },
             providesTags: ['User'],
         }),
+        getAllUserIds: builder.query({
+            query: ({ search = '', status = '', organization = '' } = {}) => {
+                let url = `/admin/members/ids?`;
+                if (search) url += `&search=${search}`;
+                if (status) url += `&status=${status}`;
+                if (organization) url += `&organization=${organization}`;
+                return url;
+            },
+        }),
         sendBulkReminderEmail: builder.mutation({
             query: (data) => ({
                 url: '/admin/member/bulk-email',
@@ -338,6 +347,7 @@ export const {
     useVerifySessionMutation,
     useGetAdminStatsQuery,
     useGetAllUsersQuery,
+    useLazyGetAllUserIdsQuery,
     useSendBulkReminderEmailMutation,
     useAdminGetEventsQuery,
     useAdminCreateEventMutation,
