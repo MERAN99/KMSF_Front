@@ -198,6 +198,27 @@ const Membership = () => {
       return;
     }
 
+    if (!formData.addressLine1) {
+      setErrorMsg('Address Line 1 is required.');
+      return;
+    }
+    if (!formData.city) {
+      setErrorMsg('City is required.');
+      return;
+    }
+    if (!formData.countyRegion) {
+      setErrorMsg('County Region is required. Please select your region.');
+      return;
+    }
+    if (!formData.country) {
+      setErrorMsg('Country is required. Please select your country.');
+      return;
+    }
+    if (!formData.postCode) {
+      setErrorMsg('Post Code is required.');
+      return;
+    }
+
     if (!validatePassword(formData.password)) {
       setErrorMsg('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.');
       return;
