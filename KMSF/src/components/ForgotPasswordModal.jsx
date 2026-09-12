@@ -23,7 +23,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     const hasUppercase = /[A-Z]/.test(newPassword);
     const hasLowercase = /[a-z]/.test(newPassword);
     const hasNumber = /\d/.test(newPassword);
-    const hasSpecial = /[@$!%*?&]/.test(newPassword);
+    const hasSpecial = /[^A-Za-z\d\s]/.test(newPassword);
     const isPasswordValid = hasMinLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
 
     const handleSendCode = async (e) => {
@@ -51,7 +51,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     const handleResetPassword = async (e) => {
         e.preventDefault();
         if (!hasMinLength || !hasUppercase || !hasLowercase || !hasNumber || !hasSpecial) {
-            setError('Password must be at least 8 characters and include uppercase, lowercase, number, and special character (@$!%*?&).');
+            setError('Password must be at least 8 characters and include uppercase, lowercase, number, and special character.');
             return;
         }
         if (newPassword !== confirmPassword) {

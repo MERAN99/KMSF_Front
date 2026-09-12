@@ -173,7 +173,7 @@ const Membership = () => {
   };
 
   const validatePassword = (pw) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(pw);
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s]).{8,}$/.test(pw);
 
   // ─── Step 1: Validate form & send OTP ──────────────────────────────────────
   const handleRequestOTP = async () => {
