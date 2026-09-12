@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAdminGetEventsQuery, useGetAdminEventTicketsQuery } from '../store/api/apiSlice';
-import { Loader2, Calendar, Users, Printer, MapPin, Search, ChevronLeft } from 'lucide-react';
+import { Loader2, Calendar, Users, Printer, MapPin, Search, ChevronLeft, ChevronDown, FileText, FileSpreadsheet } from 'lucide-react';
 
 export default function AdminTickets() {
     const { data: eventsData, isLoading: eventsLoading } = useAdminGetEventsQuery();
     const [selectedEventId, setSelectedEventId] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [showExportMenu, setShowExportMenu] = useState(false);
+    const exportMenuRef = useRef(null);
 
     const { data: ticketsData, isLoading: ticketsLoading } = useGetAdminEventTicketsQuery(selectedEventId, { skip: !selectedEventId });
 
@@ -14,7 +16,19 @@ export default function AdminTickets() {
     // Sort events by date descending
     const eventsList = [...(eventsData?.data || [])].sort((a, b) => new Date(b.date) - new Date(a.date));
 
+    // Close export menu on outside click
+    useEffect(() => {
+        const handler = (e) => {
+            if (exportMenuRef.current && !exportMenuRef.current.contains(e.target)) {
+                setShowExportMenu(false);
+            }
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
     const handlePrint = () => {
+        setShowExportMenu(false);
         const printContent = document.getElementById('printable-area').innerHTML;
         const printWindow = window.open('', '', 'width=900,height=650');
         printWindow.document.write(`
@@ -38,6 +52,49 @@ export default function AdminTickets() {
             printWindow.print();
             printWindow.close();
         }, 250);
+    };
+
+    const handleExportCSV = () => {
+        setShowExportMenu(false);
+        const tickets = ticketsData?.data || [];
+        if (tickets.length === 0) return;
+
+        // CSV headers
+        const headers = ['#', 'Ticket ID', 'First Name', 'Last Name', 'Email', 'Type', 'Profession', 'Bought On', 'Status'];
+
+        // Escape values for CSV (handle commas, quotes, newlines)
+        const esc = (val) => {
+            const str = String(val ?? '');
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                return `"${str.replace(/"/g, '""')}"`;
+            }
+            return str;
+        };
+
+        const rows = tickets.map((t, i) => [
+            i + 1,
+            esc(t.ticketCode),
+            esc(t.user?.firstName || 'Deleted'),
+            esc(t.user?.lastName || 'User'),
+            esc(t.user?.email || '—'),
+            esc(t.ticketType),
+            esc(t.user?.profession || '-'),
+            esc(new Date(t.createdAt).toLocaleDateString()),
+            esc(t.paymentStatus),
+        ].join(','));
+
+        const csvContent = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+
+        const eventTitle = (selectedEvent?.title || 'attendees').replace(/[^a-zA-Z0-9]/g, '_');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${eventTitle}_attendees.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     };
 
     if (eventsLoading) {
@@ -116,12 +173,40 @@ export default function AdminTickets() {
                             className="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-amber-500 dark:text-white"
                         />
                     </div>
-                    <button 
-                        onClick={handlePrint}
-                        className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:opacity-90 transition-opacity whitespace-nowrap"
-                    >
-                        <Printer size={16} /> Print List
-                    </button>
+                    {/* Export Dropdown */}
+                    <div className="relative" ref={exportMenuRef}>
+                        <button 
+                            onClick={() => setShowExportMenu(!showExportMenu)}
+                            className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:opacity-90 transition-opacity whitespace-nowrap"
+                        >
+                            <Printer size={16} /> Export <ChevronDown size={14} className={`transition-transform ${showExportMenu ? 'rotate-180' : ''}`} />
+                        </button>
+                        {showExportMenu && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+                                <button
+                                    onClick={handlePrint}
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                    <FileText size={16} className="text-red-500" />
+                                    <div className="text-left">
+                                        <div className="font-semibold">Print PDF</div>
+                                        <div className="text-[11px] text-gray-400">Print / Save as PDF</div>
+                                    </div>
+                                </button>
+                                <div className="border-t border-gray-100 dark:border-gray-700" />
+                                <button
+                                    onClick={handleExportCSV}
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                    <FileSpreadsheet size={16} className="text-green-500" />
+                                    <div className="text-left">
+                                        <div className="font-semibold">Export CSV</div>
+                                        <div className="text-[11px] text-gray-400">Open in Excel / Sheets</div>
+                                    </div>
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 
