@@ -332,6 +332,14 @@ export const apiSlice = createApi({
             query: (id) => `/admin/events/${id}/tickets`,
             providesTags: ['Ticket']
         }),
+        verifyTicketSession: builder.mutation({
+            query: (sessionId) => ({
+                url: '/tickets/verify-session',
+                method: 'POST',
+                body: { sessionId }
+            }),
+            invalidatesTags: ['Ticket']
+        }),
     }),
 });
 
@@ -382,4 +390,5 @@ export const {
     useGetUserTicketsQuery,
     useGetAdminEventTicketsQuery,
     useSyncStripeMembersMutation,
+    useVerifyTicketSessionMutation,
 } = apiSlice;
