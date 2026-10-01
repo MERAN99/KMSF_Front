@@ -340,6 +340,13 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['Ticket']
         }),
+        recoverAllMissingTickets: builder.mutation({
+            query: () => ({
+                url: '/admin/tickets/recover-all',
+                method: 'POST',
+            }),
+            invalidatesTags: ['Ticket']
+        }),
     }),
 });
 
@@ -391,4 +398,5 @@ export const {
     useGetAdminEventTicketsQuery,
     useSyncStripeMembersMutation,
     useVerifyTicketSessionMutation,
+    useRecoverAllMissingTicketsMutation,
 } = apiSlice;

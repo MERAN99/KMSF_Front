@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, LogOut, User as UserIcon, CreditCard, ChevronDown, Lock, Zap, Star, Pencil, Sun, Moon, Ticket as TicketIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { selectCurrentUser, selectCurrentToken, logout } from '../store/slices/authSlice';
 import MemberIDCard from '../components/MemberIDCard';
 import ChangePasswordModal from '../components/ChangePasswordModal';
@@ -27,6 +27,20 @@ const Navbar = () => {
   const token = useSelector(selectCurrentToken);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Auto-open My Tickets modal when navigated with ?showTickets=true
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('showTickets') === 'true' && token) {
+      setIsMyTicketsOpen(true);
+      // Clean the query param from the URL without triggering a navigation
+      params.delete('showTickets');
+      const newSearch = params.toString();
+      const newUrl = location.pathname + (newSearch ? `?${newSearch}` : '');
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [location.search, token]);
 
   useEffect(() => {
     const handleScroll = () => {

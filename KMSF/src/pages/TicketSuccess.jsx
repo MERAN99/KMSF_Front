@@ -69,7 +69,7 @@ export default function TicketSuccess() {
 
                         <div className="flex flex-col w-full gap-4">
                             <Link
-                                to="/profile?tab=tickets"
+                                to="/events?showTickets=true"
                                 className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[#C8A441] to-[#F2AE02] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C8A441]"
                             >
                                 View My Tickets
@@ -96,7 +96,7 @@ export default function TicketSuccess() {
 
                         <div className="flex flex-col w-full gap-4">
                             <Link
-                                to="/profile?tab=tickets"
+                                to="/events?showTickets=true"
                                 className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-[#C8A441] to-[#F2AE02] hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#C8A441]"
                             >
                                 Check My Tickets
