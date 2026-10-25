@@ -1439,7 +1439,7 @@ const AdminDashboard = () => {
                                                 <FileText size={20} className="text-amber-500 flex-shrink-0" />
                                                 <div className="flex-1 min-w-0">
                                                     <p className="text-sm text-gray-300 truncate">Current PDF attached</p>
-                                                    <a href={existingPdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-400 hover:text-amber-300 underline">Preview PDF</a>
+                                                    <a href={editingEvent?._id ? `${API_BASE_URL}/events/${editingEvent._id}/pdf` : existingPdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-400 hover:text-amber-300 underline">Preview PDF</a>
                                                 </div>
                                                 <button
                                                     type="button"

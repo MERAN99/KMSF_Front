@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, MapPin, Users, Clock, X, Loader2, AlertCircle, Archive, Images, ChevronLeft, ChevronRight, FolderOpen, FileText } from 'lucide-react';
 import { useGetEventsQuery } from '../store/api/apiSlice';
 import LazyImage from '../components/LazyImage';
+import { API_BASE_URL } from '../config';
 
 // Helper: has this event's date already passed?
 const isPastEvent = (ev) => {
@@ -255,7 +256,7 @@ const Archives = () => {
                                         {selectedEvent.attachedPdf && (
                                             <div className="mt-4">
                                                 <a
-                                                    href={selectedEvent.attachedPdf}
+                                                    href={selectedEvent.attachedPdf.includes('cloudinary.com') ? `${API_BASE_URL}/events/${selectedEvent._id}/pdf` : selectedEvent.attachedPdf}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white px-8 py-4 font-bold text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105 rounded-sm"
