@@ -25,7 +25,7 @@ import {
 } from '../store/api/apiSlice';
 import {
     Users, Calendar, Plus, Edit, Trash2, X, CheckCircle,
-    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign, Tag, Eye, EyeOff, Images, Upload, FolderOpen, ImagePlus, ArrowLeft, Save
+    AlertCircle, Clock, MapPin, Mail, Loader2, LayoutDashboard, Search, ChevronLeft, ChevronRight, Ban, Briefcase, Heart, DollarSign, Tag, Eye, EyeOff, Images, Upload, FolderOpen, ImagePlus, ArrowLeft, Save, FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -33,6 +33,7 @@ import {
     CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import AdminEditUserModal from '../components/AdminEditUserModal';
+import ProfessionUsersModal from '../components/ProfessionUsersModal';
 import AdminTickets from '../components/AdminTickets';
 import { Ticket as TicketIcon } from 'lucide-react';
 
@@ -42,6 +43,7 @@ const AdminDashboard = () => {
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
     const [editingEvent, setEditingEvent] = useState(null);
     const [editingUserId, setEditingUserId] = useState(null);
+    const [selectedProfessionGroup, setSelectedProfessionGroup] = useState(null);
 
     const [isBulkEmailModalOpen, setIsBulkEmailModalOpen] = useState(false);
     const [bulkEmailForm, setBulkEmailForm] = useState({ title: '', message: '' });
@@ -58,6 +60,12 @@ const AdminDashboard = () => {
     const [newGalleryPreviews, setNewGalleryPreviews] = useState([]); 
     const galleryInputRef = useRef(null);
 
+    // PDF attachment state
+    const [existingPdfUrl, setExistingPdfUrl] = useState(null); // Existing PDF URL (edit mode)
+    const [newPdfFile, setNewPdfFile] = useState(null);          // New PDF file to upload
+    const [removePdf, setRemovePdf] = useState(false);           // Flag to remove existing PDF
+    const pdfInputRef = useRef(null);
+
     // Team member form state
     const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
     const [editingTeamMember, setEditingTeamMember] = useState(null);
@@ -68,21 +76,25 @@ const AdminDashboard = () => {
     // Event TBD checkbox state
     const [isEventTBD, setIsEventTBD] = useState(false);
 
-    // When editing opens, seed existing images
+    // When editing opens, seed existing images and PDF
     useEffect(() => {
         if (editingEvent) {
             setExistingImages(editingEvent.images || (editingEvent.image ? [editingEvent.image] : []));
             setExistingGalleryImages(editingEvent.galleryImages || []);
             setIsEventTBD(editingEvent.isTBD || false);
+            setExistingPdfUrl(editingEvent.attachedPdf || null);
         } else {
             setExistingImages([]);
             setExistingGalleryImages([]);
             setIsEventTBD(false);
+            setExistingPdfUrl(null);
         }
         setNewImageFiles([]);
         setNewImagePreviews([]);
         setNewGalleryFiles([]);
         setNewGalleryPreviews([]);
+        setNewPdfFile(null);
+        setRemovePdf(false);
     }, [editingEvent, isEventModalOpen]);
 
     // Pagination & Search specific to Users tab
@@ -177,6 +189,15 @@ const AdminDashboard = () => {
         newImageFiles.forEach(file => formData.append('images', file));
         newGalleryFiles.forEach(file => formData.append('galleryImages', file));
 
+        // PDF attachment handling
+        if (newPdfFile) {
+            formData.append('attachedPdf', newPdfFile);
+        } else if (removePdf) {
+            formData.set('removePdf', 'true');
+        } else if (existingPdfUrl) {
+            formData.set('existingPdf', existingPdfUrl);
+        }
+
         try {
             if (editingEvent) {
                 await updateEvent({ id: editingEvent._id, formData }).unwrap();
@@ -230,6 +251,24 @@ const AdminDashboard = () => {
     const removeNewGalleryImage = (idx) => {
         setNewGalleryFiles(prev => prev.filter((_, i) => i !== idx));
         setNewGalleryPreviews(prev => prev.filter((_, i) => i !== idx));
+    };
+
+    const handlePdfFileSelected = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.type !== 'application/pdf' && !file.name.match(/\.pdf$/i)) {
+            alert('Please select a valid PDF file.');
+            return;
+        }
+        setNewPdfFile(file);
+        setRemovePdf(false);
+        if (pdfInputRef.current) pdfInputRef.current.value = '';
+    };
+
+    const handleRemovePdf = () => {
+        setNewPdfFile(null);
+        setExistingPdfUrl(null);
+        setRemovePdf(true);
     };
 
     const handleDeleteEvent = async (id) => {
@@ -565,18 +604,63 @@ const AdminDashboard = () => {
 
                                         {/* Top Professions Bar Chart */}
                                         <div className="dark:bg-gray-800 bg-white dark:border-gray-700 border-gray-200 border rounded-xl p-6 lg:col-span-3 shadow-inner">
-                                            <h3 className="text-lg font-bold dark:text-white text-gray-900 mb-6 flex items-center gap-2"><Briefcase size={20} className="text-amber-500" /> Top Professions</h3>
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
+                                                <h3 className="text-lg font-bold dark:text-white text-gray-900 flex items-center gap-2">
+                                                    <Briefcase size={20} className="text-amber-500" /> Top Professions
+                                                </h3>
+                                                <span className="text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full flex items-center gap-1.5 w-fit">
+                                                    💡 Click any bar to view members
+                                                </span>
+                                            </div>
                                             <div style={{ height: statsData.data.professionCounts ? Math.max(288, statsData.data.professionCounts.length * 45) : 288 }} className="w-full transition-all duration-300">
                                                 {statsData.data.professionCounts && statsData.data.professionCounts.length > 0 ? (
                                                     <ResponsiveContainer width="100%" height="100%">
-                                                        <BarChart data={statsData.data.professionCounts} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+                                                        <BarChart
+                                                            data={statsData.data.professionCounts}
+                                                            layout="vertical"
+                                                            margin={{ top: 5, right: 30, left: 40, bottom: 5 }}
+                                                            className="cursor-pointer"
+                                                            onClick={(state) => {
+                                                                if (state && state.activePayload && state.activePayload[0]) {
+                                                                    setSelectedProfessionGroup(state.activePayload[0].payload);
+                                                                }
+                                                            }}
+                                                        >
                                                             <CartesianGrid strokeDasharray="3 3" stroke="#374151" horizontal={false} />
                                                             <XAxis type="number" stroke="#9CA3AF" />
-                                                            <YAxis dataKey="_id" type="category" stroke="#9CA3AF" width={150} interval={0} tick={{ fontSize: 12 }} />
-                                                            <RechartsTooltip contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#fff' }} cursor={{ fill: '#374151', opacity: 0.4 }} />
-                                                            <Bar dataKey="count" name="Professionals" fill="#10B981" radius={[0, 4, 4, 0]} barSize={30}>
+                                                            <YAxis
+                                                                dataKey="_id"
+                                                                type="category"
+                                                                stroke="#9CA3AF"
+                                                                width={150}
+                                                                interval={0}
+                                                                tick={{ fontSize: 12, cursor: 'pointer' }}
+                                                            />
+                                                            <RechartsTooltip
+                                                                contentStyle={{ backgroundColor: '#1F2937', borderColor: '#374151', color: '#fff' }}
+                                                                cursor={{ fill: '#374151', opacity: 0.4 }}
+                                                                formatter={(value) => [`${value} members (Click to view)`, 'Professionals']}
+                                                            />
+                                                            <Bar
+                                                                dataKey="count"
+                                                                name="Professionals"
+                                                                fill="#10B981"
+                                                                radius={[0, 4, 4, 0]}
+                                                                barSize={30}
+                                                                cursor="pointer"
+                                                                onClick={(entry) => {
+                                                                    const item = entry?.payload || entry;
+                                                                    if (item) setSelectedProfessionGroup(item);
+                                                                }}
+                                                            >
                                                                 {statsData.data.professionCounts.map((entry, index) => (
-                                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                                    <Cell
+                                                                        key={`cell-${index}`}
+                                                                        fill={COLORS[index % COLORS.length]}
+                                                                        cursor="pointer"
+                                                                        className="hover:opacity-80 transition-opacity"
+                                                                        onClick={() => setSelectedProfessionGroup(entry)}
+                                                                    />
                                                                 ))}
                                                             </Bar>
                                                         </BarChart>
@@ -1344,6 +1428,70 @@ const AdminDashboard = () => {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* PDF Attachment Section */}
+                                    <div className="md:col-span-2 mt-4 p-5 bg-gray-800/80 rounded-xl border border-gray-700">
+                                        <h4 className="text-white font-medium mb-4 flex items-center gap-2"><FileText size={16} className="text-amber-500" /> PDF Attachment (Optional)</h4>
+                                        
+                                        {/* Show existing PDF */}
+                                        {existingPdfUrl && !newPdfFile && (
+                                            <div className="flex items-center gap-3 mb-3 p-3 bg-gray-900/60 rounded-lg border border-gray-700">
+                                                <FileText size={20} className="text-amber-500 flex-shrink-0" />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm text-gray-300 truncate">Current PDF attached</p>
+                                                    <a href={existingPdfUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-400 hover:text-amber-300 underline">Preview PDF</a>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleRemovePdf}
+                                                    className="text-red-400 hover:text-red-300 flex-shrink-0 p-1 rounded hover:bg-red-400/10 transition-colors"
+                                                    title="Remove PDF"
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* Show newly selected PDF */}
+                                        {newPdfFile && (
+                                            <div className="flex items-center gap-3 mb-3 p-3 bg-amber-500/10 rounded-lg border border-amber-500/30">
+                                                <FileText size={20} className="text-amber-500 flex-shrink-0" />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm text-white truncate">{newPdfFile.name}</p>
+                                                    <p className="text-xs text-gray-400">{(newPdfFile.size / 1024 / 1024).toFixed(2)} MB — Ready to upload</p>
+                                                </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => { setNewPdfFile(null); }}
+                                                    className="text-red-400 hover:text-red-300 flex-shrink-0 p-1 rounded hover:bg-red-400/10 transition-colors"
+                                                    title="Remove selected PDF"
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {/* Upload button */}
+                                        {!newPdfFile && (
+                                            <div
+                                                className="relative border-2 border-dashed border-gray-700 hover:border-amber-500/50 rounded-lg p-4 bg-gray-900/50 text-center transition-colors cursor-pointer"
+                                                onClick={() => pdfInputRef.current?.click()}
+                                            >
+                                                <input
+                                                    ref={pdfInputRef}
+                                                    type="file"
+                                                    accept=".pdf,application/pdf"
+                                                    className="hidden"
+                                                    onChange={handlePdfFileSelected}
+                                                />
+                                                <div className="text-amber-500 mb-1"><FileText size={22} className="mx-auto" /></div>
+                                                <span className="text-sm text-gray-400">
+                                                    {existingPdfUrl ? 'Click to replace the PDF' : 'Click to attach a PDF file'}
+                                                </span>
+                                                <p className="text-xs text-gray-600 mt-0.5">Max 10MB · PDF only</p>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="mt-8 pt-6 border-t border-gray-800 flex justify-end gap-4">
@@ -1612,6 +1760,17 @@ const AdminDashboard = () => {
             </AnimatePresence>
 
             <AdminEditUserModal isOpen={!!editingUserId} userId={editingUserId} onClose={() => setEditingUserId(null)} />
+            
+            <ProfessionUsersModal
+                isOpen={!!selectedProfessionGroup}
+                onClose={() => setSelectedProfessionGroup(null)}
+                professionData={selectedProfessionGroup}
+                onSelectUser={(userId) => setEditingUserId(userId)}
+                onFilterInTable={(profName) => {
+                    setActiveTab('users');
+                    setSearchTerm(profName);
+                }}
+            />
         </div>
     );
 };

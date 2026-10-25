@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, MapPin, Clock, ArrowRight, X, ChevronLeft, ChevronRight, ExternalLink, Lock } from "lucide-react";
+import { Calendar, MapPin, Clock, ArrowRight, X, ChevronLeft, ChevronRight, ExternalLink, Lock, FileText } from "lucide-react";
 import LazyImage from '../components/LazyImage';
 import { API_BASE_URL } from '../config';
 
@@ -426,6 +426,21 @@ export default function EventsSection() {
                       >
                         External Link
                         <ExternalLink className="w-5 h-5" />
+                      </a>
+                    </div>
+                  )}
+
+                  {/* PDF Attachment Button */}
+                  {selectedEvent.attachedPdf && (
+                    <div className={`${selectedEvent.link ? 'mt-3' : 'mt-auto pt-6 border-t border-gray-200 dark:border-gray-800'}`}>
+                      <a
+                        href={selectedEvent.attachedPdf}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full bg-white dark:bg-gray-800 border-2 border-[#C8A441] text-[#C8A441] py-3.5 px-6 font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-[#C8A441] hover:text-white transition-all duration-300 shadow-md"
+                      >
+                        <FileText className="w-5 h-5" />
+                        View Programme (PDF)
                       </a>
                     </div>
                   )}

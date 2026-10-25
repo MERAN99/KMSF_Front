@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, Users, Clock, X, Loader2, AlertCircle, Archive, Images, ChevronLeft, ChevronRight, FolderOpen } from 'lucide-react';
+import { Calendar, MapPin, Users, Clock, X, Loader2, AlertCircle, Archive, Images, ChevronLeft, ChevronRight, FolderOpen, FileText } from 'lucide-react';
 import { useGetEventsQuery } from '../store/api/apiSlice';
 import LazyImage from '../components/LazyImage';
 
@@ -249,6 +249,21 @@ const Archives = () => {
                                         {/* Description */}
                                         {selectedEvent.description && (
                                             <p className="dark:text-gray-300 text-gray-600 text-lg mb-8 leading-relaxed">{selectedEvent.description}</p>
+                                        )}
+
+                                        {/* PDF Attachment Button */}
+                                        {selectedEvent.attachedPdf && (
+                                            <div className="mt-4">
+                                                <a
+                                                    href={selectedEvent.attachedPdf}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-white px-8 py-4 font-bold text-lg transition-all shadow-lg hover:shadow-xl hover:scale-105 rounded-sm"
+                                                >
+                                                    <FileText size={22} />
+                                                    View Programme (PDF)
+                                                </a>
+                                            </div>
                                         )}
                                     </div>
 
