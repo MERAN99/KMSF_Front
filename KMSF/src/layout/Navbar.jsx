@@ -3,7 +3,8 @@ import { Menu, X, LogOut, User as UserIcon, CreditCard, ChevronDown, Lock, Zap, 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { selectCurrentUser, selectCurrentToken, logout } from '../store/slices/authSlice';
+import { selectCurrentUser, selectCurrentToken, logout, updateMembershipStatus } from '../store/slices/authSlice';
+import { useGetSubscriptionStatusQuery } from '../store/api/apiSlice';
 import MemberIDCard from '../components/MemberIDCard';
 import ChangePasswordModal from '../components/ChangePasswordModal';
 import EditProfileModal from '../components/EditProfileModal';
@@ -28,6 +29,19 @@ const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Membership status is cached in localStorage at login. Re-check it with the server
+  // on every page load so a lapsed / failed-payment member stops showing as "Full Member".
+  const { data: subStatus } = useGetSubscriptionStatusQuery(undefined, {
+    skip: !token || user?.role === 'admin',
+    refetchOnMountOrArgChange: true,
+  });
+  useEffect(() => {
+    const serverStatus = subStatus?.data?.membershipStatus;
+    if (serverStatus && serverStatus !== user?.membershipStatus) {
+      dispatch(updateMembershipStatus(serverStatus));
+    }
+  }, [subStatus, user?.membershipStatus, dispatch]);
 
   // Auto-open My Tickets modal when navigated with ?showTickets=true
   useEffect(() => {
